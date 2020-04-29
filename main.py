@@ -5,7 +5,7 @@ from setting import *
 from sprites import *
 import time 
 from time import sleep
-from moviepy.editor import VideoFileClip
+
 
 
 vec = pg.math.Vector2
@@ -16,7 +16,7 @@ class Game:
         pg.init()
         #pg.mixer.init() # for use of music
         self.screen = pg.display.set_mode(WINDOW_SIZE)
-        self.screen.fill(BLACK)
+        self.screen.fill(RED)
         pg.display.set_caption(TITLE)
         self.clock = pg.time.Clock()
         self.running = True
@@ -108,7 +108,7 @@ class Game:
                 
     def draw(self):
         # game loop - draw
-        self.screen.fill(DARKGREY)
+        self.screen.fill(RED)
         self.draw_grid()
         self.all_sprites.draw(self.screen)
         pg.display.update()
