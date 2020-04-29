@@ -1,0 +1,1 @@
+# this file is basic settings of game
