@@ -16,7 +16,7 @@ class Player(pg.sprite.Sprite):
         self.game = game
         self.walking = False
         self.current_frame = 0
-        self.lase_update = 0
+        self.last_update = 0
         self.size = (32,48)
         self.load_images()
         #self.image = self.standing_frames[0]
@@ -32,11 +32,7 @@ class Player(pg.sprite.Sprite):
         self.image = pg.Surface(self.size, pg.SRCALPHA)
         self.image.fill(BLACK)
         pass
-
-    def update(self):
-
-        self.animate()
-        self.acc = vec(0,0)
+    def get_keys(self):
         keys = pg.key.get_pressed()
         if keys[pg.K_a]:
             self.acc.x = -PLAYER_ACC
@@ -47,6 +43,10 @@ class Player(pg.sprite.Sprite):
         if keys[pg.K_s]:
             self.acc.y = PLAYER_ACC
         
+    def update(self):
+        self.acc = vec(0,0)
+        self.get_keys()
+        self.animate()
         # apply friction
         self.acc += self.vel*PLAYER_FRICTION
         #equations of motion
@@ -58,6 +58,9 @@ class Player(pg.sprite.Sprite):
             self.vel *= 3/math.sqrt(self.vel.x**2+self.vel.y**2)
         self.pos += self.vel
         self.rect.center = self.pos
+        if pg.sprite.spritecollideany(self, self.game.walls):
+            self.pos -= self.vel
+            self.rect.center = self.pos
 
     def animate(self):
         pass
@@ -93,6 +96,27 @@ class Leg(Player):
         #print('arm pos', self.pos)
 
         pass
+class bullet(pg.sprite.Sprite):
+    def __init__(self, game, pos, dir):
+        self.groups = game.all_sprites
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.load_images()
+        self.image = self
 
+    def load_images(self):
+        self.image = pg.Surface(self.size, pg.SRCALPHA)
+        self.image.fill(BLACK)
+        pass
+class Wall(pg.sprite.Sprite):
+    def __init__(self, game, x, y):
+        self.groups = game.all_sprites, game.walls
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.image = pg.Surface((TILESIZE,TILESIZE))
+        self.image.fill(LIGHTBLUE)
+        self.rect = self.image.get_rect()
+        self.pos = vec(x,y)
+        self.rect.x = self.pos.x*TILESIZE
+        self.rect.y = self.pos.y*TILESIZE
 
 
