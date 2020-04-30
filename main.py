@@ -28,7 +28,7 @@ class Game:
         self.playing = True
         #if self.playing is True, that means now playing game.
         while self.playing:
-            self.clock.tick(FPS)
+            self.dt = self.clock.tick(FPS)/1000
             #set the frame per second
             self.events()
             #events for keyboard and mouse input

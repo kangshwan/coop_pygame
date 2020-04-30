@@ -27,6 +27,8 @@ class Player(pg.sprite.Sprite):
         self.vel = vec(0,0)
         self.acc = vec(0,0)
         self.acc_max = vec()
+        self.rot = 0
+        self.last_shot = 0
 
     def load_images(self):
         self.image = pg.Surface(self.size, pg.SRCALPHA)
@@ -43,11 +45,20 @@ class Player(pg.sprite.Sprite):
             self.acc.y = -PLAYER_ACC
         if keys[pg.K_s]:
             self.acc.y = PLAYER_ACC
+        key = pg.mouse.get_pressed()
+        if key[0]:
+            now = pg.time.get_ticks()
+            if now - self.last_shot > BULLET_RATE:
+                self.last_shot = now
+                dir = vec(1,0).rotate(self.rot)
+                Bullet(self.game, self.pos, dir)
         
     def update(self):
         self.acc = vec(0,0)
         self.get_keys()
         self.animate()
+        self.rotate()
+
         # apply friction
         self.acc += self.vel*PLAYER_FRICTION
         #equations of motion
@@ -82,6 +93,7 @@ class Player(pg.sprite.Sprite):
                     self.pos.y = hits[0].rect.bottom + self.rect.height/2
                 self.vel.y = 0
                 self.rect.centery = self.pos.y
+
     def animate(self):
         pass
     def magnitude(self):
@@ -94,6 +106,7 @@ class Player(pg.sprite.Sprite):
         radius, angle = direction.as_polar()
         # Rotate the image by the negative angle (y-axis in pygame is flipped).
         self.image = pg.transform.rotate(self.orig_image, -angle)
+        self.rot = angle
         # Create a new rect with the center of the old rect.
         self.rect = self.image.get_rect(center=self.rect.center)
 
@@ -116,17 +129,32 @@ class Leg(Player):
         #print('arm pos', self.pos)
 
         pass
-class bullet(pg.sprite.Sprite):
+class Bullet(pg.sprite.Sprite):
     def __init__(self, game, pos, dir):
-        self.groups = game.all_sprites
+        self.groups = game.all_sprites, game.bullets
         pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.size = (6,6)
         self.load_images()
-        self.image = self
+        self.rect = self.image.get_rect()
+        self.pos = vec(pos)
+        self.rect.center = pos
+        self.vel = dir * BULLET_SPEED
+        self.spawn_time = pg.time.get_ticks()
+
 
     def load_images(self):
         self.image = pg.Surface(self.size, pg.SRCALPHA)
-        self.image.fill(BLACK)
+        self.image.fill(RED)
         pass
+
+    def update(self):
+        self.pos += self.vel * self.game.dt
+        self.rect.center = self.pos
+        if pg.time.get_ticks() - self.spawn_time > BULLET_LIFETIME:
+            self.kill()
+
+
 class Wall(pg.sprite.Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites, game.walls
