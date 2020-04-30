@@ -6,7 +6,7 @@ from sprites import *
 import time 
 from time import sleep
 #from moviepy.editor import VideoFileClip
-#DDDDDDDDDDDDDDD
+
 
 vec = pg.math.Vector2
 
@@ -16,7 +16,7 @@ class Game:
         pg.init()
         #pg.mixer.init() # for use of music
         self.screen = pg.display.set_mode(WINDOW_SIZE)
-        self.screen.fill(RED)
+        self.screen.fill(BLACK)
         pg.display.set_caption(TITLE)
         self.clock = pg.time.Clock()
         self.running = True
@@ -28,7 +28,7 @@ class Game:
         self.playing = True
         #if self.playing is True, that means now playing game.
         while self.playing:
-            self.clock.tick(FPS)
+            self.dt = self.clock.tick(FPS)/1000
             #set the frame per second
             self.events()
             #events for keyboard and mouse input
@@ -46,6 +46,7 @@ class Game:
         self.speed_x_min = -2
         self.speed_y_min = -2
         self.zombie_remain = 1000
+       
         #sprite gruop
         self.all_sprites = pg.sprite.Group()
         self.zombies = pg.sprite.Group()
@@ -53,9 +54,20 @@ class Game:
         self.obstarcle = pg.sprite.Group()
         self.walls = pg.sprite.Group()#just for test
         self.player = Player(self)
-        self.leg = Leg(self)
+        self.enemys = pg.sprite.Group()
+        #self.leg = Leg(self)
+        for x in range(10,20):
+            Wall(self,x,5)
         
-     
+        for z in range(39,40): #한 블럭이 -1씩 이동  
+            enemy(self,z,12)
+        for z in range(39,40): #한 블럭이 -1씩 이동  
+            enemy(self,z,10)
+        for z in range(39,40): #한 블럭이 -1씩 이동  
+            enemy(self,z,8)
+    
+        
+        
         #self.player make Player Object
         self.start_tick = pg.time.get_ticks()
         """
@@ -73,9 +85,12 @@ class Game:
         self.second = ((pg.time.get_ticks() - self.start_tick)/1000)
         #hits -> used sprite collide method, (x, y, default boolean) collision check
         hits = pg.sprite.pygame.sprite.spritecollide(self.player, self.walls, False)
+        hit = pg.sprite.pygame.sprite.spritecollide(self.player, self.enemys, False)
         if hits:
             #do something
             pass
+        if hit: #적이랑 부딪히면 게임 종료
+            pq.quit()
         if self.score == 1000:
             self.level_up.play()
             self.levelup_text()
@@ -100,6 +115,7 @@ class Game:
                 self.start = False
             if event.type == pg.MOUSEBUTTONDOWN:
                 pass
+            
     def draw_grid(self):
         for x in range(0, WIDTH, TILESIZE):
             pg.draw.line(self.screen, LIGHTGREY, (x,0), (x, HEIGHT))
@@ -108,7 +124,7 @@ class Game:
                 
     def draw(self):
         # game loop - draw
-        self.screen.fill(RED)
+        self.screen.fill(DARKGREY)
         self.draw_grid()
         self.all_sprites.draw(self.screen)
         pg.display.update()
