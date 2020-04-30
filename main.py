@@ -90,7 +90,7 @@ class Game:
             #do something
             pass
         if hit: #적이랑 부딪히면 게임 종료
-            pq.quit()
+            pg.quit()
         if self.score == 1000:
             self.level_up.play()
             self.levelup_text()
