@@ -29,9 +29,13 @@ class Player(pg.sprite.Sprite):
         self.acc_max = vec()
         self.rot = 0
         self.last_shot = 0
+
+
         self.gun_status = [True, True]
         self.gun_select = 0
         #1 is pistol 2 is shotgun
+
+
     def load_images(self):
         self.image = pg.Surface(self.size, pg.SRCALPHA)
         self.image.fill(BLACK)
@@ -57,6 +61,11 @@ class Player(pg.sprite.Sprite):
             self.acc.y = PLAYER_ACC
         key = pg.mouse.get_pressed()
         if key[0]:
+            now = pg.time.get_ticks()
+            if now - self.last_shot > BULLET_RATE:
+                self.last_shot = now
+                dir = vec(1,0).rotate(self.rot)
+                Bullet(self.game, self.pos, dir)
             if self.gun_select == 0:
                 if self.gun_status[0] == True:
                     now = pg.time.get_ticks()
@@ -80,7 +89,7 @@ class Player(pg.sprite.Sprite):
                         dir = vec(1,0).rotate(self.rot + 10)
                         Bullet(self.game, self.pos, dir)
 
-                        
+
     def update(self):
         self.acc = vec(0,0)
         self.get_keys()
@@ -101,7 +110,11 @@ class Player(pg.sprite.Sprite):
         self.collide_with_walls('x')
         self.rect.centery = self.pos.y
         self.collide_with_walls('y')
-        
+        self.rect.centerx = self.pos.x
+        self.collide_with_enemy('x')
+        self.rect.centery = self.pos.y
+        self.collide_with_enemy('y')
+
     def collide_with_walls(self,dir):
         if dir == 'x':
             hits = pg.sprite.spritecollide(self, self.game.walls, False)
@@ -121,6 +134,27 @@ class Player(pg.sprite.Sprite):
                     self.pos.y = hits[0].rect.bottom + self.rect.height/2
                 self.vel.y = 0
                 self.rect.centery = self.pos.y
+
+    def collide_with_enemy(self,dir):
+        if dir == 'x':
+            hits = pg.sprite.spritecollide(self, self.game.enemys, False)
+            if hits:
+                if self.vel.x > 0:
+                    self.pos.x = hits[0].rect.left - self.rect.width/2
+                if self.vel.x < 0:
+                    self.pos.x = hits[0].rect.right + self.rect.width/2
+                self.vel.x = 0
+                self.rect.centerx = self.pos.x
+        if dir == 'y':
+            hits = pg.sprite.spritecollide(self, self.game.enemys, False)
+            if hits:
+                if self.vel.y > 0:
+                    self.pos.y = hits[0].rect.top - self.rect.height/2
+                if self.vel.y < 0:
+                    self.pos.y = hits[0].rect.bottom + self.rect.height/2
+                self.vel.y = 0
+                self.rect.centery = self.pos.y
+
 
     def animate(self):
         pass
@@ -185,6 +219,36 @@ class Bullet(pg.sprite.Sprite):
 
 
 
+
+
+class enemy(pg.sprite.Sprite):
+    def __init__(self, game, x, y):
+        self.groups = game.all_sprites, game.enemys
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.image = pg.Surface((TILESIZE,TILESIZE))
+        self.image.fill(RED)
+        self.rect = self.image.get_rect()
+        self.pos = vec(x,y)
+        self.rect.x = self.pos.x*TILESIZE
+        self.rect.y = self.pos.y*TILESIZE
+
+    def update(self):
+        self.rect.x -= 1
+      
+
+#아이템 상자 생성
+class Feed(pg.sprite.Sprite):
+    def __init__(self, game, x, y):
+        self.groups = game.all_sprites, game.feeds
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.image = pg.Surface((TILESIZE,TILESIZE))
+        self.image.fill(WHITE)
+        self.rect = self.image.get_rect()
+        self.rect.x = x*TILESIZE
+        self.rect.y = y*TILESIZE
+
 class Wall(pg.sprite.Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites, game.walls
@@ -197,4 +261,7 @@ class Wall(pg.sprite.Sprite):
         self.rect.x = self.pos.x*TILESIZE
         self.rect.y = self.pos.y*TILESIZE
 
+# def draw_object(surface, color, pos):
+#     r = pg.Rect((pos[0], pos[1]), (TILESIZE, TILESIZE))
+#     pg.draw.rect(surface, color, r)
 
