@@ -22,6 +22,12 @@ DARKGREY  = ( 40, 40, 40)
 PLAYER_ACC = 0.45
 PLAYER_FRICTION = -0.05
 
+# gun properties
+BULLET_SPEED = 500
+BULLET_LIFETIME = 1000
+BULLET_RATE = 150
+
+
 
 #image
 TEST = "test.png"
