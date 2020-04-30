@@ -29,7 +29,9 @@ class Player(pg.sprite.Sprite):
         self.acc_max = vec()
         self.rot = 0
         self.last_shot = 0
-
+        self.gun_status = [True, True]
+        self.gun_select = 0
+        #1 is pistol 2 is shotgun
     def load_images(self):
         self.image = pg.Surface(self.size, pg.SRCALPHA)
         self.image.fill(BLACK)
@@ -37,6 +39,14 @@ class Player(pg.sprite.Sprite):
 
     def get_keys(self):
         keys = pg.key.get_pressed()
+        if keys[pg.K_1]:
+            self.gun=[True,False]
+            self.gun_select = 0
+            print('pistol')
+        if keys[pg.K_2]:
+            self.gun=[False,True]
+            self.gun_select = 1
+            print('shotgun')
         if keys[pg.K_a]:
             self.acc.x = -PLAYER_ACC
         if keys[pg.K_d]:
@@ -47,12 +57,30 @@ class Player(pg.sprite.Sprite):
             self.acc.y = PLAYER_ACC
         key = pg.mouse.get_pressed()
         if key[0]:
-            now = pg.time.get_ticks()
-            if now - self.last_shot > BULLET_RATE:
-                self.last_shot = now
-                dir = vec(1,0).rotate(self.rot)
-                Bullet(self.game, self.pos, dir)
-        
+            if self.gun_select == 0:
+                if self.gun_status[0] == True:
+                    now = pg.time.get_ticks()
+                    if now - self.last_shot > BULLET_RATE:
+                        self.last_shot = now
+                        dir = vec(1,0).rotate(self.rot)
+                        Bullet(self.game, self.pos, dir)
+            if self.gun_select == 1:
+                if self.gun_status[1] == True:
+                    now = pg.time.get_ticks()
+                    if now - self.last_shot > BULLET_RATE:
+                        self.last_shot = now
+                        dir = vec(1,0).rotate(self.rot - 10 )
+                        Bullet(self.game, self.pos, dir)
+                        dir = vec(1,0).rotate(self.rot - 5 )
+                        Bullet(self.game, self.pos, dir)
+                        dir = vec(1,0).rotate(self.rot)
+                        Bullet(self.game, self.pos, dir)
+                        dir = vec(1,0).rotate(self.rot + 5)
+                        Bullet(self.game, self.pos, dir)
+                        dir = vec(1,0).rotate(self.rot + 10)
+                        Bullet(self.game, self.pos, dir)
+
+                        
     def update(self):
         self.acc = vec(0,0)
         self.get_keys()
@@ -109,7 +137,8 @@ class Player(pg.sprite.Sprite):
         self.rot = angle
         # Create a new rect with the center of the old rect.
         self.rect = self.image.get_rect(center=self.rect.center)
-
+    def shotgun(self):
+        pass
 class Leg(Player):
     def __init__(self,game):
         super().__init__(game)
@@ -153,6 +182,7 @@ class Bullet(pg.sprite.Sprite):
         self.rect.center = self.pos
         if pg.time.get_ticks() - self.spawn_time > BULLET_LIFETIME:
             self.kill()
+
 
 
 class Wall(pg.sprite.Sprite):
