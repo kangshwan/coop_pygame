@@ -68,6 +68,7 @@ class Game:
     
         
         
+
         #self.player make Player Object
         self.start_tick = pg.time.get_ticks()
         """
