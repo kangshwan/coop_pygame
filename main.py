@@ -49,6 +49,7 @@ class Game:
         self.speed_x_min = -2
         self.speed_y_min = -2
         self.zombie_remain = 1000
+       
         #sprite gruop
         self.all_sprites = pg.sprite.Group()
         self.zombies = pg.sprite.Group()
@@ -56,10 +57,14 @@ class Game:
         self.obstarcle = pg.sprite.Group()
         self.walls = pg.sprite.Group()#just for test
         self.player = Player(self)
+
+        self.enemys = pg.sprite.Group()
+
         #self.leg = Leg(self)
         for x in range(10,20):
             Wall(self,x,5)
         
+
         #아이템or스킬상자가 랜덤한 위치에 드랍되게 / 상자를 먹으면 사라지고 일정 효과가 발동되도록 만들어주기
         #일정 주기마다 생성되도록 만들어주기 - 완료
         def item_box():
@@ -72,6 +77,17 @@ class Game:
         item_box()
 
      
+
+        for z in range(39,40): #한 블럭이 -1씩 이동  
+            enemy(self,z,12)
+        for z in range(39,40): #한 블럭이 -1씩 이동  
+            enemy(self,z,10)
+        for z in range(39,40): #한 블럭이 -1씩 이동  
+            enemy(self,z,8)
+    
+        
+        
+
         #self.player make Player Object
         self.start_tick = pg.time.get_ticks()
         """
@@ -89,9 +105,14 @@ class Game:
         self.second = ((pg.time.get_ticks() - self.start_tick)/1000)
         #hits -> used sprite collide method, (x, y, default boolean) collision check
         hits = pg.sprite.spritecollide(self.player, self.walls, False)
+
+        hits = pg.sprite.pygame.sprite.spritecollide(self.player, self.walls, False)
+        hit = pg.sprite.pygame.sprite.spritecollide(self.player, self.enemys, False)
         if hits:
             #do something
             pass
+        if hit: #적이랑 부딪히면 게임 종료
+            pq.quit()
         if self.score == 1000:
             self.level_up.play()
             self.levelup_text()

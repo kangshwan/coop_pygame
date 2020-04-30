@@ -30,6 +30,12 @@ class Player(pg.sprite.Sprite):
         self.rot = 0
         self.last_shot = 0
 
+
+        self.gun_status = [True, True]
+        self.gun_select = 0
+        #1 is pistol 2 is shotgun
+
+
     def load_images(self):
         self.image = pg.Surface(self.size, pg.SRCALPHA)
         self.image.fill(BLACK)
@@ -37,6 +43,14 @@ class Player(pg.sprite.Sprite):
 
     def get_keys(self):
         keys = pg.key.get_pressed()
+        if keys[pg.K_1]:
+            self.gun=[True,False]
+            self.gun_select = 0
+            print('pistol')
+        if keys[pg.K_2]:
+            self.gun=[False,True]
+            self.gun_select = 1
+            print('shotgun')
         if keys[pg.K_a]:
             self.acc.x = -PLAYER_ACC
         if keys[pg.K_d]:
@@ -52,7 +66,30 @@ class Player(pg.sprite.Sprite):
                 self.last_shot = now
                 dir = vec(1,0).rotate(self.rot)
                 Bullet(self.game, self.pos, dir)
-        
+            if self.gun_select == 0:
+                if self.gun_status[0] == True:
+                    now = pg.time.get_ticks()
+                    if now - self.last_shot > BULLET_RATE:
+                        self.last_shot = now
+                        dir = vec(1,0).rotate(self.rot)
+                        Bullet(self.game, self.pos, dir)
+            if self.gun_select == 1:
+                if self.gun_status[1] == True:
+                    now = pg.time.get_ticks()
+                    if now - self.last_shot > BULLET_RATE:
+                        self.last_shot = now
+                        dir = vec(1,0).rotate(self.rot - 10 )
+                        Bullet(self.game, self.pos, dir)
+                        dir = vec(1,0).rotate(self.rot - 5 )
+                        Bullet(self.game, self.pos, dir)
+                        dir = vec(1,0).rotate(self.rot)
+                        Bullet(self.game, self.pos, dir)
+                        dir = vec(1,0).rotate(self.rot + 5)
+                        Bullet(self.game, self.pos, dir)
+                        dir = vec(1,0).rotate(self.rot + 10)
+                        Bullet(self.game, self.pos, dir)
+
+
     def update(self):
         self.acc = vec(0,0)
         self.get_keys()
@@ -73,7 +110,11 @@ class Player(pg.sprite.Sprite):
         self.collide_with_walls('x')
         self.rect.centery = self.pos.y
         self.collide_with_walls('y')
-        
+        self.rect.centerx = self.pos.x
+        self.collide_with_enemy('x')
+        self.rect.centery = self.pos.y
+        self.collide_with_enemy('y')
+
     def collide_with_walls(self,dir):
         if dir == 'x':
             hits = pg.sprite.spritecollide(self, self.game.walls, False)
@@ -94,6 +135,27 @@ class Player(pg.sprite.Sprite):
                 self.vel.y = 0
                 self.rect.centery = self.pos.y
 
+    def collide_with_enemy(self,dir):
+        if dir == 'x':
+            hits = pg.sprite.spritecollide(self, self.game.enemys, False)
+            if hits:
+                if self.vel.x > 0:
+                    self.pos.x = hits[0].rect.left - self.rect.width/2
+                if self.vel.x < 0:
+                    self.pos.x = hits[0].rect.right + self.rect.width/2
+                self.vel.x = 0
+                self.rect.centerx = self.pos.x
+        if dir == 'y':
+            hits = pg.sprite.spritecollide(self, self.game.enemys, False)
+            if hits:
+                if self.vel.y > 0:
+                    self.pos.y = hits[0].rect.top - self.rect.height/2
+                if self.vel.y < 0:
+                    self.pos.y = hits[0].rect.bottom + self.rect.height/2
+                self.vel.y = 0
+                self.rect.centery = self.pos.y
+
+
     def animate(self):
         pass
     def magnitude(self):
@@ -109,7 +171,8 @@ class Player(pg.sprite.Sprite):
         self.rot = angle
         # Create a new rect with the center of the old rect.
         self.rect = self.image.get_rect(center=self.rect.center)
-
+    def shotgun(self):
+        pass
 class Leg(Player):
     def __init__(self,game):
         super().__init__(game)
@@ -155,17 +218,24 @@ class Bullet(pg.sprite.Sprite):
             self.kill()
 
 
-class Wall(pg.sprite.Sprite):
+
+
+
+class enemy(pg.sprite.Sprite):
     def __init__(self, game, x, y):
-        self.groups = game.all_sprites, game.walls
+        self.groups = game.all_sprites, game.enemys
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.image = pg.Surface((TILESIZE,TILESIZE))
-        self.image.fill(LIGHTBLUE)
+        self.image.fill(RED)
         self.rect = self.image.get_rect()
         self.pos = vec(x,y)
         self.rect.x = self.pos.x*TILESIZE
         self.rect.y = self.pos.y*TILESIZE
+
+    def update(self):
+        self.rect.x -= 1
+      
 
 #아이템 상자 생성
 class Feed(pg.sprite.Sprite):
@@ -175,6 +245,14 @@ class Feed(pg.sprite.Sprite):
         self.game = game
         self.image = pg.Surface((TILESIZE,TILESIZE))
         self.image.fill(WHITE)
+
+class Wall(pg.sprite.Sprite):
+    def __init__(self, game, x, y):
+        self.groups = game.all_sprites, game.walls
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.image = pg.Surface((TILESIZE,TILESIZE))
+        self.image.fill(LIGHTBLUE)
         self.rect = self.image.get_rect()
         self.pos = vec(x,y)
         self.rect.x = self.pos.x*TILESIZE
