@@ -222,6 +222,12 @@ class Bullet(pg.sprite.Sprite):
             self.kill()
 
 
+    def update(self):
+        self.pos += self.vel * self.game.dt
+        self.rect.center = self.pos
+        if pg.time.get_ticks() - self.spawn_time > BULLET_LIFETIME:
+            self.kill()
+
 
 class enemy(pg.sprite.Sprite):
     def __init__(self, game, x, y):
@@ -242,11 +248,6 @@ class enemy(pg.sprite.Sprite):
 
         
 
-    def update(self):
-        self.pos += self.vel * self.game.dt
-        self.rect.center = self.pos
-        if pg.time.get_ticks() - self.spawn_time > BULLET_LIFETIME:
-            self.kill()
 
 
 
