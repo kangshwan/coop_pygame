@@ -28,7 +28,7 @@ class Game:
         self.playing = True
         #if self.playing is True, that means now playing game.
         while self.playing:
-            self.clock.tick(FPS)
+            self.dt = self.clock.tick(FPS)/1000
             #set the frame per second
             self.events()
             #events for keyboard and mouse input
@@ -53,8 +53,9 @@ class Game:
         self.obstarcle = pg.sprite.Group()
         self.walls = pg.sprite.Group()#just for test
         self.player = Player(self)
-        self.leg = Leg(self)
-        
+        #self.leg = Leg(self)
+        for x in range(10,20):
+            Wall(self,x,5)
      
         #self.player make Player Object
         self.start_tick = pg.time.get_ticks()
@@ -100,6 +101,7 @@ class Game:
                 self.start = False
             if event.type == pg.MOUSEBUTTONDOWN:
                 pass
+            
     def draw_grid(self):
         for x in range(0, WIDTH, TILESIZE):
             pg.draw.line(self.screen, LIGHTGREY, (x,0), (x, HEIGHT))
