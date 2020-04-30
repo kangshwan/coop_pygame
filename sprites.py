@@ -245,6 +245,9 @@ class Feed(pg.sprite.Sprite):
         self.game = game
         self.image = pg.Surface((TILESIZE,TILESIZE))
         self.image.fill(WHITE)
+        self.rect = self.image.get_rect()
+        self.rect.x = x*TILESIZE
+        self.rect.y = y*TILESIZE
 
 class Wall(pg.sprite.Sprite):
     def __init__(self, game, x, y):
