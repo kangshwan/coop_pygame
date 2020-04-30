@@ -30,9 +30,11 @@ class Player(pg.sprite.Sprite):
         self.rot = 0
         self.last_shot = 0
 
+
         self.gun_status = [True, True]
         self.gun_select = 0
         #1 is pistol 2 is shotgun
+
 
     def load_images(self):
         self.image = pg.Surface(self.size, pg.SRCALPHA)
@@ -59,14 +61,11 @@ class Player(pg.sprite.Sprite):
             self.acc.y = PLAYER_ACC
         key = pg.mouse.get_pressed()
         if key[0]:
-
             now = pg.time.get_ticks()
             if now - self.last_shot > BULLET_RATE:
                 self.last_shot = now
                 dir = vec(1,0).rotate(self.rot)
                 Bullet(self.game, self.pos, dir)
-        
-
             if self.gun_select == 0:
                 if self.gun_status[0] == True:
                     now = pg.time.get_ticks()
@@ -90,6 +89,7 @@ class Player(pg.sprite.Sprite):
                         dir = vec(1,0).rotate(self.rot + 10)
                         Bullet(self.game, self.pos, dir)
 
+
     def update(self):
         self.acc = vec(0,0)
         self.get_keys()
@@ -110,13 +110,11 @@ class Player(pg.sprite.Sprite):
         self.collide_with_walls('x')
         self.rect.centery = self.pos.y
         self.collide_with_walls('y')
-
         self.rect.centerx = self.pos.x
         self.collide_with_enemy('x')
         self.rect.centery = self.pos.y
         self.collide_with_enemy('y')
 
-        
     def collide_with_walls(self,dir):
         if dir == 'x':
             hits = pg.sprite.spritecollide(self, self.game.walls, False)
@@ -206,7 +204,6 @@ class Bullet(pg.sprite.Sprite):
         self.rect.center = pos
         self.vel = dir * BULLET_SPEED
         self.spawn_time = pg.time.get_ticks()
-    
 
 
     def load_images(self):
@@ -214,12 +211,13 @@ class Bullet(pg.sprite.Sprite):
         self.image.fill(RED)
         pass
 
-
     def update(self):
         self.pos += self.vel * self.game.dt
         self.rect.center = self.pos
         if pg.time.get_ticks() - self.spawn_time > BULLET_LIFETIME:
             self.kill()
+
+
 
 
 
@@ -234,21 +232,19 @@ class enemy(pg.sprite.Sprite):
         self.pos = vec(x,y)
         self.rect.x = self.pos.x*TILESIZE
         self.rect.y = self.pos.y*TILESIZE
+
     def update(self):
         self.rect.x -= 1
       
-        
-        
 
-        
-
-    def update(self):
-        self.pos += self.vel * self.game.dt
-        self.rect.center = self.pos
-        if pg.time.get_ticks() - self.spawn_time > BULLET_LIFETIME:
-            self.kill()
-
-
+#아이템 상자 생성
+class Feed(pg.sprite.Sprite):
+    def __init__(self, game, x, y):
+        self.groups = game.all_sprites, game.feeds
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.image = pg.Surface((TILESIZE,TILESIZE))
+        self.image.fill(WHITE)
 
 class Wall(pg.sprite.Sprite):
     def __init__(self, game, x, y):
@@ -262,4 +258,7 @@ class Wall(pg.sprite.Sprite):
         self.rect.x = self.pos.x*TILESIZE
         self.rect.y = self.pos.y*TILESIZE
 
+# def draw_object(surface, color, pos):
+#     r = pg.Rect((pos[0], pos[1]), (TILESIZE, TILESIZE))
+#     pg.draw.rect(surface, color, r)
 

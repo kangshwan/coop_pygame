@@ -5,6 +5,9 @@ from setting import *
 from sprites import *
 import time 
 from time import sleep
+
+import time
+import threading
 #from moviepy.editor import VideoFileClip
 
 
@@ -54,11 +57,27 @@ class Game:
         self.obstarcle = pg.sprite.Group()
         self.walls = pg.sprite.Group()#just for test
         self.player = Player(self)
+
         self.enemys = pg.sprite.Group()
+
         #self.leg = Leg(self)
         for x in range(10,20):
             Wall(self,x,5)
         
+
+        #아이템or스킬상자가 랜덤한 위치에 드랍되게 / 상자를 먹으면 사라지고 일정 효과가 발동되도록 만들어주기
+        #일정 주기마다 생성되도록 만들어주기 - 완료
+        def item_box():
+            for i in range(1):
+                self.feeds = pg.sprite.Group()
+                a = random.randint(10,30)
+                b = random.randint(15,25)                   
+                Feed(self, a,b)
+            threading.Timer(3, item_box).start()
+        item_box()
+
+     
+
         for z in range(39,40): #한 블럭이 -1씩 이동  
             enemy(self,z,12)
         for z in range(39,40): #한 블럭이 -1씩 이동  
@@ -85,6 +104,8 @@ class Game:
         self.all_sprites.update()
         self.second = ((pg.time.get_ticks() - self.start_tick)/1000)
         #hits -> used sprite collide method, (x, y, default boolean) collision check
+        hits = pg.sprite.spritecollide(self.player, self.walls, False)
+
         hits = pg.sprite.pygame.sprite.spritecollide(self.player, self.walls, False)
         hit = pg.sprite.pygame.sprite.spritecollide(self.player, self.enemys, False)
         if hits:
