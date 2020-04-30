@@ -5,7 +5,7 @@ from setting import *
 from sprites import *
 import time 
 from time import sleep
-#git from moviepy.editor import VideoFileClip
+#from moviepy.editor import VideoFileClip
 
 
 vec = pg.math.Vector2
