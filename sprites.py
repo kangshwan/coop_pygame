@@ -17,7 +17,7 @@ class Player(pg.sprite.Sprite):
         self.walking = False
         self.current_frame = 0
         self.last_update = 0
-        self.size = (32,48)
+        self.size = (32,32)
         self.load_images()
         #self.image = self.standing_frames[0]
         self.orig_image = self.image
@@ -32,6 +32,7 @@ class Player(pg.sprite.Sprite):
         self.image = pg.Surface(self.size, pg.SRCALPHA)
         self.image.fill(BLACK)
         pass
+
     def get_keys(self):
         keys = pg.key.get_pressed()
         if keys[pg.K_a]:
@@ -57,11 +58,30 @@ class Player(pg.sprite.Sprite):
         if math.sqrt(self.vel.x**2+self.vel.y**2) >3:
             self.vel *= 3/math.sqrt(self.vel.x**2+self.vel.y**2)
         self.pos += self.vel
-        self.rect.center = self.pos
-        if pg.sprite.spritecollideany(self, self.game.walls):
-            self.pos -= self.vel
-            self.rect.center = self.pos
-
+        self.rect.centerx = self.pos.x
+        self.collide_with_walls('x')
+        self.rect.centery = self.pos.y
+        self.collide_with_walls('y')
+        
+    def collide_with_walls(self,dir):
+        if dir == 'x':
+            hits = pg.sprite.spritecollide(self, self.game.walls, False)
+            if hits:
+                if self.vel.x > 0:
+                    self.pos.x = hits[0].rect.left - self.rect.width/2
+                if self.vel.x < 0:
+                    self.pos.x = hits[0].rect.right + self.rect.width/2
+                self.vel.x = 0
+                self.rect.centerx = self.pos.x
+        if dir == 'y':
+            hits = pg.sprite.spritecollide(self, self.game.walls, False)
+            if hits:
+                if self.vel.y > 0:
+                    self.pos.y = hits[0].rect.top - self.rect.height/2
+                if self.vel.y < 0:
+                    self.pos.y = hits[0].rect.bottom + self.rect.height/2
+                self.vel.y = 0
+                self.rect.centery = self.pos.y
     def animate(self):
         pass
     def magnitude(self):
