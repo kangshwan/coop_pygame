@@ -61,6 +61,7 @@ class Game:
         self.enemys = pg.sprite.Group()
         self.feeds = pg.sprite.Group()
         self.feed_pos = []
+        self.enemy_pos = []
         
         #draw map in here / 여기서부터 맵을 그림.
         for row, tiles in enumerate(self.map.data):
@@ -75,7 +76,8 @@ class Game:
                 if tile == 'I':
                     self.feed_pos.append((col,row))
                 if tile == 'E':
-                    self.enemy_pos = (col,row)
+                    self.enemy_pos.append((col,row))
+                    #enemy_pos에 col,row 저장. 추후 feed처럼 append하여 생성하면 좋아보임.
         self.camera = Camera(self.map.width, self.map.height)
         # make Camera class / 카메라 객체 생성
         
@@ -94,21 +96,22 @@ class Game:
         #    threading.Timer(3, item_box).start()
         #item_box()
 
-     
-
-        	            
-    
         self.start_tick = pg.time.get_ticks()
 
         self.run()
+
     def update(self):
         self.now = pg.time.get_ticks()
         # game loop update
         self.all_sprites.update()
         self.camera.update(self.player)
+        
+        #update에서 Enemy 생성
         if self.now - self.enemy_spawned > 3000:
-            Enemy(self, self.enemy_pos[0], self.enemy_pos[1], RED)
-            self.enemy_spawned = self.now
+            for e_position in self.enemy_pos:
+                #3초마다 해당 장소에서 생성. 추후 enemy_pos를 list로 쓸경우 for문 안에넣고 index들로 접근해서 생성하면 될듯.
+                Enemy(self, e_position[0], e_position[1], RED)
+                self.enemy_spawned = self.now
 
         self.second = ((pg.time.get_ticks() - self.start_tick)/1000)
         #hits -> used sprite collide method, (x, y, default boolean) collision check
