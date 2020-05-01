@@ -106,7 +106,6 @@ class Game:
         if hit: #적이랑 부딪히면 게임 종료
             pg.quit()
 
-
     def events(self):
         # game loop events
         for event in pg.event.get():

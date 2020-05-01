@@ -36,7 +36,6 @@ class Player(pg.sprite.Sprite):
         self.gun_select = 0
         #1 is pistol 2 is shotgun
 
-
     def load_images(self):
         self.image = pg.Surface(self.size, pg.SRCALPHA)
         # self.image에 Surface를 저장함. 나중에 img 삽입시 self.image에 img가 들어갈것.
@@ -98,7 +97,6 @@ class Player(pg.sprite.Sprite):
                         # This is for bullet spreads like shotgun
                         # 산탄총 처럼 퍼져나가게 하기 위함
 
-
     def update(self):
         self.acc = vec(0,0)
         self.get_keys()
@@ -151,6 +149,7 @@ class Player(pg.sprite.Sprite):
                 self.vel.y = 0
                 # 부딫혔으니 y방향 속도를 0으로 해줌
                 self.rect.centery = self.pos.y
+    
     #위와 동일할것으로 예상
     def collide_with_enemy(self,dir):
         if dir == 'x':
@@ -172,11 +171,8 @@ class Player(pg.sprite.Sprite):
                 self.vel.y = 0
                 self.rect.centery = self.pos.y
 
-
     def animate(self):
         pass
-    def magnitude(self):
-        return
 
     def rotate(self):
         # The vector to the target (the mouse position).
@@ -198,8 +194,6 @@ class Player(pg.sprite.Sprite):
         self.rot = angle
         # Create a new rect with the center of the old rect.
         self.rect = self.image.get_rect(center=self.rect.center)
-    def shotgun(self):
-        pass
 
 class Bullet(pg.sprite.Sprite):
     def __init__(self, game, pos, dir):
@@ -228,11 +222,6 @@ class Bullet(pg.sprite.Sprite):
         if pg.time.get_ticks() - self.spawn_time > BULLET_LIFETIME:
             self.kill()
 
-
-
-
-
-
 class enemy(pg.sprite.Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites, game.enemys
@@ -248,7 +237,6 @@ class enemy(pg.sprite.Sprite):
     def update(self):
         self.rect.x -= self.speedy
       
-
 #아이템 상자 생성
 class Feed(pg.sprite.Sprite):
     def __init__(self, game, x, y):
@@ -261,6 +249,7 @@ class Feed(pg.sprite.Sprite):
         self.pos = vec(x,y)
         self.rect.x = self.pos.x*TILESIZE
         self.rect.y = self.pos.y*TILESIZE
+
 class Wall(pg.sprite.Sprite):
     def __init__(self, game, x, y, color):
         self.groups = game.all_sprites, game.walls
