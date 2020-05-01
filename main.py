@@ -137,7 +137,7 @@ class Game:
         self.draw_grid()
         for sprite in self.all_sprites:
             self.screen.blit(sprite.image, self.camera.apply(sprite))
-
+        pg.draw.rect(self.screen, WHITE, self.player.hitbox,2)
         pg.display.update()
 
     def load_data(self):

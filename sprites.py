@@ -3,6 +3,7 @@ import os
 import pygame as pg
 import random
 from setting import *
+from tilemap import *
 from time import sleep
 import math
 
@@ -24,6 +25,8 @@ class Player(pg.sprite.Sprite):
         #self.image = self.standing_frames[0]
         self.orig_image = self.image
         self.rect = self.image.get_rect()
+        self.hitbox = PLAYER_HIT_BOX
+        self.hitbox.center = self.rect.center
         self.pos = vec(x*32, y*32)
         self.vel = vec(0,0)
         self.acc = vec(0,0)
@@ -112,15 +115,16 @@ class Player(pg.sprite.Sprite):
             self.vel *= self.max_speed/math.sqrt(self.vel.x**2+self.vel.y**2)
             # simple vector calculate / 간단한 벡터계산을 이용하였음. 현재속력이 3보다 클경우 3으로 고정하기위한 수식.
         self.pos += self.vel
-        self.rect.centerx = self.pos.x
+        self.hitbox.centerx = self.pos.x
         self.collide_with_walls('x')
-        self.rect.centery = self.pos.y
+        self.hitbox.centery = self.pos.y
         self.collide_with_walls('y')
-        self.rect.centerx = self.pos.x
+        self.hitbox.centerx = self.pos.x
         self.collide_with_enemy('x')
-        self.rect.centery = self.pos.y
+        self.hitbox.centery = self.pos.y
         self.collide_with_enemy('y')
         self.collide_with_feed()
+        self.rect.center = self.hitbox.center
 
         if self.now - self.last_speed > SPEEDUP_RATE:
             self.max_speed = 3
@@ -129,29 +133,29 @@ class Player(pg.sprite.Sprite):
         if dir == 'x':
             # see collide with x axis
             # x 방향으로 충돌 확인
-            hits = pg.sprite.spritecollide(self, self.game.walls, False)
+            hits = pg.sprite.spritecollide(self, self.game.walls, False, collide_hit_rect)
             if hits:
                 if self.vel.x > 0:
-                    self.pos.x = hits[0].rect.left - self.rect.width/2
+                    self.pos.x = hits[0].rect.left - self.hitbox.width/2
                     # x 방향 속도가 양수일 경우 -> 오른쪽으로 진행하고있음 따라서 position을 다시 세팅해줌
                 if self.vel.x < 0:
-                    self.pos.x = hits[0].rect.right + self.rect.width/2
+                    self.pos.x = hits[0].rect.right + self.hitbox.width/2
                     # x 방향 속도가 음수일 경우 -> 왼쪽으로 진행하고있음 따라서 position을 다시 세팅해줌
                 self.vel.x = 0
                 # 부딫혔으니 x방향 속도를 0으로 해줌.
-                self.rect.centerx = self.pos.x
+                self.hitbox.centerx = self.pos.x
         if dir == 'y':
-            hits = pg.sprite.spritecollide(self, self.game.walls, False)
+            hits = pg.sprite.spritecollide(self, self.game.walls, False,collide_hit_rect)
             if hits:
                 if self.vel.y > 0:
-                    self.pos.y = hits[0].rect.top - self.rect.height/2
+                    self.pos.y = hits[0].rect.top - self.hitbox.height/2
                     # y 방향 속도가 양수일 경우 -> 아래으로 진행하고있음 따라서 position을 다시 세팅해줌
                 if self.vel.y < 0:
-                    self.pos.y = hits[0].rect.bottom + self.rect.height/2
+                    self.pos.y = hits[0].rect.bottom + self.hitbox.height/2
                     # y 방향 속도가 양수일 경우 -> 위쪽으로 진행하고있음 따라서 position을 다시 세팅해줌
                 self.vel.y = 0
                 # 부딫혔으니 y방향 속도를 0으로 해줌
-                self.rect.centery = self.pos.y
+                self.hitbox.centery = self.pos.y
     
     #위와 동일할것으로 예상
     def collide_with_enemy(self,dir):
@@ -258,9 +262,6 @@ class Feed(pg.sprite.Sprite):
         self.rect.y = self.pos.y*TILESIZE
         # 추후 random을 통해 바꿔야함.
         self.item_no = 1
-
-
-
 
 class Wall(pg.sprite.Sprite):
     def __init__(self, game, x, y, color):
