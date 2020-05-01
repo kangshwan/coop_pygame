@@ -218,12 +218,6 @@ class Bullet(pg.sprite.Sprite):
             self.kill()
 
 
-    def update(self):
-        self.pos += self.vel * self.game.dt
-        self.rect.center = self.pos
-        if pg.time.get_ticks() - self.spawn_time > BULLET_LIFETIME:
-            self.kill()
-
 
 
 
@@ -238,16 +232,10 @@ class enemy(pg.sprite.Sprite):
         self.pos = vec(x,y)
         self.rect.x = self.pos.x*TILESIZE
         self.rect.y = self.pos.y*TILESIZE
-
+        self.speedy = random.randrange(1,4)
     def update(self):
-        self.rect.x -= 1
+        self.rect.x -= self.speedy
       
-        
-        
-
-        
-
-
 
 #아이템 상자 생성
 class Feed(pg.sprite.Sprite):
@@ -258,9 +246,9 @@ class Feed(pg.sprite.Sprite):
         self.image = pg.Surface((TILESIZE,TILESIZE))
         self.image.fill(WHITE)
         self.rect = self.image.get_rect()
-        self.rect.x = x*TILESIZE
-        self.rect.y = y*TILESIZE
-
+        self.pos = vec(x,y)
+        self.rect.x = self.pos.x*TILESIZE
+        self.rect.y = self.pos.y*TILESIZE
 class Wall(pg.sprite.Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites, game.walls
@@ -276,4 +264,3 @@ class Wall(pg.sprite.Sprite):
 # def draw_object(surface, color, pos):
 #     r = pg.Rect((pos[0], pos[1]), (TILESIZE, TILESIZE))
 #     pg.draw.rect(surface, color, r)
-
