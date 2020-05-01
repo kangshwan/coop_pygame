@@ -233,13 +233,13 @@ class Bullet(pg.sprite.Sprite):
         if pg.time.get_ticks() - self.spawn_time > BULLET_LIFETIME:
             self.kill()
 
-class enemy(pg.sprite.Sprite):
-    def __init__(self, game, x, y):
+class Enemy(pg.sprite.Sprite):
+    def __init__(self, game, x, y, color):
         self.groups = game.all_sprites, game.enemys
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.image = pg.Surface((TILESIZE,TILESIZE))
-        self.image.fill(RED)
+        self.image.fill(color)
         self.rect = self.image.get_rect()
         self.pos = vec(x,y)
         self.rect.x = self.pos.x*TILESIZE

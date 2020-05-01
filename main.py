@@ -51,6 +51,7 @@ class Game:
         self.phase = 0
         #이후 1페이즈, 2페이즈 등 결정할때 사용
         self.zombie_remain = 1000 
+        self.enemy_spawned = 0
         #sprite gruop
         self.all_sprites = pg.sprite.Group()
         self.zombies = pg.sprite.Group()
@@ -72,6 +73,8 @@ class Game:
                     self.player = Player(self, col, row)
                 if tile == 'I':
                     self.feed_pos.append((col,row))
+                if tile == 'E':
+                    self.enemy_pos = (col,row)
         self.camera = Camera(self.map.width, self.map.height)
         # make Camera class / 카메라 객체 생성
         
@@ -93,17 +96,20 @@ class Game:
 
      
 
-        for z in range(6,16): #한 블럭이 -1씩 이동  
-            enemy(self,z,12)	            
+        #for z in range(6,16): #한 블럭이 -1씩 이동  
+        #    enemy(self,z,12)	            
     
         self.start_tick = pg.time.get_ticks()
 
         self.run()
-
     def update(self):
+        self.now = pg.time.get_ticks()
         # game loop update
         self.all_sprites.update()
         self.camera.update(self.player)
+        if self.now - self.enemy_spawned > 3000:
+            Enemy(self, self.enemy_pos[0], self.enemy_pos[1], RED)
+            self.enemy_spawned = self.now
 
         self.second = ((pg.time.get_ticks() - self.start_tick)/1000)
         #hits -> used sprite collide method, (x, y, default boolean) collision check
