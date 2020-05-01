@@ -8,7 +8,7 @@ from tilemap import *
 from os import path
 import time 
 from time import sleep
-
+from numpy import random
 import time
 import threading
 
@@ -58,7 +58,8 @@ class Game:
         self.obstacle = pg.sprite.Group()
         self.walls = pg.sprite.Group()
         self.enemys = pg.sprite.Group()
-
+        self.feeds = pg.sprite.Group()
+        self.feed_pos = []
         #draw map in here / 여기서부터 맵을 그림.
         for row, tiles in enumerate(self.map.data):
             #enumerate는 한 배열에 대하여 index와 그 값을 동시에 가져올수 있음. -> 자세한건 구글링
@@ -69,26 +70,31 @@ class Game:
                     Wall(self, col, row, BROWN)
                 if tile == 'P':
                     self.player = Player(self, col, row)
+                if tile == 'I':
+                    self.feed_pos.append((col,row))
         self.camera = Camera(self.map.width, self.map.height)
         # make Camera class / 카메라 객체 생성
         
+        test = random.randint(0,len(self.feed_pos)-1)
+        Feed(self, self.feed_pos[test][0],self.feed_pos[test][1])
 
-    #아이템or스킬상자가 랜덤한 위치에 드랍되게 / 상자를 먹으면 사라지고 일정 효과가 발동되도록 만들어주기
-    #일정 주기마다 생성되도록 만들어주기 - 완료
-        def item_box():
-            for i in range(1):
-                self.feeds = pg.sprite.Group()
-                a = random.randint(10,30)
-                b = random.randint(15,25)                   
-                Feed(self, a,b)
-            threading.Timer(3, item_box)
-        item_box()
+
+        #아이템or스킬상자가 랜덤한 위치에 드랍되게 / 상자를 먹으면 사라지고 일정 효과가 발동되도록 만들어주기
+        #일정 주기마다 생성되도록 만들어주기 - 완료
+        #def item_box():
+        #    for i in range(1):
+        #        self.feeds = pg.sprite.Group()
+        #        a = random.randint(10,30)
+        #        b = random.randint(15,25)                   
+        #        Feed(self, a,b)
+        #        
+        #    threading.Timer(3, item_box).start()
+        #item_box()
 
      
 
         for z in range(6,16): #한 블럭이 -1씩 이동  
-            enemy(self,39,z)
-        
+            enemy(self,z,12)	            
     
             self.start_tick = pg.time.get_ticks()
 
@@ -105,6 +111,7 @@ class Game:
 
         if hit: #적이랑 부딪히면 게임 종료
             pg.quit()
+
 
     def events(self):
         # game loop events
@@ -146,6 +153,5 @@ while g.start:
     while g.running:
         # this g.running will take control of game over or not
         g.new()
-
 pg.quit()
 sys.exit()

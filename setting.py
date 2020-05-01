@@ -33,7 +33,8 @@ PISTOL_SPEED = 500
 PISTOL_LIFETIME = 700
 PISTOL_RATE = 250
 
-
+# item properties
+SPEEDUP_RATE = 5000
 
 #image
 TEST = "test.png"
