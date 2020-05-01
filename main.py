@@ -81,17 +81,14 @@ class Game:
                 a = random.randint(10,30)
                 b = random.randint(15,25)                   
                 Feed(self, a,b)
-            threading.Timer(3, item_box).start()
+            threading.Timer(3, item_box)
         item_box()
 
      
 
-        for z in range(39,40): #한 블럭이 -1씩 이동  
-            enemy(self,z,12)
-        for z in range(39,40): #한 블럭이 -1씩 이동  
-            enemy(self,z,10)
-        for z in range(39,40): #한 블럭이 -1씩 이동  
-            enemy(self,z,8)
+        for z in range(6,16): #한 블럭이 -1씩 이동  
+            enemy(self,39,z)
+        
     
         self.start_tick = pg.time.get_ticks()
 
@@ -150,5 +147,6 @@ while g.start:
     while g.running:
         # this g.running will take control of game over or not
         g.new()
+
 pg.quit()
 sys.exit()

@@ -244,9 +244,9 @@ class enemy(pg.sprite.Sprite):
         self.pos = vec(x,y)
         self.rect.x = self.pos.x*TILESIZE
         self.rect.y = self.pos.y*TILESIZE
-
+        self.speedy = random.randrange(1,4)
     def update(self):
-        self.rect.x -= 1
+        self.rect.x -= self.speedy
       
 
 #아이템 상자 생성
@@ -258,9 +258,9 @@ class Feed(pg.sprite.Sprite):
         self.image = pg.Surface((TILESIZE,TILESIZE))
         self.image.fill(WHITE)
         self.rect = self.image.get_rect()
-        self.rect.x = x*TILESIZE
-        self.rect.y = y*TILESIZE
-
+        self.pos = vec(x,y)
+        self.rect.x = self.pos.x*TILESIZE
+        self.rect.y = self.pos.y*TILESIZE
 class Wall(pg.sprite.Sprite):
     def __init__(self, game, x, y, color):
         self.groups = game.all_sprites, game.walls
@@ -272,4 +272,3 @@ class Wall(pg.sprite.Sprite):
         self.pos = vec(x,y)
         self.rect.x = self.pos.x*TILESIZE
         self.rect.y = self.pos.y*TILESIZE
-
