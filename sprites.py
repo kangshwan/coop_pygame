@@ -31,8 +31,8 @@ class Player(pg.sprite.Sprite):
         self.rot = 0
         self.last_shot = 0
 
-
         self.gun_status = [True, True]
+
         self.gun_select = 0
         #1 is pistol 2 is shotgun
 
@@ -84,7 +84,6 @@ class Player(pg.sprite.Sprite):
                 if self.gun_status[1] == True:
                     now = pg.time.get_ticks()
                     if now - self.last_shot > BULLET_RATE:
-                        print('in')
                         self.last_shot = now
                         dir = vec(1,0).rotate(self.rot - 10 )
                         Bullet(self.game, self.pos, dir)
@@ -224,6 +223,8 @@ class Bullet(pg.sprite.Sprite):
     def update(self):
         self.pos += self.vel * self.game.dt
         self.rect.center = self.pos
+        if pg.sprite.spritecollideany(self, self.game.walls):
+            self.kill()
         if pg.time.get_ticks() - self.spawn_time > BULLET_LIFETIME:
             self.kill()
 
@@ -271,8 +272,4 @@ class Wall(pg.sprite.Sprite):
         self.pos = vec(x,y)
         self.rect.x = self.pos.x*TILESIZE
         self.rect.y = self.pos.y*TILESIZE
-
-# def draw_object(surface, color, pos):
-#     r = pg.Rect((pos[0], pos[1]), (TILESIZE, TILESIZE))
-#     pg.draw.rect(surface, color, r)
 
