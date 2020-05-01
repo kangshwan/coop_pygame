@@ -73,8 +73,8 @@ class Game:
         # make Camera class / 카메라 객체 생성
         
 
-        #아이템or스킬상자가 랜덤한 위치에 드랍되게 / 상자를 먹으면 사라지고 일정 효과가 발동되도록 만들어주기
-        #일정 주기마다 생성되도록 만들어주기 - 완료
+    #아이템or스킬상자가 랜덤한 위치에 드랍되게 / 상자를 먹으면 사라지고 일정 효과가 발동되도록 만들어주기
+    #일정 주기마다 생성되도록 만들어주기 - 완료
         def item_box():
             for i in range(1):
                 self.feeds = pg.sprite.Group()
@@ -90,9 +90,9 @@ class Game:
             enemy(self,39,z)
         
     
-        self.start_tick = pg.time.get_ticks()
+            self.start_tick = pg.time.get_ticks()
 
-        self.run()
+            self.run()
 
     def update(self):
         # game loop update
