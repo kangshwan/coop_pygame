@@ -11,7 +11,6 @@ from time import sleep
 
 import time
 import threading
-#from moviepy.editor import VideoFileClip
 
 
 vec = pg.math.Vector2
@@ -22,8 +21,9 @@ class Game:
         pg.init()
         #pg.mixer.init() # for use of music
         self.screen = pg.display.set_mode(WINDOW_SIZE)
-        self.screen.fill(BLACK)
+        # make a screen for the game / 게임을 하기위한 screen 생성(창 크기 설정)
         pg.display.set_caption(TITLE)
+        # this is the tiltle of the game you'll see in the window / 창의 제목 결정
         self.clock = pg.time.Clock()
         self.running = True
         self.start = True
@@ -33,38 +33,35 @@ class Game:
         #pg.mixer.music.play(loops = -1)   #bg play. loops == false -> play gain , Ture -> once
 
         self.playing = True
-        #if self.playing is True, that means now playing game.
+        #if self.playing is True, that means now playing game. / self.playing이 True면 게임을 진행하고있다는뜻 
+        # -> 이후 사망시 continue?를 물을때 False로 바꿔주고 Yes일 경우 다시 True로, No일경우 self.running을 False로 바꾸어 주면 좋아보임.
         while self.playing:
             self.dt = self.clock.tick(FPS)/1000
-            #set the frame per second
+            #set the frame per second / FPS를 구하기 위함. 이후 dt는 총알구현에 있어서 중요하게 사용됨.
             self.events()
-            #events for keyboard and mouse input
+            #events for keyboard and mouse input / 이벤트를 처리하기 위함. 항상 pygame은 event 이벤트발생(사용자의 입력) -> update(입력에 따른 변화를 업데이트해줌) -> draw 이후 그림을 그림
             self.update()
             self.draw()
-        pg.mixer.music.fadeout(500)
 
     def new(self):
         #when start a new game
         self.score = 0
         self.money = 5000
+        #이후 player sprite로 들어갈 가능성 있음.
         self.phase = 0
-        self.speed_x = 4
-        self.speed_y = 4
-        self.speed_x_min = -2
-        self.speed_y_min = -2
-        self.zombie_remain = 1000
-       
+        #이후 1페이즈, 2페이즈 등 결정할때 사용
+        self.zombie_remain = 1000 
         #sprite gruop
         self.all_sprites = pg.sprite.Group()
         self.zombies = pg.sprite.Group()
         self.bullets = pg.sprite.Group()
-        self.obstarcle = pg.sprite.Group()
-        self.walls = pg.sprite.Group()#just for test
-
+        self.obstacle = pg.sprite.Group()
+        self.walls = pg.sprite.Group()
         self.enemys = pg.sprite.Group()
 
-        #draw map in here
+        #draw map in here / 여기서부터 맵을 그림.
         for row, tiles in enumerate(self.map.data):
+            #enumerate는 한 배열에 대하여 index와 그 값을 동시에 가져올수 있음. -> 자세한건 구글링
             for col, tile in enumerate(tiles):
                 if tile == '1':
                     Wall(self, col, row, LIGHTBLUE)
@@ -73,6 +70,7 @@ class Game:
                 if tile == 'P':
                     self.player = Player(self, col, row)
         self.camera = Camera(self.map.width, self.map.height)
+        # make Camera class / 카메라 객체 생성
         
 
         #아이템or스킬상자가 랜덤한 위치에 드랍되게 / 상자를 먹으면 사라지고 일정 효과가 발동되도록 만들어주기
@@ -95,18 +93,8 @@ class Game:
         for z in range(39,40): #한 블럭이 -1씩 이동  
             enemy(self,z,8)
     
-        
-        
-
-        #self.player make Player Object
         self.start_tick = pg.time.get_ticks()
-        """
-            with open(os.path.join(self.dir, SCORE), 'r') as f:
-                try:
-                    self.highscore = int(f.read())
-                except:
-                    self.highscore = 0
-        """
+
         self.run()
 
     def update(self):
@@ -116,27 +104,11 @@ class Game:
 
         self.second = ((pg.time.get_ticks() - self.start_tick)/1000)
         #hits -> used sprite collide method, (x, y, default boolean) collision check
-        hits = pg.sprite.spritecollide(self.player, self.walls, False)
-
-        hits = pg.sprite.pygame.sprite.spritecollide(self.player, self.walls, False)
         hit = pg.sprite.pygame.sprite.spritecollide(self.player, self.enemys, False)
-        if hits:
-            #do something
-            pass
+
         if hit: #적이랑 부딪히면 게임 종료
             pg.quit()
-        if self.score == 1000:
-            self.level_up.play()
-            self.levelup_text()
-            sleep(0.4)
-            self.enemy_level += 1
-            self.levelup(self.phase)
-        #게임 클리어 조건
-        if self.zombie_remain < 0:
-            self.clear_text()
-            self.ending = True
-            self.playing = False
-            sleep(1)
+
 
     def events(self):
         # game loop events
