@@ -25,16 +25,16 @@ class Player(pg.sprite.Sprite):
         self.orig_image = self.image
         self.rect = self.image.get_rect()
         self.pos = vec(x*32, y*32)
-        
         self.vel = vec(0,0)
         self.acc = vec(0,0)
         self.rot = 0
         self.last_shot = 0
-
         self.gun_status = [True, True]
-
         self.gun_select = 0
         #1 is pistol 2 is shotgun
+        self.last_speed = 0
+        self.now =pg.time.get_ticks()
+        self.max_speed = 3
 
     def load_images(self):
         self.image = pg.Surface(self.size, pg.SRCALPHA)
@@ -98,19 +98,18 @@ class Player(pg.sprite.Sprite):
                         # 산탄총 처럼 퍼져나가게 하기 위함
 
     def update(self):
+        self.now =pg.time.get_ticks()
         self.acc = vec(0,0)
         self.get_keys()
-        self.animate()
-        self.rotate()
-        
+        self.rotate() 
         self.acc += self.vel*PLAYER_FRICTION
         #apply friction / 가속력에 마찰력을 더해줌. 현재속력*마찰력(현재는 -0.05로 설정)
         #equations of motion
         self.vel = self.vel + 0.3*self.acc
-        if math.sqrt(self.vel.x**2+self.vel.y**2) >3: 
+        if math.sqrt(self.vel.x**2+self.vel.y**2) > self.max_speed: 
             # this is for stop velocity growing infinitly
             # 속도가 무한정으로 빨라지는것을 방지하기위해 속도(vector)의 magnitude(속력)를 계산하여 magnitude가 3을 넘지 않도록 설정
-            self.vel *= 3/math.sqrt(self.vel.x**2+self.vel.y**2)
+            self.vel *= self.max_speed/math.sqrt(self.vel.x**2+self.vel.y**2)
             # simple vector calculate / 간단한 벡터계산을 이용하였음. 현재속력이 3보다 클경우 3으로 고정하기위한 수식.
         self.pos += self.vel
         self.rect.centerx = self.pos.x
@@ -121,6 +120,10 @@ class Player(pg.sprite.Sprite):
         self.collide_with_enemy('x')
         self.rect.centery = self.pos.y
         self.collide_with_enemy('y')
+        self.collide_with_feed()
+
+        if self.now - self.last_speed > SPEEDUP_RATE:
+            self.max_speed = 3
 
     def collide_with_walls(self,dir):
         if dir == 'x':
@@ -171,8 +174,12 @@ class Player(pg.sprite.Sprite):
                 self.vel.y = 0
                 self.rect.centery = self.pos.y
 
-    def animate(self):
-        pass
+    def collide_with_feed(self):
+        hits = pg.sprite.spritecollide(self, self.game.feeds, True)
+        if hits:
+            print('collide!')
+            self.max_speed = 10
+            self.last_speed = pg.time.get_ticks()
 
     def rotate(self):
         # The vector to the target (the mouse position).
@@ -249,6 +256,11 @@ class Feed(pg.sprite.Sprite):
         self.pos = vec(x,y)
         self.rect.x = self.pos.x*TILESIZE
         self.rect.y = self.pos.y*TILESIZE
+        # 추후 random을 통해 바꿔야함.
+        self.item_no = 1
+
+
+
 
 class Wall(pg.sprite.Sprite):
     def __init__(self, game, x, y, color):
