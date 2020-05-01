@@ -232,6 +232,8 @@ class Bullet(pg.sprite.Sprite):
             self.kill()
         if pg.time.get_ticks() - self.spawn_time > BULLET_LIFETIME:
             self.kill()
+        
+        
 
 class Enemy(pg.sprite.Sprite):
     def __init__(self, game, x, y, color):
@@ -241,13 +243,25 @@ class Enemy(pg.sprite.Sprite):
         self.image = pg.Surface((TILESIZE,TILESIZE))
         self.image.fill(color)
         self.rect = self.image.get_rect()
-        self.pos = vec(x,y)
+        self.image.fill(RED)
+        self.pos = vec(x, y)
+        self.rect.center = self.pos
         self.rect.x = self.pos.x*TILESIZE
         self.rect.y = self.pos.y*TILESIZE
-        self.speedy = random.randrange(1,4)
+        self.speedy = 1
+
     def update(self):
         self.rect.x -= self.speedy
-      
+        if pg.sprite.spritecollide(self, self.game.bullets, True):
+            self.kill()
+        #bullet이랑 enemy가 충돌시 둘 다 kill
+            
+            
+        # self.rot = (self.game.player.pos - self.pos).angle_to(vec(1, 0))
+        # self.image = pg.transform.rotate(pg.Surface((TILESIZE,TILESIZE)), self.rot)
+        # self.rect = self.image.get_rect()
+        # self.rect.center = self.pos
+        
 #아이템 상자 생성
 class Feed(pg.sprite.Sprite):
     def __init__(self, game, x, y):

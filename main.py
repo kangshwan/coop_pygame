@@ -6,11 +6,11 @@ from setting import *
 from sprites import *
 from tilemap import *
 from os import path
-import time 
 from time import sleep
 from numpy import random
 import time
 import threading
+
 
 
 vec = pg.math.Vector2
@@ -61,6 +61,7 @@ class Game:
         self.enemys = pg.sprite.Group()
         self.feeds = pg.sprite.Group()
         self.feed_pos = []
+        
         #draw map in here / 여기서부터 맵을 그림.
         for row, tiles in enumerate(self.map.data):
             #enumerate는 한 배열에 대하여 index와 그 값을 동시에 가져올수 있음. -> 자세한건 구글링
@@ -80,8 +81,7 @@ class Game:
         
         test = random.randint(0,len(self.feed_pos)-1)
         Feed(self, self.feed_pos[test][0],self.feed_pos[test][1])
-
-
+        
         #아이템or스킬상자가 랜덤한 위치에 드랍되게 / 상자를 먹으면 사라지고 일정 효과가 발동되도록 만들어주기
         #일정 주기마다 생성되도록 만들어주기 - 완료
         #def item_box():
@@ -96,8 +96,7 @@ class Game:
 
      
 
-        #for z in range(6,16): #한 블럭이 -1씩 이동  
-        #    enemy(self,z,12)	            
+        	            
     
         self.start_tick = pg.time.get_ticks()
 
@@ -160,4 +159,4 @@ while g.start:
         # this g.running will take control of game over or not
         g.new()
 pg.quit()
-sys.exit()
+
