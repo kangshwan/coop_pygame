@@ -1,8 +1,11 @@
 import os
 import random
 import pygame as pg
+import sys
 from setting import *
 from sprites import *
+from tilemap import *
+from os import path
 import time 
 from time import sleep
 
@@ -24,6 +27,7 @@ class Game:
         self.clock = pg.time.Clock()
         self.running = True
         self.start = True
+        self.load_data()
 
     def run(self):
         #pg.mixer.music.play(loops = -1)   #bg play. loops == false -> play gain , Ture -> once
@@ -56,13 +60,19 @@ class Game:
         self.bullets = pg.sprite.Group()
         self.obstarcle = pg.sprite.Group()
         self.walls = pg.sprite.Group()#just for test
-        self.player = Player(self)
 
         self.enemys = pg.sprite.Group()
 
-        #self.leg = Leg(self)
-        for x in range(10,20):
-            Wall(self,x,5)
+        #draw map in here
+        for row, tiles in enumerate(self.map.data):
+            for col, tile in enumerate(tiles):
+                if tile == '1':
+                    Wall(self, col, row, LIGHTBLUE)
+                if tile == '2':
+                    Wall(self, col, row, BROWN)
+                if tile == 'P':
+                    self.player = Player(self, col, row)
+        self.camera = Camera(self.map.width, self.map.height)
         
 
         #아이템or스킬상자가 랜덤한 위치에 드랍되게 / 상자를 먹으면 사라지고 일정 효과가 발동되도록 만들어주기
@@ -102,6 +112,8 @@ class Game:
     def update(self):
         # game loop update
         self.all_sprites.update()
+        self.camera.update(self.player)
+
         self.second = ((pg.time.get_ticks() - self.start_tick)/1000)
         #hits -> used sprite collide method, (x, y, default boolean) collision check
         hits = pg.sprite.spritecollide(self.player, self.walls, False)
@@ -148,12 +160,23 @@ class Game:
         # game loop - draw
         self.screen.fill(DARKGREY)
         self.draw_grid()
-        self.all_sprites.draw(self.screen)
+        for sprite in self.all_sprites:
+            self.screen.blit(sprite.image, self.camera.apply(sprite))
+
         pg.display.update()
+
+    def load_data(self):
+        # load map to the game
+        game_folder = path.dirname(__file__)
+        self.map = Map(path.join(game_folder,'map','map2.txt'))
+        pass
 
 
 g = Game()
 while g.start:
+    # Game start when g.start is True
     while g.running:
+        # this g.running will take control of game over or not
         g.new()
 pg.quit()
+sys.exit()

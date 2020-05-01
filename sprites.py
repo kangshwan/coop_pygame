@@ -10,23 +10,21 @@ vec = pg.math.Vector2
 
 class Player(pg.sprite.Sprite):
     
-    def __init__(self, game):
+    def __init__(self, game, x, y):
         self.groups = game.all_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        self.walking = False
         self.current_frame = 0
         self.last_update = 0
-        self.size = (32,32)
+        self.size = (TILESIZE,TILESIZE)
         self.load_images()
         #self.image = self.standing_frames[0]
         self.orig_image = self.image
         self.rect = self.image.get_rect()
-        self.rect.center = (WIDTH/2,HEIGHT/2)
-        self.pos = vec(WIDTH/2, HEIGHT/2)
+        self.pos = vec(x*32, y*32)
+        
         self.vel = vec(0,0)
         self.acc = vec(0,0)
-        self.acc_max = vec()
         self.rot = 0
         self.last_shot = 0
 
@@ -62,10 +60,7 @@ class Player(pg.sprite.Sprite):
         key = pg.mouse.get_pressed()
         if key[0]:
             now = pg.time.get_ticks()
-            if now - self.last_shot > BULLET_RATE:
-                self.last_shot = now
-                dir = vec(1,0).rotate(self.rot)
-                Bullet(self.game, self.pos, dir)
+
             if self.gun_select == 0:
                 if self.gun_status[0] == True:
                     now = pg.time.get_ticks()
@@ -73,10 +68,11 @@ class Player(pg.sprite.Sprite):
                         self.last_shot = now
                         dir = vec(1,0).rotate(self.rot)
                         Bullet(self.game, self.pos, dir)
-            if self.gun_select == 1:
+            elif self.gun_select == 1:
                 if self.gun_status[1] == True:
                     now = pg.time.get_ticks()
                     if now - self.last_shot > BULLET_RATE:
+                        print('in')
                         self.last_shot = now
                         dir = vec(1,0).rotate(self.rot - 10 )
                         Bullet(self.game, self.pos, dir)
@@ -94,7 +90,7 @@ class Player(pg.sprite.Sprite):
         self.acc = vec(0,0)
         self.get_keys()
         self.animate()
-        self.rotate()
+        #self.rotate()
 
         # apply friction
         self.acc += self.vel*PLAYER_FRICTION
@@ -105,6 +101,7 @@ class Player(pg.sprite.Sprite):
         self.vel = self.vel + 0.3*self.acc
         if math.sqrt(self.vel.x**2+self.vel.y**2) >3:
             self.vel *= 3/math.sqrt(self.vel.x**2+self.vel.y**2)
+            
         self.pos += self.vel
         self.rect.centerx = self.pos.x
         self.collide_with_walls('x')
@@ -173,6 +170,7 @@ class Player(pg.sprite.Sprite):
         self.rect = self.image.get_rect(center=self.rect.center)
     def shotgun(self):
         pass
+
 class Leg(Player):
     def __init__(self,game):
         super().__init__(game)
@@ -192,6 +190,7 @@ class Leg(Player):
         #print('arm pos', self.pos)
 
         pass
+
 class Bullet(pg.sprite.Sprite):
     def __init__(self, game, pos, dir):
         self.groups = game.all_sprites, game.bullets
@@ -216,6 +215,7 @@ class Bullet(pg.sprite.Sprite):
         self.rect.center = self.pos
         if pg.time.get_ticks() - self.spawn_time > BULLET_LIFETIME:
             self.kill()
+
 
 
 
@@ -250,12 +250,12 @@ class Feed(pg.sprite.Sprite):
         self.rect.y = y*TILESIZE
 
 class Wall(pg.sprite.Sprite):
-    def __init__(self, game, x, y):
+    def __init__(self, game, x, y, color):
         self.groups = game.all_sprites, game.walls
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.image = pg.Surface((TILESIZE,TILESIZE))
-        self.image.fill(LIGHTBLUE)
+        self.image.fill(color)
         self.rect = self.image.get_rect()
         self.pos = vec(x,y)
         self.rect.x = self.pos.x*TILESIZE

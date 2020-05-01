@@ -1,12 +1,14 @@
 # this file is basic settings of game
 TITLE = "Zombie Survival"
-WIDTH = 1280
-HEIGHT = 960
+WIDTH = 960
+HEIGHT = 640
 FPS = 60
-WINDOW_SIZE = [1280,960]
+WINDOW_SIZE = [WIDTH,HEIGHT]
 TILESIZE = 32
 GRIDWIDTH = WIDTH/TILESIZE
+# width 40 block
 GRIDHEIGHT = HEIGHT/TILESIZE
+# height 30 block
 
 #define colors
 BLACK     = (  0,  0,  0)
