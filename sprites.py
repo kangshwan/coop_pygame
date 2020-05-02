@@ -242,7 +242,7 @@ class Player(pg.sprite.Sprite):
             self.last_speed = pg.time.get_ticks()
             self.gun_status[1] = [True, 240]
             self.gun_status[2] = [True, 10]
-            self.gun_status[3] = [True, 500]
+                self.gun_status[3] = [True, 500]
             self.weapon_rate *= 0.5
             self.weapon_damage *= 1.5
 =======
