@@ -33,17 +33,14 @@ class Game:
         #pg.mixer.music.play(loops = -1)   #bg play. loops == false -> play gain , Ture -> once
 
         self.playing = True
-        pg.mixer.music.play(loops=-1)
         #if self.playing is True, that means now playing game. / self.playing이 True면 게임을 진행하고있다는뜻 
         # -> 이후 사망시 continue?를 물을때 False로 바꿔주고 Yes일 경우 다시 True로, No일경우 self.running을 False로 바꾸어 주면 좋아보임.
         while self.playing:
             self.dt = self.clock.tick(FPS)/1000
             #set the frame per second / FPS를 구하기 위함. 이후 dt는 총알구현에 있어서 중요하게 사용됨.
             self.events()
-            if not self.paused:
             #events for keyboard and mouse input / 이벤트를 처리하기 위함. 항상 pygame은 event 이벤트발생(사용자의 입력) -> update(입력에 따른 변화를 업데이트해줌) -> draw 이후 그림을 그림
-                self.update()
-            
+            self.update()
             self.draw()
 
     def new(self):
@@ -66,14 +63,7 @@ class Game:
         self.feeds       = pg.sprite.Group()
         self.explode     = pg.sprite.Group()
         self.feed_pos = []
-<<<<<<< HEAD
-        self.paused = False
-     
-        
-        
-=======
         self.enemy_pos = []
->>>>>>> develop
         
         #draw map in here / 여기서부터 맵을 그림.
         for row, tiles in enumerate(self.map.data):
@@ -171,16 +161,12 @@ class Game:
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 if self.playing:
-                    
                     self.playing = False
                     self.running = False
                     self.start = False
                 self.start = False
-            
             if event.type == pg.MOUSEBUTTONDOWN:
                 pass
-            
-             
             
     def draw_grid(self):
         for x in range(0, WIDTH, TILESIZE):
@@ -207,20 +193,10 @@ class Game:
     def load_data(self):
         # load map to the game
         game_folder = path.dirname(__file__)
-<<<<<<< HEAD
-        pg.mixer.music.load(path.join(MUSIC))
-=======
         img_folder = path.join(game_folder, 'Image')
->>>>>>> develop
         self.map = Map(path.join(game_folder,'map','map2.txt'))
         self.ground_img = pg.image.load(path.join(img_folder, GROUND_IMG)).convert_alpha
         pass
-    
-    def get_keys(self):
-        # event handling / 이벤트 핸들링
-        keys = pg.key.get_pressed()
-   
-    
 
 
 g = Game()

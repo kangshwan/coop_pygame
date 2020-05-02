@@ -99,10 +99,6 @@ class Player(pg.sprite.Sprite):
             self.acc.y = -PLAYER_ACC
         if keys[pg.K_s]:
             self.acc.y = PLAYER_ACC
-        if keys[pg.K_p]:
-            self.game.paused = not self.game.paused
-            
-            
         # add acceleration when press w,a,s,d / w,a,s,d를 눌렀을때 가속을 더해줌.
         key = pg.mouse.get_pressed()
         if key[0]:
@@ -110,31 +106,11 @@ class Player(pg.sprite.Sprite):
                 if self.gun_status[0][0] == True:
                     self.shoot(self.gun_select)
             elif self.gun_select == 1:
-<<<<<<< HEAD
-                if self.gun_status[1] == True:
-                    now = pg.time.get_ticks()
-                    if now - self.last_shot > BULLET_RATE:
-                        self.last_shot = now
-                        dir = vec(1,0).rotate(self.rot - 10 )
-                        Bullet(self.game, self.pos, dir)
-                        dir = vec(1,0).rotate(self.rot - 5 )
-                        Bullet(self.game, self.pos, dir)
-                        dir = vec(1,0).rotate(self.rot)
-                        Bullet(self.game, self.pos, dir)
-                        dir = vec(1,0).rotate(self.rot + 5)
-                        Bullet(self.game, self.pos, dir)
-                        dir = vec(1,0).rotate(self.rot + 10)
-                        Bullet(self.game, self.pos, dir)
-            
-                        # This is for bullet spreads like shotgun
-                        # 산탄총 처럼 퍼져나가게 하기 위함
-=======
                 if self.gun_status[self.gun_select][0] == True:
                     self.shoot(self.gun_select)
             elif self.gun_select == 2:
                 if self.gun_status[self.gun_select][0] == True:
                     self.shoot(self.gun_select)
->>>>>>> develop
 
         if key[2]:
             #마우스 우클릭시
@@ -381,12 +357,6 @@ class Enemy(pg.sprite.Sprite):
         self.vel = vec(0, 0)
         self.acc = vec(0, 0)
         self.rect.center = self.pos
-<<<<<<< HEAD
-        self.rect.x = self.pos.x*TILESIZE
-        self.rect.y = self.pos.y*TILESIZE
-        self.speedy = 1
-        self.rot = 0
-=======
         #self.rect.x = self.pos.x*TILESIZE
         #self.rect.y = self.pos.y*TILESIZE
         #제 생각에 문제는 단 한번으로 좌표를 할당해도되는데 좌표할당행위를 나눠서 여러번 해서 
@@ -403,7 +373,6 @@ class Enemy(pg.sprite.Sprite):
                 if 0 < dist.length() < AVOID_RADIUS:
                     self.acc += dist.normalize()
 
->>>>>>> develop
     def update(self):
         #self.rect.x -= self.speedy 
         self.rot = (self.game.player.pos - self.pos).angle_to(vec(1, 0))
@@ -422,15 +391,6 @@ class Enemy(pg.sprite.Sprite):
         collide_with_gameobject(self, self.game.walls, 'y')
         self.rect.center = self.hitbox.center
         #bullet이랑 enemy가 충돌시 둘 다 kill
-<<<<<<< HEAD
-            
-            
-        # self.rot = (self.game.player.pos - self.pos).angle_to(vec(1, 0))
-        # self.image = pg.transform.rotate(, self.rot)
-        # self.rect = self.image.get_rect()
-        # self.rect.center = self.pos
-        
-=======
         if self.health <= 0:
             self.kill()
 
@@ -443,7 +403,6 @@ class Enemy(pg.sprite.Sprite):
             pg.draw.rect(self.image, col, self.health_bar)
             pg.draw.rect(self.image, WHITE, self.outer_edge, 1)
 
->>>>>>> develop
 #아이템 상자 생성
 class Feed(pg.sprite.Sprite):
     def __init__(self, game, x, y):
