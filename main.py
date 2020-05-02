@@ -64,6 +64,8 @@ class Game:
         self.feeds = pg.sprite.Group()
         self.feed_pos = []
         self.paused = False
+     
+        
         
         
         #draw map in here / 여기서부터 맵을 그림.
@@ -124,10 +126,12 @@ class Game:
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 if self.playing:
+                    
                     self.playing = False
                     self.running = False
                     self.start = False
                 self.start = False
+            
             if event.type == pg.MOUSEBUTTONDOWN:
                 pass
             
@@ -154,6 +158,12 @@ class Game:
         pg.mixer.music.load(path.join(MUSIC))
         self.map = Map(path.join(game_folder,'map','map2.txt'))
         pass
+    
+    def get_keys(self):
+        # event handling / 이벤트 핸들링
+        keys = pg.key.get_pressed()
+   
+    
 
 
 g = Game()

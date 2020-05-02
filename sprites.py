@@ -64,9 +64,8 @@ class Player(pg.sprite.Sprite):
         if keys[pg.K_s]:
             self.acc.y = PLAYER_ACC
         if keys[pg.K_p]:
-            self.game.paused = not self.game.paused 
-        
-        
+            self.game.paused = not self.game.paused
+            
             
         # add acceleration when press w,a,s,d / w,a,s,d를 눌렀을때 가속을 더해줌.
         key = pg.mouse.get_pressed()
