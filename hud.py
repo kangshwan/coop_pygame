@@ -1,5 +1,6 @@
 import pygame as pg
 from setting import *
+
 def draw_player_health(surf, x, y, pct):
     if pct < 0:
         pct = 0
@@ -24,7 +25,6 @@ def draw_gun_list(surf, gunstatus):
 def draw_gun(surf, x, y, possible):
     BAR_LENGTH = 50
     BAR_HEIGHT = 50
-
     if possible[0]:
         gun_rect = pg.Rect(x, y, BAR_LENGTH, BAR_HEIGHT)
         pg.draw.rect(surf, LIGHTGREY, gun_rect)

@@ -32,16 +32,6 @@ PLAYER_FRICTION = -0.05
 PLAYER_HIT_BOX = pg.Rect(0, 0, 35, 35)
 PLAYER_HEALTH = 100
 
-# gun properties
-BULLET_SPEED = 500
-BULLET_LIFETIME = 700
-BULLET_RATE = 300
-BULLET_SPREAD = 5
-PISTOL_SPEED = 500
-PISTOL_LIFETIME = 700
-PISTOL_RATE = 250
-PISTOL_DAMAGE = 10
-
 # Weapon setting
 WEAPONS = {}
 WEAPONS['pistol'] = {'bullet_speed': 350,
@@ -63,26 +53,21 @@ WEAPONS['shotgun'] = {'bullet_speed': 300,
 WEAPONS['sniper'] = {'bullet_speed': 500,
                      'bullet_lifetime': 1000,
                      'rate': 1500,
-                     'damage': 40,
+                     'damage': 13,
                      'spread': 0,
                      'bullet_size': (3,3),
                      'bullet_count': 1}
-
-
-GUN_BULLET = {'pistol':-1, 'shotgun': 100}
-GUN_SPEED  = {'pistol': 350, 'shotgun': 500}
-GUN_LIFETIME = {'pistol': 700, 'shotgun': 200}
-GUN_RATE = {'pistol': 200, 'shotgun': 2000}
-GUN_DAMAGE = {'pistol': 10, 'shotgun': 7}
+#'flamethrower 추가 바람
 
 # grenade properties
 GRENADE_SPEED = 600
 GRENADE_LIFETIME = 3000
 GRENADE_RATE = 1000
 GRENADE_DAMAGE = 60
+
+# explosion properties
 EXPLOSION_LITETIME = 500
 EXPLOSION_KNOCKBACK = 70
-
 
 # enemy properties
 ENEMY_HEALTH = 100
@@ -95,6 +80,8 @@ AVOID_RADIUS = 50
 
 # item properties
 SPEEDUP_RATE = 5000
+ITEM_KIND = [0, 1, 2, 3, 4]
 
 #image
 TEST = "test.png"
+GROUND_IMG = 'ground.png'

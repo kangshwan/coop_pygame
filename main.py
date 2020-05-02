@@ -110,11 +110,11 @@ class Game:
         self.camera.update(self.player)
         
         #update에서 Enemy 생성
-        #if self.now - self.enemy_spawned > 3000:
-        #    for e_position in self.enemy_pos:
-        #        #3초마다 해당 장소에서 생성. 추후 enemy_pos를 list로 쓸경우 for문 안에넣고 index들로 접근해서 생성하면 될듯.
-        #        Enemy(self, e_position[0], e_position[1], RED)
-        #        self.enemy_spawned = self.now
+        if self.now - self.enemy_spawned > 3000:
+            for e_position in self.enemy_pos:
+                #3초마다 해당 장소에서 생성. 추후 enemy_pos를 list로 쓸경우 for문 안에넣고 index들로 접근해서 생성하면 될듯.
+                Enemy(self, e_position[0], e_position[1], RED)
+                self.enemy_spawned = self.now
         self.second = ((pg.time.get_ticks() - self.start_tick)/1000)
 
         #hits -> used sprite collide method, (x, y, default boolean) collision check
@@ -128,10 +128,16 @@ class Game:
             self.player.pos += vec(ENEMY_KNOCKBACK, 0).rotate(-hits[0].rot)
         
         # bullet hit the mob
-        hits = pg.sprite.groupcollide(self.enemys, self.bullets, False, True)
-        for hit in hits:
-            hit.health -= WEAPONS[self.player.weapon]['damage'] * len(hits[hit])
-            hit.vel = vec(0, 0)
+        if self.player.gun_select == 2:
+            hits = pg.sprite.groupcollide(self.enemys, self.bullets, False, False)
+            for hit in hits:
+                hit.health -= self.player.weapon_damage
+                hit.vel = vec(0, 0)
+        else:
+            hits = pg.sprite.groupcollide(self.enemys, self.bullets, False, True)
+            for hit in hits:
+                hit.health -= self.player.weapon_damage * len(hits[hit])
+                hit.vel = vec(0, 0)
 
         # explosion hit the player
         hits = pg.sprite.pygame.sprite.spritecollide(self.player, self.explode, False, collide_hit_rect)
@@ -149,8 +155,6 @@ class Game:
             hit.health -= GRENADE_DAMAGE
             hit.vel = vec(0, 0)
             hit.pos += vec(EXPLOSION_KNOCKBACK, 0).rotate(-hit.rot)
-
-
 
     def events(self):
         # game loop events
@@ -178,6 +182,7 @@ class Game:
             if isinstance(sprite, Enemy):
                 sprite.draw_health()
             self.screen.blit(sprite.image, self.camera.apply(sprite))
+
         #pg.draw.rect(self.screen, WHITE, self.player.hitbox,2)
         
         # HUD functions
@@ -188,7 +193,9 @@ class Game:
     def load_data(self):
         # load map to the game
         game_folder = path.dirname(__file__)
+        img_folder = path.join(game_folder, 'Image')
         self.map = Map(path.join(game_folder,'map','map2.txt'))
+        self.ground_img = pg.image.load(path.join(img_folder, GROUND_IMG)).convert_alpha
         pass
 
 
