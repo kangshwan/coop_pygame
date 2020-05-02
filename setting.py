@@ -20,6 +20,7 @@ BROWN     = (150, 75,  0)
 LIGHTBLUE = ( 75,137,220)
 LIGHTGREY = (100,100,100)
 DARKGREY  = ( 40, 40, 40)
+GREEN     = ( 11, 64,  8)
 
 
 #player properties
@@ -37,6 +38,12 @@ BULLET_DAMAGE = 5
 PISTOL_SPEED = 500
 PISTOL_LIFETIME = 700
 PISTOL_RATE = 250
+
+# grenade properties
+GRENADE_SPEED = 800
+GRENADE_LIFETIME = 3000
+GRENADE_RATE = 1000
+
 
 # item properties
 SPEEDUP_RATE = 5000

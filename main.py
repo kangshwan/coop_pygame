@@ -56,6 +56,7 @@ class Game:
         self.all_sprites = pg.sprite.Group()
         self.zombies = pg.sprite.Group()
         self.bullets = pg.sprite.Group()
+        self.grenades = pg.sprite.Group()
         self.obstacle = pg.sprite.Group()
         self.walls = pg.sprite.Group()
         self.enemys = pg.sprite.Group()
@@ -145,7 +146,7 @@ class Game:
         self.draw_grid()
         for sprite in self.all_sprites:
             self.screen.blit(sprite.image, self.camera.apply(sprite))
-        pg.draw.rect(self.screen, WHITE, self.player.hitbox,2)
+        #pg.draw.rect(self.screen, WHITE, self.player.hitbox,2)
         pg.display.update()
 
     def load_data(self):

@@ -34,6 +34,7 @@ class Player(pg.sprite.Sprite):
         self.last_shot = 0
         self.gun_status = [True, True]
         self.gun_select = 0
+        self.last_grenade = 0
         #1 is pistol 2 is shotgun
         self.last_speed = 0
         self.now =pg.time.get_ticks()
@@ -99,6 +100,13 @@ class Player(pg.sprite.Sprite):
                         Bullet(self.game, self.pos, dir)
                         # This is for bullet spreads like shotgun
                         # 산탄총 처럼 퍼져나가게 하기 위함
+        if key[2]:
+            now = pg.time.get_ticks()
+            if now - self.last_grenade > GRENADE_RATE:
+                self.last_grenade = now
+                dir = vec(1,0).rotate(self.rot)
+                Grenade(self.game, self.pos, dir)
+                print('fire in the hole!')
 
     def update(self):
         self.now =pg.time.get_ticks()
@@ -233,8 +241,67 @@ class Bullet(pg.sprite.Sprite):
         if pg.time.get_ticks() - self.spawn_time > BULLET_LIFETIME:
             self.kill()
         
-        
+class Grenade(pg.sprite.Sprite):
+    def __init__(self, game, pos, dir):
+        self.groups = game.all_sprites, game.grenades
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.size = (10,10)
+        self.load_images()
+        self.rect = self.image.get_rect()
+        self.pos = vec(pos)
+        self.rect.center = pos
+        self.dir = dir
+        self.speed = GRENADE_SPEED
+        self.spawn_time = pg.time.get_ticks()
 
+    def load_images(self):
+        self.image = pg.Surface(self.size, pg.SRCALPHA)
+        self.image.fill(GREEN)
+
+    def update(self):
+        self.vel = self.dir * self.speed
+        self.pos += self.vel * self.game.dt
+        if math.sqrt(self.vel.x**2 + self.vel.y**2) > 0 :
+            self.speed -= 10
+        elif  math.sqrt(self.vel.x**2 + self.vel.y**2) < 0 :
+            self.vel = 0
+        self.rect.centerx = self.pos.x
+        self.collide_with_walls('x')
+        self.rect.centery = self.pos.y
+        self.collide_with_walls('y')
+
+        if pg.time.get_ticks() - self.spawn_time > GRENADE_LIFETIME:
+            self.kill()
+            #call sprite - explode
+
+    def collide_with_walls(self,dir):
+        if dir == 'x':
+            # see collide with x axis
+            # x 방향으로 충돌 확인
+            hits = pg.sprite.spritecollide(self, self.game.walls, False)
+            if hits:
+                if self.vel.x > 0:
+                    self.pos.x = hits[0].rect.left - self.rect.width/2
+                    # x 방향 속도가 양수일 경우 -> 오른쪽으로 진행하고있음 따라서 position을 다시 세팅해줌
+                if self.vel.x < 0:
+                    self.pos.x = hits[0].rect.right + self.rect.width/2
+                    # x 방향 속도가 음수일 경우 -> 왼쪽으로 진행하고있음 따라서 position을 다시 세팅해줌
+                self.vel.x = 0
+                # 부딫혔으니 x방향 속도를 0으로 해줌.
+                self.rect.centerx = self.pos.x
+        if dir == 'y':
+            hits = pg.sprite.spritecollide(self, self.game.walls, False)
+            if hits:
+                if self.vel.y > 0:
+                    self.pos.y = hits[0].rect.top - self.rect.height/2
+                    # y 방향 속도가 양수일 경우 -> 아래으로 진행하고있음 따라서 position을 다시 세팅해줌
+                if self.vel.y < 0:
+                    self.pos.y = hits[0].rect.bottom + self.rect.height/2
+                    # y 방향 속도가 양수일 경우 -> 위쪽으로 진행하고있음 따라서 position을 다시 세팅해줌
+                self.vel.y = 0
+                # 부딫혔으니 y방향 속도를 0으로 해줌
+                self.rect.centery = self.pos.y
 class Enemy(pg.sprite.Sprite):
     def __init__(self, game, x, y, color):
         self.groups = game.all_sprites, game.enemys
