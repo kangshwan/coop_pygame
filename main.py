@@ -5,6 +5,7 @@ import sys
 from setting import *
 from sprites import *
 from tilemap import *
+from hud import *
 from os import path
 from time import sleep
 from numpy import random
@@ -78,7 +79,7 @@ class Game:
                     self.feed_pos.append((col,row))
                 if tile == 'E':
                     self.enemy_pos.append((col,row))
-                    
+                    Enemy(self, col, row, RED)
                     #enemy_pos에 col,row 저장. 추후 feed처럼 append하여 생성하면 좋아보임.
         self.camera = Camera(self.map.width, self.map.height)
         # make Camera class / 카메라 객체 생성
@@ -109,18 +110,27 @@ class Game:
         self.camera.update(self.player)
         
         #update에서 Enemy 생성
-        if self.now - self.enemy_spawned > 3000:
-            for e_position in self.enemy_pos:
-                #3초마다 해당 장소에서 생성. 추후 enemy_pos를 list로 쓸경우 for문 안에넣고 index들로 접근해서 생성하면 될듯.
-                Enemy(self, e_position[0], e_position[1], RED)
-                self.enemy_spawned = self.now
+        #if self.now - self.enemy_spawned > 3000:
+        #    for e_position in self.enemy_pos:
+        #        #3초마다 해당 장소에서 생성. 추후 enemy_pos를 list로 쓸경우 for문 안에넣고 index들로 접근해서 생성하면 될듯.
+        #        Enemy(self, e_position[0], e_position[1], RED)
+        #        self.enemy_spawned = self.now
 
         self.second = ((pg.time.get_ticks() - self.start_tick)/1000)
         #hits -> used sprite collide method, (x, y, default boolean) collision check
-        hit = pg.sprite.pygame.sprite.spritecollide(self.player, self.enemys, False)
-
-        if hit: #적이랑 부딪히면 게임 종료
-            pg.quit()
+        hits = pg.sprite.pygame.sprite.spritecollide(self.player, self.enemys, False, collide_hit_rect)
+        for hit in hits:
+            self.player.health -= ENEMY_DAMAGE
+            hit.vel = vec(0, 0)
+            if self.player.health <= 0:
+                self.playing = False
+        if hits:
+            self.player.pos += vec(ENEMY_KNOCKBACK, 0).rotate(-hits[0].rot)
+        # bullet hit the mob
+        hits = pg.sprite.groupcollide(self.enemys, self.bullets, False, True)
+        for hit in hits:
+            hit.health -= PISTOL_DAMAGE
+            hit.vel = vec(0, 0)
 
 
     def events(self):
@@ -146,10 +156,16 @@ class Game:
         self.screen.fill(DARKGREY)
         self.draw_grid()
         for sprite in self.all_sprites:
+            if isinstance(sprite, Enemy):
+                sprite.draw_health()
             self.screen.blit(sprite.image, self.camera.apply(sprite))
         #pg.draw.rect(self.screen, WHITE, self.player.hitbox,2)
-        pg.display.update()
+        
+        # HUD functions
+        draw_player_health(self.screen, 10, HEIGHT - 40, self.player.health / PLAYER_HEALTH)
 
+        pg.display.update()
+        
     def load_data(self):
         # load map to the game
         game_folder = path.dirname(__file__)

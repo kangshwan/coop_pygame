@@ -40,6 +40,8 @@ class Player(pg.sprite.Sprite):
         self.now =pg.time.get_ticks()
         self.max_speed = 3
 
+        self.health = PLAYER_HEALTH
+
     def load_images(self):
         self.image = pg.Surface(self.size, pg.SRCALPHA)
         # self.image에 Surface를 저장함. 나중에 img 삽입시 self.image에 img가 들어갈것.
@@ -143,10 +145,10 @@ class Player(pg.sprite.Sprite):
             # x 방향으로 충돌 확인
             hits = pg.sprite.spritecollide(self, self.game.walls, False, collide_hit_rect)
             if hits:
-                if self.vel.x > 0:
+                if hits[0].rect.centerx > self.hitbox.centerx:
                     self.pos.x = hits[0].rect.left - self.hitbox.width/2
                     # x 방향 속도가 양수일 경우 -> 오른쪽으로 진행하고있음 따라서 position을 다시 세팅해줌
-                if self.vel.x < 0:
+                if hits[0].rect.centerx < self.hitbox.centerx:
                     self.pos.x = hits[0].rect.right + self.hitbox.width/2
                     # x 방향 속도가 음수일 경우 -> 왼쪽으로 진행하고있음 따라서 position을 다시 세팅해줌
                 self.vel.x = 0
@@ -155,10 +157,10 @@ class Player(pg.sprite.Sprite):
         if dir == 'y':
             hits = pg.sprite.spritecollide(self, self.game.walls, False,collide_hit_rect)
             if hits:
-                if self.vel.y > 0:
+                if hits[0].rect.centery > self.hitbox.centery:
                     self.pos.y = hits[0].rect.top - self.hitbox.height/2
                     # y 방향 속도가 양수일 경우 -> 아래으로 진행하고있음 따라서 position을 다시 세팅해줌
-                if self.vel.y < 0:
+                if hits[0].rect.centery < self.hitbox.centery:
                     self.pos.y = hits[0].rect.bottom + self.hitbox.height/2
                     # y 방향 속도가 양수일 경우 -> 위쪽으로 진행하고있음 따라서 position을 다시 세팅해줌
                 self.vel.y = 0
@@ -257,7 +259,7 @@ class Grenade(pg.sprite.Sprite):
 
     def load_images(self):
         self.image = pg.Surface(self.size, pg.SRCALPHA)
-        self.image.fill(GREEN)
+        self.image.fill(GRENADE)
 
     def update(self):
         self.vel = self.dir * self.speed
@@ -327,6 +329,7 @@ class Enemy(pg.sprite.Sprite):
         #문제가 생겼던것 같습니다. 이렇게 하니 잘 되는것같네요!
         self.speedy = 1
         self.rot = 0
+        self.health = ENEMY_HEALTH
 
     def update(self):
         #self.rect.x -= self.speedy 
@@ -335,9 +338,17 @@ class Enemy(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = self.pos
         #bullet이랑 enemy가 충돌시 둘 다 kill
-        if pg.sprite.spritecollide(self, self.game.bullets, True):
+        if self.health <= 0:
             self.kill()
-        
+
+    def draw_health(self):
+        col = RED
+        width = int(self.rect.width * self.health / ENEMY_HEALTH)
+        self.health_bar = pg.Rect(0, 0, width, 7)
+        self.outer_edge = pg.Rect(0, 0, self.rect.width, 7)
+        if self.health < ENEMY_HEALTH:
+            pg.draw.rect(self.image, col, self.health_bar)
+            pg.draw.rect(self.image, WHITE, self.outer_edge, 1)
 #아이템 상자 생성
 class Feed(pg.sprite.Sprite):
     def __init__(self, game, x, y):
