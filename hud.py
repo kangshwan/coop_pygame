@@ -1,4 +1,6 @@
 import pygame as pg
+import os
+from os import path
 from setting import *
 
 def draw_player_health(surf, x, y, pct):
@@ -20,15 +22,34 @@ def draw_player_health(surf, x, y, pct):
 
 def draw_gun_list(surf, gunstatus):
     for idx, val in enumerate(gunstatus):
-        draw_gun(surf, 140 + idx * 80, HEIGHT-60, val)
+        draw_gun(surf, 140 + idx * 80, HEIGHT-60, val, idx)
 
-def draw_gun(surf, x, y, possible):
+def draw_gun(surf, x, y, possible, gun_kind):
     BAR_LENGTH = 50
     BAR_HEIGHT = 50
+    image = 0
+    if gun_kind == 0:
+        game_folder = path.dirname(__file__)
+        img_folder = path.join(game_folder, 'Image')
+        image = pg.image.load(path.join(img_folder, WEAPON_IMGS[gun_kind]))
+    if gun_kind == 1:
+        game_folder = path.dirname(__file__)
+        img_folder = path.join(game_folder, 'Image')
+        image = pg.image.load(path.join(img_folder, WEAPON_IMGS[gun_kind]))
+    if gun_kind == 2:
+        game_folder = path.dirname(__file__)
+        img_folder = path.join(game_folder, 'Image')
+        image = pg.image.load(path.join(img_folder, WEAPON_IMGS[gun_kind]))
+    if gun_kind == 3:
+        game_folder = path.dirname(__file__)
+        img_folder = path.join(game_folder, 'Image')
+        image = pg.image.load(path.join(img_folder, WEAPON_IMGS[gun_kind]))
     if possible[0]:
         gun_rect = pg.Rect(x, y, BAR_LENGTH, BAR_HEIGHT)
         pg.draw.rect(surf, LIGHTGREY, gun_rect)
         pg.draw.rect(surf, WHITE, gun_rect,2)
+        surf.blit(image, (x, y))
+
     else:
         gun_rect = pg.Rect(x, y, BAR_LENGTH - 10, BAR_HEIGHT - 10)
         pg.draw.rect(surf, LIGHTGREY, gun_rect)

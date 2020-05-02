@@ -85,13 +85,27 @@ class Player(pg.sprite.Sprite):
         if keys[pg.K_1]:
             self.gun_select = 0
             self.weapon = 'pistol'
+            self.weapon_rate = WEAPONS[self.weapon]['rate']
+            self.weapon_damage = WEAPONS[self.weapon]['damage']
+
             # 총기를 잘 집었는지 출력
         if keys[pg.K_2]:
             self.gun_select = 1
             self.weapon = 'shotgun'
+            self.weapon_rate = WEAPONS[self.weapon]['rate']
+            self.weapon_damage = WEAPONS[self.weapon]['damage']
         if keys[pg.K_3]:
             self.gun_select = 2
             self.weapon = 'sniper'
+            self.weapon_rate = WEAPONS[self.weapon]['rate']
+            self.weapon_damage = WEAPONS[self.weapon]['damage']
+
+        if keys[pg.K_4]:
+            self.gun_select = 3
+            self.weapon = 'flamethrower'
+            self.weapon_rate = WEAPONS[self.weapon]['rate']
+            self.weapon_damage = WEAPONS[self.weapon]['damage']
+        
         if keys[pg.K_a]:
             self.acc.x = -PLAYER_ACC
         if keys[pg.K_d]:
@@ -104,15 +118,17 @@ class Player(pg.sprite.Sprite):
         key = pg.mouse.get_pressed()
         if key[0]:
             if self.gun_select == 0:
-                if self.gun_status[0][0] == True:
+                if self.gun_status[0][0]:
                     self.shoot(self.gun_select)
             elif self.gun_select == 1:
-                if self.gun_status[self.gun_select][0] == True:
+                if self.gun_status[self.gun_select][0]:
                     self.shoot(self.gun_select)
             elif self.gun_select == 2:
-                if self.gun_status[self.gun_select][0] == True:
+                if self.gun_status[self.gun_select][0]:
                     self.shoot(self.gun_select)
-
+            elif self.gun_select == 3:
+                if self.gun_status[self.gun_select][0]:
+                    self.shoot(self.gun_select)
         if key[2]:
             #마우스 우클릭시
             now = pg.time.get_ticks()
@@ -139,13 +155,14 @@ class Player(pg.sprite.Sprite):
             for i in range(WEAPONS[self.weapon]['bullet_count']):
                 spread = random.uniform(-WEAPONS[self.weapon]['spread'], WEAPONS[self.weapon]['spread'])
                 Bullet(self.game, self.pos, dir.rotate(spread))
-
             self.gun_status[self.gun_select][1] -= WEAPONS[self.weapon]['bullet_count'] 
+
             if self.gun_select == 0:
                 pass
             elif self.gun_status[self.gun_select][1] <= 0:
                 self.gun_status[self.gun_select][0] = False
             print('left bullet', self.gun_status[self.gun_select][1])
+
     def update(self):
         self.now =pg.time.get_ticks()
         self.acc = vec(0,0)
@@ -211,6 +228,7 @@ class Player(pg.sprite.Sprite):
             self.last_speed = pg.time.get_ticks()
             self.gun_status[1] = [True, 240]
             self.gun_status[2] = [True, 10]
+            self.gun_status[3] = [True, 500]
             self.weapon_rate *= 0.5
             self.weapon_damage *= 1.5
 
@@ -447,9 +465,19 @@ class Wall(pg.sprite.Sprite):
         self.groups = game.all_sprites, game.walls
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-
         self.image = pg.Surface((TILESIZE,TILESIZE))
         self.image.fill(color)
+        self.rect = self.image.get_rect()
+        self.pos = vec(x,y)
+        self.rect.x = self.pos.x*TILESIZE
+        self.rect.y = self.pos.y*TILESIZE
+
+class Ground(pg.sprite.Sprite):
+    def __init__(self, game, x, y, image):
+        self.groups = game.all_sprites, game.ground
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.image = game.ground_img
         self.rect = self.image.get_rect()
         self.pos = vec(x,y)
         self.rect.x = self.pos.x*TILESIZE

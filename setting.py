@@ -1,5 +1,4 @@
 import pygame as pg
-
 # this file is basic settings of game
 TITLE = "Zombie Survival"
 WIDTH = 960
@@ -34,29 +33,37 @@ PLAYER_HEALTH = 100
 
 # Weapon setting
 WEAPONS = {}
-WEAPONS['pistol'] = {'bullet_speed': 350,
-                     'bullet_lifetime': 700,
-                     'rate': 200,
-                     'damage': 10,
-                     'spread': 4,
-                     'bullet_size': (6,6),
-                     'bullet_count': 1}
+WEAPONS['pistol']       = {'bullet_speed': 350,
+                           'bullet_lifetime': 700,
+                           'rate': 200,
+                           'damage': 10,
+                           'spread': 4,
+                           'bullet_size': (6,6),
+                           'bullet_count': 1}
 
-WEAPONS['shotgun'] = {'bullet_speed': 300,
-                      'bullet_lifetime': 350,
-                      'rate': 1000,
-                      'damage': 5,
-                      'spread': 20,
-                      'bullet_size': (3,3),
-                      'bullet_count': 12}
+WEAPONS['shotgun']      = {'bullet_speed': 300,
+                           'bullet_lifetime': 350,
+                           'rate': 1000,
+                           'damage': 5,
+                           'spread': 20,
+                           'bullet_size': (3,3),
+                           'bullet_count': 12}
 
-WEAPONS['sniper'] = {'bullet_speed': 500,
-                     'bullet_lifetime': 1000,
-                     'rate': 1500,
-                     'damage': 13,
-                     'spread': 0,
-                     'bullet_size': (3,3),
-                     'bullet_count': 1}
+WEAPONS['sniper']       = {'bullet_speed': 500,
+                           'bullet_lifetime': 1000,
+                           'rate': 1500,
+                           'damage': 13,
+                           'spread': 0,
+                           'bullet_size': (3,3),
+                           'bullet_count': 1}
+
+WEAPONS['flamethrower'] = {'bullet_speed': 500,
+                           'bullet_lifetime': 400,
+                           'rate': 0,
+                           'damage': 3,
+                           'spread': 7,
+                           'bullet_size': (3,3),
+                           'bullet_count': 15}
 #'flamethrower 추가 바람
 
 # grenade properties
@@ -85,3 +92,8 @@ ITEM_KIND = [0, 1, 2, 3, 4]
 #image
 TEST = "test.png"
 GROUND_IMG = 'ground.png'
+WEAPON_IMGS = []
+WEAPON_IMGS.append('pistol.png')#pistol image
+WEAPON_IMGS.append('pistol.png')#shotgun image
+WEAPON_IMGS.append('pistol.png')#sniper image
+WEAPON_IMGS.append('pistol.png')#flamethrower image

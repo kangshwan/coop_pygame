@@ -1,6 +1,4 @@
-import os
 import random
-import pygame as pg
 import sys
 from setting import *
 from sprites import *
@@ -8,7 +6,7 @@ from tilemap import *
 from hud import *
 from os import path
 from time import sleep
-from numpy import random
+import random
 import time
 import threading
 vec = pg.math.Vector2
@@ -52,6 +50,7 @@ class Game:
         #이후 1페이즈, 2페이즈 등 결정할때 사용
         self.zombie_remain = 1000 
         self.enemy_spawned = 0
+        self.item_spawned = 0
         #sprite gruop
         self.all_sprites = pg.sprite.Group()
         self.zombies     = pg.sprite.Group()
@@ -62,30 +61,31 @@ class Game:
         self.enemys      = pg.sprite.Group()
         self.feeds       = pg.sprite.Group()
         self.explode     = pg.sprite.Group()
+        self.ground      = pg.sprite.Group()
         self.feed_pos = []
         self.enemy_pos = []
-        
-        #draw map in here / 여기서부터 맵을 그림.
         for row, tiles in enumerate(self.map.data):
             #enumerate는 한 배열에 대하여 index와 그 값을 동시에 가져올수 있음. -> 자세한건 구글링
             for col, tile in enumerate(tiles):
+                Ground(self, col, row, self.ground_img)
                 if tile == '1':
                     Wall(self, col, row, LIGHTBLUE)
                 if tile == '2':
                     Wall(self, col, row, BROWN)
+        #draw map in here / 여기서부터 맵을 그림.
+        for row, tiles in enumerate(self.map.data):
+            #enumerate는 한 배열에 대하여 index와 그 값을 동시에 가져올수 있음. -> 자세한건 구글링
+            for col, tile in enumerate(tiles):
                 if tile == 'P':
                     self.player = Player(self, col, row)
                 if tile == 'I':
-                    self.feed_pos.append((col,row))
+                    self.feed_pos.append([(col,row),False])
                 if tile == 'E':
                     self.enemy_pos.append((col,row))
                     Enemy(self, col, row, RED)
                     #enemy_pos에 col,row 저장. 추후 feed처럼 append하여 생성하면 좋아보임.
         self.camera = Camera(self.map.width, self.map.height)
         # make Camera class / 카메라 객체 생성
-        
-        test = random.randint(0,len(self.feed_pos)-1)
-        Feed(self, self.feed_pos[test][0],self.feed_pos[test][1])
         
         #아이템or스킬상자가 랜덤한 위치에 드랍되게 / 상자를 먹으면 사라지고 일정 효과가 발동되도록 만들어주기
         #일정 주기마다 생성되도록 만들어주기 - 완료
@@ -108,9 +108,19 @@ class Game:
         # game loop update
         self.all_sprites.update()
         self.camera.update(self.player)
-        
+        if self.now - self.item_spawned > 3000:    
+            #test = random.randint(0,len(self.feed_pos)-1)
+            #if self.feed_pos[test][1] == True:
+            #    Feed(self, self.feed_pos[test][0][0],self.feed_pos[test][0][1])
+            chosen_item = random.choice(self.feed_pos)
+            if chosen_item[1] == False:
+                Feed(self, chosen_item[0][0], chosen_item[0][1])
+                chosen_item[1] = True
+                    
+                
+            self.item_spawned = self.now
         #update에서 Enemy 생성
-        if self.now - self.enemy_spawned > 3000:
+        if self.now - self.enemy_spawned > 10000:
             for e_position in self.enemy_pos:
                 #3초마다 해당 장소에서 생성. 추후 enemy_pos를 list로 쓸경우 for문 안에넣고 index들로 접근해서 생성하면 될듯.
                 Enemy(self, e_position[0], e_position[1], RED)
@@ -128,7 +138,7 @@ class Game:
             self.player.pos += vec(ENEMY_KNOCKBACK, 0).rotate(-hits[0].rot)
         
         # bullet hit the mob
-        if self.player.gun_select == 2:
+        if self.player.gun_select in [2,3]:
             hits = pg.sprite.groupcollide(self.enemys, self.bullets, False, False)
             for hit in hits:
                 hit.health -= self.player.weapon_damage
@@ -177,25 +187,30 @@ class Game:
     def draw(self):
         # game loop - draw
         self.screen.fill(DARKGREY)
-        self.draw_grid()
+        #self.draw_grid()
         for sprite in self.all_sprites:
             if isinstance(sprite, Enemy):
                 sprite.draw_health()
-            self.screen.blit(sprite.image, self.camera.apply(sprite))
+            if isinstance(sprite, Player):
+                self.screen.blit(sprite.image, self.camera.apply(sprite))
+            else:
+                self.screen.blit(sprite.image, self.camera.apply(sprite))
 
         #pg.draw.rect(self.screen, WHITE, self.player.hitbox,2)
         
         # HUD functions
         draw_player_health(self.screen, 10, HEIGHT - 40, self.player.health / PLAYER_HEALTH)
         draw_gun_list(self.screen, self.player.gun_status)
+
         pg.display.update()
         
     def load_data(self):
         # load map to the game
         game_folder = path.dirname(__file__)
         img_folder = path.join(game_folder, 'Image')
-        self.map = Map(path.join(game_folder,'map','map2.txt'))
-        self.ground_img = pg.image.load(path.join(img_folder, GROUND_IMG)).convert_alpha
+        self.map = Map(path.join(game_folder,'map','map.txt'))
+        self.ground_img = pg.image.load(path.join(img_folder, GROUND_IMG)).convert_alpha()
+        
         pass
 
 
