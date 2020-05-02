@@ -3,21 +3,41 @@ import os
 from os import path
 from setting import *
 
-def draw_player_health(surf, x, y, pct):
+def draw_player_health(surf, x, y, health, amor, max_health):
+    pct = (health+amor)/max_health
+
     if pct < 0:
         pct = 0
     BAR_LENGTH = 100
     BAR_HEIGHT = 30
-    fill = pct * BAR_LENGTH
+    try:
+        amor_pct = amor/(health+amor)
+        health_pct = health/PLAYER_HEALTH
+    except ZeroDivisionError:
+        amor_pct = 0
+        health_pct = 0
+    if pct < amor_pct or amor <= 0:
+        health_fill = (health_pct+amor_pct)* BAR_LENGTH
+        print(health, amor)
+        print(health_pct)
+        print(max_health)
+    else:
+        health_fill = (pct-amor_pct) * BAR_LENGTH
+    amor_fill = pct * BAR_LENGTH
     outline_rect = pg.Rect(x, y, BAR_LENGTH, BAR_HEIGHT)
-    fill_rect = pg.Rect(x, y, fill, BAR_HEIGHT)
-    if pct > 0.6:
+    health_fill_rect = pg.Rect(x, y, health_fill, BAR_HEIGHT)
+    amor_fill_rect = pg.Rect(x, y, amor_fill, BAR_HEIGHT)
+    amor_col = SILVER
+    if pct > 1-amor_pct:
+        amor_col = SILVER
+    if health_pct > 0.6:
         col = GREEN
-    elif pct > 0.3:
+    elif health_pct > 0.3:
         col = YELLOW
     else:
         col = RED
-    pg.draw.rect(surf, col, fill_rect)
+    pg.draw.rect(surf, amor_col, amor_fill_rect)
+    pg.draw.rect(surf, col, health_fill_rect)
     pg.draw.rect(surf, WHITE, outline_rect, 3)
 
 def draw_gun_list(surf, gunstatus):

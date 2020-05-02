@@ -116,8 +116,7 @@ class Game:
             if chosen_item[1] == False:
                 Feed(self, chosen_item[0][0], chosen_item[0][1])
                 chosen_item[1] = True
-                    
-                
+
             self.item_spawned = self.now
         #update에서 Enemy 생성
         if self.now - self.enemy_spawned > 10000:
@@ -130,7 +129,12 @@ class Game:
         #hits -> used sprite collide method, (x, y, default boolean) collision check
         hits = pg.sprite.pygame.sprite.spritecollide(self.player, self.enemys, False, collide_hit_rect)
         for hit in hits:
-            self.player.health -= ENEMY_DAMAGE
+            if self.player.amor != 0:
+                self.player.amor -= ENEMY_DAMAGE
+                if self.player.amor < 0:
+                    self.player.health += self.player.amor
+            else:
+                self.player.health -= ENEMY_DAMAGE
             hit.vel = vec(0, 0)
             if self.player.health <= 0:
                 self.playing = False
@@ -152,7 +156,16 @@ class Game:
         # explosion hit the player
         hits = pg.sprite.pygame.sprite.spritecollide(self.player, self.explode, False, collide_hit_rect)
         for hit in hits:
-            self.player.health -= GRENADE_DAMAGE
+            if self.player.amor > 0:
+                self.player.amor -= GRENADE_DAMAGE
+                print(self.player.amor)
+                if self.player.amor < 0:
+                    print('passed')
+                    self.player.health += self.player.amor
+            else:
+                print("fuck~!")
+                self.player.health -= GRENADE_DAMAGE
+                print(self.player.health)
             hit.vel = vec(0, 0)
             if self.player.health <= 0:
                 self.playing = False
@@ -199,7 +212,7 @@ class Game:
         #pg.draw.rect(self.screen, WHITE, self.player.hitbox,2)
         
         # HUD functions
-        draw_player_health(self.screen, 10, HEIGHT - 40, self.player.health / PLAYER_HEALTH)
+        draw_player_health(self.screen, 10, HEIGHT - 40, self.player.health, self.player.amor ,self.player.max_health)
         draw_gun_list(self.screen, self.player.gun_status)
 
         pg.display.update()

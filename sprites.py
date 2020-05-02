@@ -69,7 +69,9 @@ class Player(pg.sprite.Sprite):
         self.last_weapon_damage = 0
         self.now =pg.time.get_ticks()
         self.max_speed = 3
+        self.max_health = PLAYER_HEALTH
         self.health = PLAYER_HEALTH
+        self.amor = 0
         self.weapon = 'pistol'
         self.weapon_rate = WEAPONS[self.weapon]['rate']
         self.weapon_damage = WEAPONS[self.weapon]['damage']
@@ -89,10 +91,7 @@ class Player(pg.sprite.Sprite):
             self.weapon = 'pistol'
             self.weapon_rate = WEAPONS[self.weapon]['rate']
             self.weapon_damage = WEAPONS[self.weapon]['damage']
-<<<<<<< HEAD
 
-=======
->>>>>>> origin/soonin
             # 총기를 잘 집었는지 출력
         if keys[pg.K_2]:
             self.gun_select = 1
@@ -104,16 +103,11 @@ class Player(pg.sprite.Sprite):
             self.weapon = 'sniper'
             self.weapon_rate = WEAPONS[self.weapon]['rate']
             self.weapon_damage = WEAPONS[self.weapon]['damage']
-<<<<<<< HEAD
-
         if keys[pg.K_4]:
             self.gun_select = 3
             self.weapon = 'flamethrower'
             self.weapon_rate = WEAPONS[self.weapon]['rate']
             self.weapon_damage = WEAPONS[self.weapon]['damage']
-        
-=======
->>>>>>> origin/soonin
         if keys[pg.K_a]:
             self.acc.x = -PLAYER_ACC
         if keys[pg.K_d]:
@@ -125,18 +119,8 @@ class Player(pg.sprite.Sprite):
         # add acceleration when press w,a,s,d / w,a,s,d를 눌렀을때 가속을 더해줌.
         key = pg.mouse.get_pressed()
         if key[0]:
-            if self.gun_select == 0:
-                if self.gun_status[0][0]:
-                    self.shoot(self.gun_select)
-            elif self.gun_select == 1:
-                if self.gun_status[self.gun_select][0]:
-                    self.shoot(self.gun_select)
-            elif self.gun_select == 2:
-                if self.gun_status[self.gun_select][0]:
-                    self.shoot(self.gun_select)
-            elif self.gun_select == 3:
-                if self.gun_status[self.gun_select][0]:
-                    self.shoot(self.gun_select)
+            if self.gun_status[0][0]:
+                self.shoot(self.gun_select)
         if key[2]:
             #마우스 우클릭시
             now = pg.time.get_ticks()
@@ -163,8 +147,8 @@ class Player(pg.sprite.Sprite):
             for i in range(WEAPONS[self.weapon]['bullet_count']):
                 spread = random.uniform(-WEAPONS[self.weapon]['spread'], WEAPONS[self.weapon]['spread'])
                 Bullet(self.game, self.pos, dir.rotate(spread))
-            self.gun_status[self.gun_select][1] -= WEAPONS[self.weapon]['bullet_count'] 
 
+            self.gun_status[self.gun_select][1] -= WEAPONS[self.weapon]['bullet_count'] 
             if self.gun_select == 0:
                 pass
             elif self.gun_status[self.gun_select][1] <= 0:
@@ -205,9 +189,9 @@ class Player(pg.sprite.Sprite):
 
         if self.now - self.last_weapon_damage > SPEEDUP_RATE:
             self.weapon_damage = WEAPONS[self.weapon]['damage']
+        if self.amor <= 0:
+            self.amor = 0
 
-    
-    #위와 동일할것으로 예상
     def collide_with_enemy(self,dir):
         if dir == 'x':
             hits = pg.sprite.spritecollide(self, self.game.enemys, False)
@@ -237,15 +221,7 @@ class Player(pg.sprite.Sprite):
                 self.last_speed = pg.time.get_ticks()
                 self.gun_status[1] = [True, 240]
                 self.gun_status[2] = [True, 10]
-<<<<<<< HEAD
-            self.max_speed = 10
-            self.last_speed = pg.time.get_ticks()
-            self.gun_status[1] = [True, 240]
-            self.gun_status[2] = [True, 10]
                 self.gun_status[3] = [True, 500]
-            self.weapon_rate *= 0.5
-            self.weapon_damage *= 1.5
-=======
 
             if hit.item_no == 1:
                 self.weapon_rate *= 0.001
@@ -261,17 +237,19 @@ class Player(pg.sprite.Sprite):
                     self.health = PLAYER_HEALTH
             
             if hit.item_no == 4:
-                self.health += 25 # 체력이 아니라 armor (일정 시간이 지나면 사라짐) / 초록색이 아니라 체력과 따로 흰색으로 표시되도록
-            
+                self.amor = AMOR_HEALTH # 체력이 아니라 armor (일정 시간이 지나면 사라짐) / 초록색이 아니라 체력과 따로 흰색으로 표시되도록
+                self.max_health = PLAYER_HEALTH + AMOR_HEALTH
+                self.max_health = self.health + self.amor
+                if self.max_health < PLAYER_HEALTH:
+                    self.max_health = PLAYER_HEALTH
                 
-                
+                            
             # self.max_speed = 10
             # self.last_speed = pg.time.get_ticks()
             # self.gun_status[1] = [True, 240]
             # self.gun_status[2] = [True, 10]
             
             
->>>>>>> origin/soonin
 
     def rotate(self):
         # The vector to the target (the mouse position).
@@ -477,8 +455,8 @@ class Feed(pg.sprite.Sprite):
         self.rect.x = self.pos.x*TILESIZE
         self.rect.y = self.pos.y*TILESIZE
         # 추후 random을 통해 바꿔야함.
-        self.item_no = random.choice(ITEM_KIND)
-
+        #self.item_no = random.choice(ITEM_KIND)
+        self.item_no = 4
 class Explode(pg.sprite.Sprite):
     def __init__(self, game, pos):
         self.groups = game.all_sprites, game.explode

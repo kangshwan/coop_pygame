@@ -24,7 +24,7 @@ GREEN     = (  0,255,  0)
 GRENADE   = ( 11, 64,  8)
 YELLOW    = (255,255,  0)
 ORANGE    = (255,127,  0)
-
+SILVER    = (192,192,192)
 #player properties
 PLAYER_ACC = 0.45
 PLAYER_FRICTION = -0.05
@@ -88,7 +88,7 @@ AVOID_RADIUS = 50
 # item properties
 SPEEDUP_RATE = 5000
 ITEM_KIND = [0, 1, 2, 3, 4]
-
+AMOR_HEALTH = 25
 #image
 TEST = "test.png"
 GROUND_IMG = 'ground.png'
