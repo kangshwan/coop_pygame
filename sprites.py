@@ -59,7 +59,7 @@ class Player(pg.sprite.Sprite):
         self.acc = vec(0,0)
         self.rot = 0
         self.last_shot = 0
-        self.gun_status = [[True,1], [False, 0]]
+        self.gun_status = [[True,1], [False, 0],[False, 0]]
         self.gun_select = 0
         self.last_grenade = 0
         #0 is pistol 1 is shotgun
@@ -84,9 +84,11 @@ class Player(pg.sprite.Sprite):
             self.weapon = 'pistol'
             # 총기를 잘 집었는지 출력
         if keys[pg.K_2]:
-            self.gun=[False,True]
             self.gun_select = 1
             self.weapon = 'shotgun'
+        if keys[pg.K_3]:
+            self.gun_select = 2
+            self.weapon = 'sniper'
         if keys[pg.K_a]:
             self.acc.x = -PLAYER_ACC
         if keys[pg.K_d]:
@@ -102,7 +104,10 @@ class Player(pg.sprite.Sprite):
                 if self.gun_status[0][0] == True:
                     self.shoot(self.gun_select)
             elif self.gun_select == 1:
-                if self.gun_status[1][0] == True:
+                if self.gun_status[self.gun_select][0] == True:
+                    self.shoot(self.gun_select)
+            elif self.gun_select == 2:
+                if self.gun_status[self.gun_select][0] == True:
                     self.shoot(self.gun_select)
 
         if key[2]:
@@ -196,7 +201,8 @@ class Player(pg.sprite.Sprite):
             print('collide!')
             self.max_speed = 10
             self.last_speed = pg.time.get_ticks()
-            self.gun_status[1] = [True, 120]
+            self.gun_status[1] = [True, 240]
+            self.gun_status[2] = [True, 10]
 
     def rotate(self):
         # The vector to the target (the mouse position).

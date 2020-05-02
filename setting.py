@@ -63,7 +63,7 @@ WEAPONS['shotgun'] = {'bullet_speed': 300,
 WEAPONS['sniper'] = {'bullet_speed': 500,
                      'bullet_lifetime': 1000,
                      'rate': 1500,
-                     'damage': 40,
+                     'damage': 13,
                      'spread': 0,
                      'bullet_size': (3,3),
                      'bullet_count': 1}

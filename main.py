@@ -128,10 +128,16 @@ class Game:
             self.player.pos += vec(ENEMY_KNOCKBACK, 0).rotate(-hits[0].rot)
         
         # bullet hit the mob
-        hits = pg.sprite.groupcollide(self.enemys, self.bullets, False, True)
-        for hit in hits:
-            hit.health -= WEAPONS[self.player.weapon]['damage'] * len(hits[hit])
-            hit.vel = vec(0, 0)
+        if self.player.gun_select == 2:
+            hits = pg.sprite.groupcollide(self.enemys, self.bullets, False, False)
+            for hit in hits:
+                hit.health -= WEAPONS[self.player.weapon]['damage']
+                hit.vel = vec(0, 0)
+        else:
+            hits = pg.sprite.groupcollide(self.enemys, self.bullets, False, True)
+            for hit in hits:
+                hit.health -= WEAPONS[self.player.weapon]['damage'] * len(hits[hit])
+                hit.vel = vec(0, 0)
 
         # explosion hit the player
         hits = pg.sprite.pygame.sprite.spritecollide(self.player, self.explode, False, collide_hit_rect)
