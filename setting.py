@@ -1,4 +1,5 @@
 import pygame as pg
+
 # this file is basic settings of game
 TITLE = "Zombie Survival"
 WIDTH = 960
@@ -23,6 +24,7 @@ DARKGREY  = ( 40, 40, 40)
 GREEN     = (  0,255,  0)
 GRENADE   = ( 11, 64,  8)
 YELLOW    = (255,255,  0)
+ORANGE    = (255,127,  0)
 
 #player properties
 PLAYER_ACC = 0.45
@@ -43,12 +45,21 @@ PISTOL_DAMAGE = 10
 # grenade properties
 GRENADE_SPEED = 600
 GRENADE_LIFETIME = 3000
-GRENADE_RATE = 10000
+GRENADE_RATE = 1000
+GRENADE_DAMAGE = 60
+EXPLOSION_LITETIME = 500
+EXPLOSION_KNOCKBACK = 70
+
 
 # enemy properties
 ENEMY_HEALTH = 100
 ENEMY_DAMAGE = 10
-ENEMY_KNOCKBACK = 2
+ENEMY_KNOCKBACK = 20
+ENEMY_SPEED = [100, 150, 75, 125]
+ENEMY_FRICTION = -1
+ENEMY_HIT_BOX = pg.Rect(0, 0, 30, 30)
+AVOID_RADIUS = 50
+
 # item properties
 SPEEDUP_RATE = 5000
 
