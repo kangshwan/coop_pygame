@@ -59,16 +59,16 @@ class Player(pg.sprite.Sprite):
         self.acc = vec(0,0)
         self.rot = 0
         self.last_shot = 0
-        self.gun_status = [True, True]
+        self.gun_status = [[True,1], [False, 0]]
         self.gun_select = 0
         self.last_grenade = 0
-        #1 is pistol 2 is shotgun
+        #0 is pistol 1 is shotgun
         self.last_speed = 0
         self.now =pg.time.get_ticks()
         self.max_speed = 3
 
         self.health = PLAYER_HEALTH
-
+        self.weapon = 'pistol'
     def load_images(self):
         self.image = pg.Surface(self.size, pg.SRCALPHA)
         # self.image에 Surface를 저장함. 나중에 img 삽입시 self.image에 img가 들어갈것.
@@ -80,15 +80,13 @@ class Player(pg.sprite.Sprite):
         # event handling / 이벤트 핸들링
         keys = pg.key.get_pressed()
         if keys[pg.K_1]:
-            self.gun=[True,False]
-            # 총알 갯수를 세기위해 만들었으나 추후 삭제예정
             self.gun_select = 0
-            print('pistol')
+            self.weapon = 'pistol'
             # 총기를 잘 집었는지 출력
         if keys[pg.K_2]:
             self.gun=[False,True]
             self.gun_select = 1
-            print('shotgun')
+            self.weapon = 'shotgun'
         if keys[pg.K_a]:
             self.acc.x = -PLAYER_ACC
         if keys[pg.K_d]:
@@ -101,37 +99,16 @@ class Player(pg.sprite.Sprite):
         key = pg.mouse.get_pressed()
         if key[0]:
             if self.gun_select == 0:
-                if self.gun_status[0] == True:
-                    now = pg.time.get_ticks()
-                    # bring the time when clicked / 딱 클릭된 순간의 시간을 가져옴
-                    if now - self.last_shot > BULLET_RATE:
-                        # this is for setting the bullet duration.
-                        # 초기의 last_shot의 초기값은 0, 이는 총알이 일정 간격을 두고 발사되는것을 염두한것. 
-                        # ex)클릭 : 5시 1분 04.500초 바로전 총발사 : 5시 1분 04.300일시 뺐을경우 300이기때문에 총알발사 안됌
-                        self.last_shot = now
-                        # 이후 now를 last_shot에 저장해줌.
-                        dir = vec(1,0).rotate(self.rot)
-                        Bullet(self.game, self.pos, dir)
+                if self.gun_status[0][0] == True:
+                    self.shoot(self.gun_select)
             elif self.gun_select == 1:
-                if self.gun_status[1] == True:
-                    now = pg.time.get_ticks()
-                    if now - self.last_shot > BULLET_RATE:
-                        self.last_shot = now
-                        dir = vec(1,0).rotate(self.rot - 10 )
-                        Bullet(self.game, self.pos, dir)
-                        dir = vec(1,0).rotate(self.rot - 5 )
-                        Bullet(self.game, self.pos, dir)
-                        dir = vec(1,0).rotate(self.rot)
-                        Bullet(self.game, self.pos, dir)
-                        dir = vec(1,0).rotate(self.rot + 5)
-                        Bullet(self.game, self.pos, dir)
-                        dir = vec(1,0).rotate(self.rot + 10)
-                        Bullet(self.game, self.pos, dir)
-                        # This is for bullet spreads like shotgun
-                        # 산탄총 처럼 퍼져나가게 하기 위함
+                if self.gun_status[1][0] == True:
+                    self.shoot(self.gun_select)
+
         if key[2]:
             #마우스 우클릭시
             now = pg.time.get_ticks()
+            print('clicked')
             if now - self.last_grenade > GRENADE_RATE:
                 self.last_grenade = now
                 dir = vec(1,0).rotate(self.rot)
@@ -141,6 +118,27 @@ class Player(pg.sprite.Sprite):
                 Grenade(self.game, self.pos, dir, magnitude)
                 print('fire in the hole!')
 
+    def shoot(self, gun_select):
+        now = pg.time.get_ticks()
+        # bring the time when clicked / 딱 클릭된 순간의 시간을 가져옴
+        if now - self.last_shot > WEAPONS[self.weapon]['rate']:
+            # this is for setting the bullet duration.
+            # 초기의 last_shot의 초기값은 0, 이는 총알이 일정 간격을 두고 발사되는것을 염두한것. 
+            # ex)클릭 : 5시 1분 04.500초 바로전 총발사 : 5시 1분 04.300일시 뺐을경우 300이기때문에 총알발사 안됌
+            self.last_shot = now
+            # 이후 now를 last_shot에 저장해줌.
+            dir = vec(1,0).rotate(self.rot)
+            #self.vel = vec(-WEAPONS[self.weapon]['kickback'], 0).rotate(-self.rot)
+            for i in range(WEAPONS[self.weapon]['bullet_count']):
+                spread = random.uniform(-WEAPONS[self.weapon]['spread'], WEAPONS[self.weapon]['spread'])
+                Bullet(self.game, self.pos, dir.rotate(spread))
+
+            self.gun_status[self.gun_select][1] -= WEAPONS[self.weapon]['bullet_count'] 
+            if self.gun_select == 0:
+                pass
+            elif self.gun_status[self.gun_select][1] <= 0:
+                self.gun_status[self.gun_select][0] = False
+            print('left bullet', self.gun_status[self.gun_select][1])
     def update(self):
         self.now =pg.time.get_ticks()
         self.acc = vec(0,0)
@@ -160,10 +158,10 @@ class Player(pg.sprite.Sprite):
         collide_with_gameobject(self, self.game.walls,'x')
         self.hitbox.centery = self.pos.y
         collide_with_gameobject(self, self.game.walls,'y')
-        self.hitbox.centerx = self.pos.x
-        self.collide_with_enemy('x')
-        self.hitbox.centery = self.pos.y
-        self.collide_with_enemy('y')
+        #self.hitbox.centerx = self.pos.x
+        #self.collide_with_enemy('x')
+        #self.hitbox.centery = self.pos.y
+        #self.collide_with_enemy('y')
         self.collide_with_feed()
         self.rect.center = self.hitbox.center
 
@@ -198,6 +196,7 @@ class Player(pg.sprite.Sprite):
             print('collide!')
             self.max_speed = 10
             self.last_speed = pg.time.get_ticks()
+            self.gun_status[1] = [True, 120]
 
     def rotate(self):
         # The vector to the target (the mouse position).
@@ -225,14 +224,14 @@ class Bullet(pg.sprite.Sprite):
         self.groups = game.all_sprites, game.bullets
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        self.size = (6,6)
+        self.size = WEAPONS[game.player.weapon]['bullet_size']
         self.load_images()
         self.rect = self.image.get_rect()
         self.pos = vec(pos)
         self.rect.center = pos
-        self.vel = dir * BULLET_SPEED
+        #spread = random.uniform(-BULLET_SPREAD,BULLET_SPREAD)
+        self.vel = dir * WEAPONS[game.player.weapon]['bullet_speed']
         self.spawn_time = pg.time.get_ticks()
-
 
     def load_images(self):
         self.image = pg.Surface(self.size, pg.SRCALPHA)
@@ -244,7 +243,7 @@ class Bullet(pg.sprite.Sprite):
         self.rect.center = self.pos
         if pg.sprite.spritecollideany(self, self.game.walls):
             self.kill()
-        if pg.time.get_ticks() - self.spawn_time > BULLET_LIFETIME:
+        if pg.time.get_ticks() - self.spawn_time > WEAPONS[self.game.player.weapon]['bullet_lifetime']:
             self.kill()
         
 class Grenade(pg.sprite.Sprite):
@@ -371,7 +370,7 @@ class Enemy(pg.sprite.Sprite):
         self.hitbox.centerx = self.pos.x
         collide_with_gameobject(self, self.game.walls, 'x')
         self.hitbox.centery = self.pos.y
-        collide_with_gameobject(self, self.game.walls, 'x')
+        collide_with_gameobject(self, self.game.walls, 'y')
         self.rect.center = self.hitbox.center
         #bullet이랑 enemy가 충돌시 둘 다 kill
         if self.health <= 0:

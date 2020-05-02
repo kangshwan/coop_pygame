@@ -36,11 +36,44 @@ PLAYER_HEALTH = 100
 BULLET_SPEED = 500
 BULLET_LIFETIME = 700
 BULLET_RATE = 300
-
+BULLET_SPREAD = 5
 PISTOL_SPEED = 500
 PISTOL_LIFETIME = 700
 PISTOL_RATE = 250
 PISTOL_DAMAGE = 10
+
+# Weapon setting
+WEAPONS = {}
+WEAPONS['pistol'] = {'bullet_speed': 350,
+                     'bullet_lifetime': 700,
+                     'rate': 200,
+                     'damage': 10,
+                     'spread': 4,
+                     'bullet_size': (6,6),
+                     'bullet_count': 1}
+
+WEAPONS['shotgun'] = {'bullet_speed': 300,
+                      'bullet_lifetime': 350,
+                      'rate': 1000,
+                      'damage': 5,
+                      'spread': 20,
+                      'bullet_size': (3,3),
+                      'bullet_count': 12}
+
+WEAPONS['sniper'] = {'bullet_speed': 500,
+                     'bullet_lifetime': 1000,
+                     'rate': 1500,
+                     'damage': 40,
+                     'spread': 0,
+                     'bullet_size': (3,3),
+                     'bullet_count': 1}
+
+
+GUN_BULLET = {'pistol':-1, 'shotgun': 100}
+GUN_SPEED  = {'pistol': 350, 'shotgun': 500}
+GUN_LIFETIME = {'pistol': 700, 'shotgun': 200}
+GUN_RATE = {'pistol': 200, 'shotgun': 2000}
+GUN_DAMAGE = {'pistol': 10, 'shotgun': 7}
 
 # grenade properties
 GRENADE_SPEED = 600

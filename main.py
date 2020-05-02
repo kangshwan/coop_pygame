@@ -79,7 +79,7 @@ class Game:
                     self.feed_pos.append((col,row))
                 if tile == 'E':
                     self.enemy_pos.append((col,row))
-                    #Enemy(self, col, row, RED)
+                    Enemy(self, col, row, RED)
                     #enemy_pos에 col,row 저장. 추후 feed처럼 append하여 생성하면 좋아보임.
         self.camera = Camera(self.map.width, self.map.height)
         # make Camera class / 카메라 객체 생성
@@ -110,12 +110,11 @@ class Game:
         self.camera.update(self.player)
         
         #update에서 Enemy 생성
-        if self.now - self.enemy_spawned > 3000:
-            for e_position in self.enemy_pos:
-                #3초마다 해당 장소에서 생성. 추후 enemy_pos를 list로 쓸경우 for문 안에넣고 index들로 접근해서 생성하면 될듯.
-                Enemy(self, e_position[0], e_position[1], RED)
-                self.enemy_spawned = self.now
-
+        #if self.now - self.enemy_spawned > 3000:
+        #    for e_position in self.enemy_pos:
+        #        #3초마다 해당 장소에서 생성. 추후 enemy_pos를 list로 쓸경우 for문 안에넣고 index들로 접근해서 생성하면 될듯.
+        #        Enemy(self, e_position[0], e_position[1], RED)
+        #        self.enemy_spawned = self.now
         self.second = ((pg.time.get_ticks() - self.start_tick)/1000)
 
         #hits -> used sprite collide method, (x, y, default boolean) collision check
@@ -131,8 +130,9 @@ class Game:
         # bullet hit the mob
         hits = pg.sprite.groupcollide(self.enemys, self.bullets, False, True)
         for hit in hits:
-            hit.health -= PISTOL_DAMAGE
+            hit.health -= WEAPONS[self.player.weapon]['damage'] * len(hits[hit])
             hit.vel = vec(0, 0)
+
         # explosion hit the player
         hits = pg.sprite.pygame.sprite.spritecollide(self.player, self.explode, False, collide_hit_rect)
         for hit in hits:
@@ -169,7 +169,7 @@ class Game:
             pg.draw.line(self.screen, LIGHTGREY, (x,0), (x, HEIGHT))
             for y in range(0, HEIGHT, TILESIZE):
                 pg.draw.line(self.screen, LIGHTGREY, (0,y), (WIDTH,y))
-                
+
     def draw(self):
         # game loop - draw
         self.screen.fill(DARKGREY)
@@ -182,7 +182,7 @@ class Game:
         
         # HUD functions
         draw_player_health(self.screen, 10, HEIGHT - 40, self.player.health / PLAYER_HEALTH)
-        draw_gun_list(self.screen, 140, HEIGHT-60, self.player.gun_status)
+        draw_gun_list(self.screen, self.player.gun_status)
         pg.display.update()
         
     def load_data(self):
