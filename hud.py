@@ -15,12 +15,9 @@ def draw_player_health(surf, x, y, health, amor, max_health):
         health_pct = health/PLAYER_HEALTH
     except ZeroDivisionError:
         amor_pct = 0
-        health_pct = 0
+        
     if pct < amor_pct or amor <= 0:
         health_fill = (health_pct+amor_pct)* BAR_LENGTH
-        print(health, amor)
-        print(health_pct)
-        print(max_health)
     else:
         health_fill = (pct-amor_pct) * BAR_LENGTH
     amor_fill = pct * BAR_LENGTH
