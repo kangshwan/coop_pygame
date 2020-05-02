@@ -2,6 +2,7 @@ import os
 import random
 import pygame as pg
 import sys
+
 from setting import *
 from sprites import *
 from tilemap import *
@@ -28,6 +29,14 @@ class Game:
         self.running = True
         self.start = True
         self.load_data()
+    
+
+    
+                #메뉴판 만들고
+                #button -> game start 누르면 self.game_running()
+
+    
+    
 
     def run(self):
         #pg.mixer.music.play(loops = -1)   #bg play. loops == false -> play gain , Ture -> once
@@ -64,6 +73,7 @@ class Game:
         self.explode     = pg.sprite.Group()
         self.feed_pos = []
         self.enemy_pos = []
+      
         
         #draw map in here / 여기서부터 맵을 그림.
         for row, tiles in enumerate(self.map.data):
@@ -205,4 +215,4 @@ while g.start:
     while g.running:
         # this g.running will take control of game over or not
         g.new()
-pg.quit()
+    pg.quit()
