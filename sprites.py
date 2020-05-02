@@ -65,6 +65,8 @@ class Player(pg.sprite.Sprite):
         self.last_grenade = 0
         #0 is pistol 1 is shotgun
         self.last_speed = 0
+        self.last_weapon_speed = 0
+        self.last_weapon_damage = 0
         self.now =pg.time.get_ticks()
         self.max_speed = 3
         self.health = PLAYER_HEALTH
@@ -87,7 +89,10 @@ class Player(pg.sprite.Sprite):
             self.weapon = 'pistol'
             self.weapon_rate = WEAPONS[self.weapon]['rate']
             self.weapon_damage = WEAPONS[self.weapon]['damage']
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/soonin
             # 총기를 잘 집었는지 출력
         if keys[pg.K_2]:
             self.gun_select = 1
@@ -99,6 +104,7 @@ class Player(pg.sprite.Sprite):
             self.weapon = 'sniper'
             self.weapon_rate = WEAPONS[self.weapon]['rate']
             self.weapon_damage = WEAPONS[self.weapon]['damage']
+<<<<<<< HEAD
 
         if keys[pg.K_4]:
             self.gun_select = 3
@@ -106,6 +112,8 @@ class Player(pg.sprite.Sprite):
             self.weapon_rate = WEAPONS[self.weapon]['rate']
             self.weapon_damage = WEAPONS[self.weapon]['damage']
         
+=======
+>>>>>>> origin/soonin
         if keys[pg.K_a]:
             self.acc.x = -PLAYER_ACC
         if keys[pg.K_d]:
@@ -168,7 +176,6 @@ class Player(pg.sprite.Sprite):
         self.acc = vec(0,0)
         self.get_keys()
         self.rotate() 
-        self.weapon_rate = WEAPONS[self.weapon]['rate']
         self.acc += self.vel*PLAYER_FRICTION
         #apply friction / 가속력에 마찰력을 더해줌. 현재속력*마찰력(현재는 -0.05로 설정)
         #equations of motion
@@ -192,6 +199,12 @@ class Player(pg.sprite.Sprite):
 
         if self.now - self.last_speed > SPEEDUP_RATE:
             self.max_speed = 3
+
+        if self.now - self.last_weapon_speed > SPEEDUP_RATE:
+            self.weapon_rate = WEAPONS[self.weapon]['rate']
+
+        if self.now - self.last_weapon_damage > SPEEDUP_RATE:
+            self.weapon_damage = WEAPONS[self.weapon]['damage']
 
     
     #위와 동일할것으로 예상
@@ -219,11 +232,12 @@ class Player(pg.sprite.Sprite):
         hits = pg.sprite.spritecollide(self, self.game.feeds, True)
         for hit in hits:
             print(hit.item_no)
-            if hit.item_no == 1:
+            if hit.item_no == 0:
                 self.max_speed = 10
                 self.last_speed = pg.time.get_ticks()
                 self.gun_status[1] = [True, 240]
                 self.gun_status[2] = [True, 10]
+<<<<<<< HEAD
             self.max_speed = 10
             self.last_speed = pg.time.get_ticks()
             self.gun_status[1] = [True, 240]
@@ -231,6 +245,33 @@ class Player(pg.sprite.Sprite):
             self.gun_status[3] = [True, 500]
             self.weapon_rate *= 0.5
             self.weapon_damage *= 1.5
+=======
+
+            if hit.item_no == 1:
+                self.weapon_rate *= 0.001
+                self.last_weapon_speed = pg.time.get_ticks()
+
+            if hit.item_no == 2:
+                self.weapon_damage *= 2.0
+                self.last_weapon_damage = pg.time.get_ticks()
+
+            if hit.item_no == 3:
+                self.health += 50
+                if self.health > PLAYER_HEALTH :
+                    self.health = PLAYER_HEALTH
+            
+            if hit.item_no == 4:
+                self.health += 25 # 체력이 아니라 armor (일정 시간이 지나면 사라짐) / 초록색이 아니라 체력과 따로 흰색으로 표시되도록
+            
+                
+                
+            # self.max_speed = 10
+            # self.last_speed = pg.time.get_ticks()
+            # self.gun_status[1] = [True, 240]
+            # self.gun_status[2] = [True, 10]
+            
+            
+>>>>>>> origin/soonin
 
     def rotate(self):
         # The vector to the target (the mouse position).
@@ -252,6 +293,7 @@ class Player(pg.sprite.Sprite):
         self.rot = angle
         # Create a new rect with the center of the old rect.
         self.rect = self.image.get_rect(center=self.rect.center)
+
 
 class Bullet(pg.sprite.Sprite):
     def __init__(self, game, pos, dir):
