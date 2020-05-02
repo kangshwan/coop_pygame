@@ -1,5 +1,9 @@
 import pygame as pg
 from setting import *
+
+def collide_hit_rect(first, second):
+    return first.hitbox.colliderect(second.rect)
+    
 class Map:
     def __init__(self, filename):
         self.data = []

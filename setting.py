@@ -1,3 +1,4 @@
+import pygame as pg
 # this file is basic settings of game
 TITLE = "Zombie Survival"
 WIDTH = 960
@@ -24,11 +25,15 @@ DARKGREY  = ( 40, 40, 40)
 #player properties
 PLAYER_ACC = 0.45
 PLAYER_FRICTION = -0.05
+PLAYER_HIT_BOX = pg.Rect(0, 0, 35, 35)
+PLAYER_HEALTH = 100
 
 # gun properties
 BULLET_SPEED = 500
 BULLET_LIFETIME = 700
 BULLET_RATE = 300
+BULLET_DAMAGE = 5
+
 PISTOL_SPEED = 500
 PISTOL_LIFETIME = 700
 PISTOL_RATE = 250
@@ -38,3 +43,5 @@ SPEEDUP_RATE = 5000
 
 #image
 TEST = "test.png"
+#image
+MUSIC = 'MUSIC.MP3'

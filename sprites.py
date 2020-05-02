@@ -1,4 +1,3 @@
-# this file is for every game objects.
 import os
 import pygame as pg
 import random
@@ -64,6 +63,11 @@ class Player(pg.sprite.Sprite):
             self.acc.y = -PLAYER_ACC
         if keys[pg.K_s]:
             self.acc.y = PLAYER_ACC
+        if keys[pg.K_p]:
+            self.game.paused = not self.game.paused 
+        
+        
+            
         # add acceleration when press w,a,s,d / w,a,s,d를 눌렀을때 가속을 더해줌.
         key = pg.mouse.get_pressed()
         if key[0]:
@@ -94,6 +98,7 @@ class Player(pg.sprite.Sprite):
                         Bullet(self.game, self.pos, dir)
                         dir = vec(1,0).rotate(self.rot + 10)
                         Bullet(self.game, self.pos, dir)
+            
                         # This is for bullet spreads like shotgun
                         # 산탄총 처럼 퍼져나가게 하기 위함
 
@@ -245,7 +250,7 @@ class Enemy(pg.sprite.Sprite):
         self.rect.x = self.pos.x*TILESIZE
         self.rect.y = self.pos.y*TILESIZE
         self.speedy = 1
-
+        self.rot = 0
     def update(self):
         self.rect.x -= self.speedy
         if pg.sprite.spritecollide(self, self.game.bullets, True):
@@ -254,7 +259,7 @@ class Enemy(pg.sprite.Sprite):
             
             
         # self.rot = (self.game.player.pos - self.pos).angle_to(vec(1, 0))
-        # self.image = pg.transform.rotate(pg.Surface((TILESIZE,TILESIZE)), self.rot)
+        # self.image = pg.transform.rotate(, self.rot)
         # self.rect = self.image.get_rect()
         # self.rect.center = self.pos
         
