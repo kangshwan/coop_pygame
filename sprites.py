@@ -1,5 +1,5 @@
 import os
-
+import pytweening as tween
 import pygame as pg
 import random
 from setting import *
@@ -410,7 +410,7 @@ class Feed(pg.sprite.Sprite):
         self.groups = game.all_sprites, game.feeds
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        self.image = pg.Surface((TILESIZE,TILESIZE))
+        self.image = pg.Surface((TILESIZE/2,TILESIZE/2))
         self.image.fill(WHITE)
         self.rect = self.image.get_rect()
         self.pos = vec(x,y)
@@ -418,6 +418,18 @@ class Feed(pg.sprite.Sprite):
         self.rect.y = self.pos.y*TILESIZE
         # 추후 random을 통해 바꿔야함.
         self.item_no = random.choice(ITEM_KIND)
+        self.tween = tween.easeInOutSine
+        self.step = 0
+        self.dir = 1
+    def update(self): #아이템 흔들거리게 해놨는데 좌표값이 이상함 수정 요망
+        offset = BOB_RANGE * (self.tween(self.step / BOB_RANGE) - 0.5)
+        self.rect.y = self.pos.y+ 120 + offset * self.dir
+        self.step += BOB_SPEED
+
+        if self.step > BOB_RANGE:
+            self.step = 0
+            self.dir *= -1
+       
 
 class Explode(pg.sprite.Sprite):
     def __init__(self, game, pos):

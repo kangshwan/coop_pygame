@@ -85,3 +85,7 @@ ITEM_KIND = [0, 1, 2, 3, 4]
 #image
 TEST = "test.png"
 GROUND_IMG = 'ground.png'
+
+#test
+BOB_RANGE = 20
+BOB_SPEED = 0.6
