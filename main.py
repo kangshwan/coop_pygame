@@ -49,8 +49,10 @@ class Game:
             self.dt = self.clock.tick(FPS)/1000
             #set the frame per second / FPS를 구하기 위함. 이후 dt는 총알구현에 있어서 중요하게 사용됨.
             self.events()
-            #events for keyboard and mouse input / 이벤트를 처리하기 위함. 항상 pygame은 event 이벤트발생(사용자의 입력) -> update(입력에 따른 변화를 업데이트해줌) -> draw 이후 그림을 그림
+            #if self.paused == 0:
             self.update()
+            #events for keyboard and mouse input / 이벤트를 처리하기 위함. 항상 pygame은 event 이벤트발생(사용자의 입력) -> update(입력에 따른 변화를 업데이트해줌) -> draw 이후 그림을 그림
+            
             self.draw()
 
     def new(self):
@@ -74,7 +76,7 @@ class Game:
         self.explode     = pg.sprite.Group()
         self.feed_pos = []
         self.enemy_pos = []
-      
+        #self.paused = 0
         
         #draw map in here / 여기서부터 맵을 그림.
         for row, tiles in enumerate(self.map.data):

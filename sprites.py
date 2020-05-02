@@ -100,6 +100,14 @@ class Player(pg.sprite.Sprite):
             self.acc.y = -PLAYER_ACC
         if keys[pg.K_s]:
             self.acc.y = PLAYER_ACC
+        #if keys[pg.K_p]:           p키를 누르면 paused를 구현하고 싶었으나 화면 pause가 아닌 게임pause가 된다.
+            #self.game.paused += 1
+           # if self.game.paused%2 == 0:
+                #self.game.paused = 0
+        #if keys[pg.K_r]:      확인하기 위해 r키 삽입해서 출력해보았으나 출력 안된다.
+            #print(1)
+
+        
         # add acceleration when press w,a,s,d / w,a,s,d를 눌렀을때 가속을 더해줌.
         key = pg.mouse.get_pressed()
         if key[0]:
@@ -366,6 +374,7 @@ class Enemy(pg.sprite.Sprite):
         self.speed = random.choice(ENEMY_SPEED)
         self.rot = 0
         self.health = ENEMY_HEALTH
+        self.target = game.player
         
     def avoid_enemys(self):
         for enemy in self.game.enemys:
@@ -375,8 +384,10 @@ class Enemy(pg.sprite.Sprite):
                     self.acc += dist.normalize()
 
     def update(self):
+        target_dist = self.target.pos - self.pos 
+        #if target_dist.length_squared() < DETECT_RADIUS**2:
         #self.rect.x -= self.speedy 
-        self.rot = (self.game.player.pos - self.pos).angle_to(vec(1, 0))
+        self.rot = target_dist.angle_to(vec(1, 0)) #target_dist == (self.game.player.pos - self.pos)
         self.image = pg.transform.rotate(self.origin_image, self.rot)
         self.rect = self.image.get_rect()
         self.rect.center = self.pos
@@ -392,6 +403,7 @@ class Enemy(pg.sprite.Sprite):
         collide_with_gameobject(self, self.game.walls, 'y')
         self.rect.center = self.hitbox.center
         #bullet이랑 enemy가 충돌시 둘 다 kill
+        #ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ주석if밑으로 여기까지 한칸씩 tap해주면 enemy와 player가 일정 거리이상 벌어지면 추격Xㅡㅡㅡㅡ
         if self.health <= 0:
             self.kill()
 
@@ -422,11 +434,11 @@ class Feed(pg.sprite.Sprite):
         self.step = 0
         self.dir = 1
     def update(self): #아이템 흔들거리게 해놨는데 좌표값이 이상함 수정 요망
-        offset = BOB_RANGE * (self.tween(self.step / BOB_RANGE) - 0.5)
+        offset = FEED_RANGE * (self.tween(self.step / FEED_RANGE) - 0.5)
         self.rect.y = self.pos.y+ 120 + offset * self.dir
-        self.step += BOB_SPEED
+        self.step += FEED_SPEED
 
-        if self.step > BOB_RANGE:
+        if self.step > FEED_RANGE:
             self.step = 0
             self.dir *= -1
        

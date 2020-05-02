@@ -86,6 +86,8 @@ ITEM_KIND = [0, 1, 2, 3, 4]
 TEST = "test.png"
 GROUND_IMG = 'ground.png'
 
-#test
-BOB_RANGE = 20
-BOB_SPEED = 0.6
+#FEED shake up and down 
+FEED_RANGE = 20
+FEED_SPEED = 0.6
+#enemy and player distance
+DETECT_RADIUS = 400
