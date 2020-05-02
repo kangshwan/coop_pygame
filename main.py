@@ -78,6 +78,7 @@ class Game:
                     self.feed_pos.append((col,row))
                 if tile == 'E':
                     self.enemy_pos.append((col,row))
+                    
                     #enemy_pos에 col,row 저장. 추후 feed처럼 append하여 생성하면 좋아보임.
         self.camera = Camera(self.map.width, self.map.height)
         # make Camera class / 카메라 객체 생성

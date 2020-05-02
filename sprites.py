@@ -284,9 +284,11 @@ class Grenade(pg.sprite.Sprite):
                 if self.vel.x > 0:
                     self.pos.x = hits[0].rect.left - self.rect.width/2
                     # x 방향 속도가 양수일 경우 -> 오른쪽으로 진행하고있음 따라서 position을 다시 세팅해줌
+                    self.reflect((-1,0))
                 if self.vel.x < 0:
                     self.pos.x = hits[0].rect.right + self.rect.width/2
                     # x 방향 속도가 음수일 경우 -> 왼쪽으로 진행하고있음 따라서 position을 다시 세팅해줌
+                    self.reflect((1,0))
                 self.vel.x = 0
                 # 부딫혔으니 x방향 속도를 0으로 해줌.
                 self.rect.centerx = self.pos.x
@@ -296,38 +298,45 @@ class Grenade(pg.sprite.Sprite):
                 if self.vel.y > 0:
                     self.pos.y = hits[0].rect.top - self.rect.height/2
                     # y 방향 속도가 양수일 경우 -> 아래으로 진행하고있음 따라서 position을 다시 세팅해줌
+                    self.reflect((0,-1))
                 if self.vel.y < 0:
                     self.pos.y = hits[0].rect.bottom + self.rect.height/2
                     # y 방향 속도가 양수일 경우 -> 위쪽으로 진행하고있음 따라서 position을 다시 세팅해줌
+                    self.reflect((0,1))
                 self.vel.y = 0
                 # 부딫혔으니 y방향 속도를 0으로 해줌
                 self.rect.centery = self.pos.y
+    def reflect(self, NV):
+        self.dir = self.dir.reflect(pg.math.Vector2(NV))
+
 class Enemy(pg.sprite.Sprite):
     def __init__(self, game, x, y, color):
         self.groups = game.all_sprites, game.enemys
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        self.image = pg.Surface((TILESIZE,TILESIZE))
+        self.image = pg.Surface((TILESIZE,TILESIZE), pg.SRCALPHA)
         self.image.fill(color)
+        self.origin_image = self.image
         self.rect = self.image.get_rect()
         self.image.fill(RED)
-        self.pos = vec(x, y)
+        self.pos = vec(x, y) *TILESIZE
         self.rect.center = self.pos
-        self.rect.x = self.pos.x*TILESIZE
-        self.rect.y = self.pos.y*TILESIZE
+        #self.rect.x = self.pos.x*TILESIZE
+        #self.rect.y = self.pos.y*TILESIZE
+        #제 생각에 문제는 단 한번으로 좌표를 할당해도되는데 좌표할당행위를 나눠서 여러번 해서 
+        #문제가 생겼던것 같습니다. 이렇게 하니 잘 되는것같네요!
         self.speedy = 1
+        self.rot = 0
 
     def update(self):
-        self.rect.x -= self.speedy
+        #self.rect.x -= self.speedy 
+        self.rot = (self.game.player.pos - self.pos).angle_to(vec(1, 0))
+        self.image = pg.transform.rotate(self.origin_image, self.rot)
+        self.rect = self.image.get_rect()
+        self.rect.center = self.pos
+        #bullet이랑 enemy가 충돌시 둘 다 kill
         if pg.sprite.spritecollide(self, self.game.bullets, True):
             self.kill()
-        #bullet이랑 enemy가 충돌시 둘 다 kill
-            
-            
-        # self.rot = (self.game.player.pos - self.pos).angle_to(vec(1, 0))
-        # self.image = pg.transform.rotate(pg.Surface((TILESIZE,TILESIZE)), self.rot)
-        # self.rect = self.image.get_rect()
-        # self.rect.center = self.pos
         
 #아이템 상자 생성
 class Feed(pg.sprite.Sprite):
@@ -343,7 +352,8 @@ class Feed(pg.sprite.Sprite):
         self.rect.y = self.pos.y*TILESIZE
         # 추후 random을 통해 바꿔야함.
         self.item_no = 1
-
+class Explode(pg.sprite.Sprite):
+    pass
 class Wall(pg.sprite.Sprite):
     def __init__(self, game, x, y, color):
         self.groups = game.all_sprites, game.walls
