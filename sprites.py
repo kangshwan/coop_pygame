@@ -235,7 +235,7 @@ class Player(pg.sprite.Sprite):
         if self.walking + 1 >= FPS:
             self.walking = 0
         if self.standing:
-            self.game.screen.blit(self.body[self.walking], (self.game.camera.camera.x+self.hitbox.x, self.game.camera.camera.y+self.hitbox.y-18))
+            self.game.screen.blit(self.body[self.walking//FPS], (self.game.camera.camera.x+self.hitbox.x, self.game.camera.camera.y+self.hitbox.y-18))
         else:
             print(self.walking)
             self.game.screen.blit(self.body[self.walking%2], (self.game.camera.camera.x+self.hitbox.x, self.game.camera.camera.y+self.hitbox.y-18))
@@ -510,19 +510,19 @@ class Feed(pg.sprite.Sprite):
         self.image.fill(WHITE)
         self.rect = self.image.get_rect()
         self.pos = vec(x,y)
-        self.rect.x = self.pos.x*TILESIZE
-        self.rect.y = self.pos.y*TILESIZE
+        self.rect.centerx = self.pos.x*TILESIZE + (TILESIZE/2)
+        self.rect.y = self.pos.y*TILESIZE 
         # 추후 random을 통해 바꿔야함.
         self.item_no = random.choice(ITEM_KIND)
         self.tween = tween.easeInOutSine
         self.step = 0
         self.dir = 1
+        print(self.pos)
+
     def update(self): #아이템 흔들거리게 해놨는데 좌표값이 이상함 수정 요망
         offset = FEED_RANGE * (self.tween(self.step / FEED_RANGE) - 0.5)
-        self.rect.y = self.pos.y+ 120 + offset * self.dir
+        self.rect.y = (self.pos.y*TILESIZE) + offset * self.dir
         self.step += FEED_SPEED
-        
-
         if self.step > FEED_RANGE:
             self.step = 0
             self.dir *= -1

@@ -204,6 +204,7 @@ class Game:
                 pass
             if key_1[pg.K_p]:
                 self.paused = not self.paused
+                self.player.standing = True
             
     def draw_grid(self):
         for x in range(0, WIDTH, TILESIZE):
