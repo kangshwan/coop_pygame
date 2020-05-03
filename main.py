@@ -160,7 +160,6 @@ class Game:
         # player collide with the feed
         hits = pg.sprite.pygame.sprite.spritecollide(self.player, self.feeds, True, collide_hit_rect)
         for hit in hits:
-            print('collide')
             if hit.item_no == 0:
                 self.player.max_speed = 10
                 self.player.last_speed = pg.time.get_ticks()
@@ -281,7 +280,7 @@ class Game:
         self.pistol_img = pg.image.load(path.join(img_folder, WEAPON_IMGS[0][1])).convert_alpha()
         self.shotgun_img = pg.transform.scale(pg.image.load(path.join(img_folder, WEAPON_IMGS[1][1])).convert_alpha(), (62,16))
         self.sniper_img = pg.transform.scale(pg.image.load(path.join(img_folder, WEAPON_IMGS[2][1])).convert_alpha(),(89,18))
-        self.flamethrower_img = pg.transform.scale(pg.image.load(path.join(img_folder, WEAPON_IMGS[3])).convert_alpha(),(70,18))
+        self.flamethrower_img = pg.transform.scale(pg.image.load(path.join(img_folder, WEAPON_IMGS[3][1])).convert_alpha(),(70,18))
         self.move1_img = pg.image.load(path.join(img_folder, PLAYER_IMG1)).convert_alpha()
         self.move2_img = pg.image.load(path.join(img_folder, PLAYER_IMG2)).convert_alpha()
         pass

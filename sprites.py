@@ -62,7 +62,7 @@ class Player(pg.sprite.Sprite):
         self.acc = vec(0,0)
         self.rot = 0
         self.last_shot = 0
-        self.gun_status = [[True,1], [True, 100000],[False, 0],[False, 0]]
+        self.gun_status = [[True,1], [True, 100000],[True, 10000],[True, 10000000]]
         # 0 is pistol, 1 is shotgun, 2 is sniper 3 is flamethrower
         self.last_grenade = 0
         #0 is pistol 1 is shotgun
@@ -180,7 +180,6 @@ class Player(pg.sprite.Sprite):
         self.acc = vec(0,0)
         self.get_keys()
         self.rotate() 
-        print(self.money)
         self.acc += self.vel*PLAYER_FRICTION
         #apply friction / 가속력에 마찰력을 더해줌. 현재속력*마찰력(현재는 -0.05로 설정)
         #equations of motion
@@ -235,10 +234,10 @@ class Player(pg.sprite.Sprite):
         if self.walking + 1 >= FPS:
             self.walking = 0
         if self.standing:
-            self.game.screen.blit(self.body[self.walking//FPS], (self.game.camera.camera.x+self.hitbox.x, self.game.camera.camera.y+self.hitbox.y-18))
+            self.game.screen.blit(self.body[self.walking//FPS], (self.game.camera.camera.x+self.hitbox.x, self.game.camera.camera.y+self.hitbox.y-21))
         else:
 
-            self.game.screen.blit(self.body[self.walking%len(self.body)], (self.game.camera.camera.x+self.hitbox.x, self.game.camera.camera.y+self.hitbox.y-18))
+            self.game.screen.blit(self.body[self.walking%len(self.body)], (self.game.camera.camera.x+self.hitbox.x, self.game.camera.camera.y+self.hitbox.y-21))
             self.walking += 1
             #self.game.screen.blit(self.body[self.walking%len(self.body)], (self.game.camera.camera.x+self.hitbox.x, self.game.camera.camera.y+self.hitbox.y-18))
         self.game.screen.blit(self.image, self.game.camera.apply(self.game.player))
@@ -498,7 +497,6 @@ class Feed(pg.sprite.Sprite):
         self.tween = tween.easeInOutSine
         self.step = 0
         self.dir = 1
-        print(self.pos)
 
     def update(self): #아이템 흔들거리게 해놨는데 좌표값이 이상함 수정 요망
         offset = FEED_RANGE * (self.tween(self.step / FEED_RANGE) - 0.5)

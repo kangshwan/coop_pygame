@@ -65,7 +65,7 @@ def draw_gun(surf, x, y, possible, gun_kind, gun_now):
         image = pg.image.load(path.join(img_folder, WEAPON_IMGS[gun_kind][0])).convert_alpha()
         rotated = pg.transform.scale(pg.transform.rotate(image, 40),(48, 48))
     if gun_kind == 3:
-        image = pg.image.load(path.join(img_folder, WEAPON_IMGS[gun_kind])).convert_alpha()
+        image = pg.image.load(path.join(img_folder, WEAPON_IMGS[gun_kind][0])).convert_alpha()
         rotated = pg.transform.scale(pg.transform.rotate(image, 40),(48, 48))
 
     if possible[0]:

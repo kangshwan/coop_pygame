@@ -38,7 +38,7 @@ PLAYER_HEALTH = 100
 WEAPONS = {}
 WEAPONS['pistol']       = {'bullet_speed': 350,
                            'bullet_lifetime': 700,
-                           'rate': 1,
+                           'rate': 200,
                            'damage': 10,
                            'spread': 4,
                            'bullet_size': (6,6),
@@ -48,29 +48,29 @@ WEAPONS['pistol']       = {'bullet_speed': 350,
 
 WEAPONS['shotgun']      = {'bullet_speed': 300,
                            'bullet_lifetime': 350,
-                           'rate': 1000,
+                           'rate': 0,
                            'damage': 5,
                            'spread': 20,
                            'bullet_size': (3,3),
                            'bullet_count': 12,
-                           'barrel_offset': vec(34, -4),
-                           'barrel_offset_fliped': vec(34, 4)}
+                           'barrel_offset': vec(34, -3),
+                           'barrel_offset_fliped': vec(34, 3)}
 
 WEAPONS['sniper']       = {'bullet_speed': 500,
                            'bullet_lifetime': 1000,
-                           'rate': 1500,
+                           'rate': 0,
                            'damage': 13,
                            'spread': 0,
                            'bullet_size': (3,3),
                            'bullet_count': 1,
-                           'barrel_offset': vec(48, 0),
-                           'barrel_offset_fliped': vec(48, 0)}
+                           'barrel_offset': vec(38, -1),
+                           'barrel_offset_fliped': vec(38, 1)}
 
 WEAPONS['flamethrower'] = {'bullet_speed': 500,
                            'bullet_lifetime': 400,
                            'rate': 0,
                            'damage': 3,
-                           'spread': 20,
+                           'spread': 10,
                            'bullet_size': (3,3),
                            'bullet_count': 15,
                            'barrel_offset': vec(40, -4),
@@ -107,7 +107,7 @@ WEAPON_IMGS = []
 WEAPON_IMGS.append(['glock.png','glock_hand.png'])#pistol image
 WEAPON_IMGS.append(['shotgun.png','shotgun_hand.png'])#shotgun image
 WEAPON_IMGS.append(['sniper_rifle.png', 'sniper_rifle_hand.png'])#sniper image
-WEAPON_IMGS.append('flamethrower.png')#flamethrower image
+WEAPON_IMGS.append(['flamethrower.png', 'flamethrower_hand.png'])#flamethrower image
 GRENADE_IMG = 'grenade.png'
 GRENADE_THROW_IMG = 'grenade_throw.png'
 PLAYER_IMG1 = 'move1.png'
