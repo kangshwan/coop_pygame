@@ -75,7 +75,8 @@ class Player(pg.sprite.Sprite):
         self.weapon = 'pistol'
         self.weapon_rate = WEAPONS[self.weapon]['rate']
         self.weapon_damage = WEAPONS[self.weapon]['damage']
-        self.grenade = [True, 5]
+        self.grenade = [True, 3]
+        self.money = 0
 
     def load_images(self):
         self.image = pg.Surface(self.size, pg.SRCALPHA)
@@ -120,7 +121,6 @@ class Player(pg.sprite.Sprite):
         key = pg.mouse.get_pressed()
         if key[0]:
             if self.gun_status[self.gun_select][0]:
-                print("passed test")
                 self.shoot(self.gun_select)
         if key[2]:
             #마우스 우클릭시
@@ -135,7 +135,6 @@ class Player(pg.sprite.Sprite):
                     self.grenade[1] -= 1
                     if self.grenade[1] <= 0:
                         self.grenade[0] = False
-                    print('fire in the hole!')
 
     def shoot(self, gun_select):
         now = pg.time.get_ticks()
@@ -157,8 +156,6 @@ class Player(pg.sprite.Sprite):
                 pass
             elif self.gun_status[self.gun_select][1] <= 0:
                 self.gun_status[self.gun_select][0] = False
-                print("no longer use")
-            print('left bullet', self.gun_status[self.gun_select][1])
 
     def update(self):
         self.now =pg.time.get_ticks()
@@ -287,7 +284,6 @@ class Player(pg.sprite.Sprite):
         # Create a new rect with the center of the old rect.
         self.rect = self.image.get_rect(center=self.rect.center)
 
-
 class Bullet(pg.sprite.Sprite):
     def __init__(self, game, pos, dir):
         self.groups = game.all_sprites, game.bullets
@@ -322,13 +318,15 @@ class Grenade(pg.sprite.Sprite):
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.size = (10,10)
-        self.load_images()
+        self.image = game.grenade_img
+        self.origin_image = self.image.copy()
         self.rect = self.image.get_rect()
         self.pos = vec(pos)
         self.rect.center = pos
         self.dir = dir
         self.speed = GRENADE_SPEED
         self.spawn_time = pg.time.get_ticks()
+        self.rot = 0
         
         self.power = magnitude
         if self.power > 300:
@@ -339,10 +337,6 @@ class Grenade(pg.sprite.Sprite):
             self.speed *= 0.6
         else:
             self.speed *= 0.4
-
-    def load_images(self):
-        self.image = pg.Surface(self.size, pg.SRCALPHA)
-        self.image.fill(GRENADE)
 
     def update(self):
         self.vel = self.dir * self.speed
@@ -355,6 +349,9 @@ class Grenade(pg.sprite.Sprite):
         self.reflect_with_walls('x')
         self.rect.centery = self.pos.y
         self.reflect_with_walls('y')
+        self.image = pg.transform.rotate(self.origin_image, self.rot%360)
+        if self.vel.length() >0:
+            self.rot += 10
 
         if pg.time.get_ticks() - self.spawn_time > GRENADE_LIFETIME:
             self.kill()
@@ -446,6 +443,7 @@ class Enemy(pg.sprite.Sprite):
         self.rect.center = self.hitbox.center
         #bullet이랑 enemy가 충돌시 둘 다 kill
         if self.health <= 0:
+            self.game.player.money += 100
             self.kill()
 
     def draw_health(self):
@@ -472,6 +470,7 @@ class Feed(pg.sprite.Sprite):
         # 추후 random을 통해 바꿔야함.
         #self.item_no = random.choice(ITEM_KIND)
         self.item_no = 4
+
 class Explode(pg.sprite.Sprite):
     def __init__(self, game, pos):
         self.groups = game.all_sprites, game.explode

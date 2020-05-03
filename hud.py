@@ -88,12 +88,12 @@ def draw_gun(surf, x, y, possible, gun_kind, gun_now):
 
 def draw_grenade_list(surf, grenade_left):
     for idx in range(grenade_left):
-        draw_grenade(surf, WIDTH - 50 - (idx*40), HEIGHT-40)
+        draw_grenade(surf, WIDTH-40-(idx*25), HEIGHT-40)
     pass
 def draw_grenade(surf, x, y):
     game_folder = path.dirname(__file__)
     img_folder = path.join(game_folder, 'Image')
-    image = pg.transform.scale(pg.image.load(path.join(img_folder, GRENADE_IMG)).convert_alpha(),(30, 37))
+    image = pg.transform.scale(pg.image.load(path.join(img_folder, GRENADE_IMG)).convert_alpha(),(20, 24))
 
     surf.blit(image, (x, y))
     pass

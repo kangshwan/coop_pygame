@@ -158,12 +158,10 @@ class Game:
         for hit in hits:
             if self.player.amor > 0:
                 self.player.amor -= GRENADE_DAMAGE
-                print(self.player.amor)
                 if self.player.amor < 0:
                     self.player.health += self.player.amor
             else:
                 self.player.health -= GRENADE_DAMAGE
-                print(self.player.health)
             hit.vel = vec(0, 0)
             if self.player.health <= 0:
                 self.playing = False
@@ -221,6 +219,7 @@ class Game:
         img_folder = path.join(game_folder, 'Image')
         self.map = Map(path.join(game_folder,'map','map.txt'))
         self.ground_img = pg.image.load(path.join(img_folder, GROUND_IMG)).convert_alpha()
+        self.grenade_img = pg.image.load(path.join(img_folder, GRENADE_THROW_IMG)).convert_alpha()
         
         pass
 
