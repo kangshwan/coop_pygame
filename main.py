@@ -228,8 +228,6 @@ class Game:
         self.flamethrower_img = pg.transform.scale(pg.image.load(path.join(img_folder, WEAPON_IMGS[3])).convert_alpha(),(70,18))
         self.move1_img = pg.image.load(path.join(img_folder, PLAYER_IMG1)).convert_alpha()
         self.move2_img = pg.image.load(path.join(img_folder, PLAYER_IMG2)).convert_alpha()
-        
-        
         pass
 
 

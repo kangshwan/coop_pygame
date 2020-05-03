@@ -43,8 +43,8 @@ WEAPONS['pistol']       = {'bullet_speed': 350,
                            'spread': 4,
                            'bullet_size': (6,6),
                            'bullet_count': 1,
-                           'barrel_offset': vec(55, -6),
-                           'barrel_offset_fliped': vec(55, 6)}
+                           'barrel_offset': vec(34, -5),
+                           'barrel_offset_fliped': vec(34, 5)}
 
 WEAPONS['shotgun']      = {'bullet_speed': 300,
                            'bullet_lifetime': 350,

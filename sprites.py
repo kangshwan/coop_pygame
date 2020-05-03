@@ -216,8 +216,8 @@ class Player(pg.sprite.Sprite):
         self.body = self.game.move1_img
         
 #        pg.draw.rect(self.game.screen, col, self.body)
-        self.game.screen.blit(self.image, self.game.camera.apply(self.game.player))
         self.game.screen.blit(self.body, (self.game.camera.camera.x+self.hitbox.x, self.game.camera.camera.y+self.hitbox.y-18))
+        self.game.screen.blit(self.image, self.game.camera.apply(self.game.player))
 
     def collide_with_enemy(self,dir):
         if dir == 'x':
