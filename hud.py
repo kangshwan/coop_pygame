@@ -30,9 +30,9 @@ def draw_player_health(surf, x, y, health, amor, max_health):
     #외곽 테두리
     health_fill_rect = pg.Rect(x, y, health_fill, BAR_HEIGHT)
     amor_fill_rect = pg.Rect(x, y, amor_fill, BAR_HEIGHT)
+
     amor_col = SILVER
-    if pct > 1-amor_pct:
-        amor_col = SILVER
+
     if health_pct > 0.6:
         col = GREEN
     elif health_pct > 0.3:
@@ -90,6 +90,7 @@ def draw_grenade_list(surf, grenade_left):
     for idx in range(grenade_left):
         draw_grenade(surf, WIDTH-40-(idx*25), HEIGHT-40)
     pass
+
 def draw_grenade(surf, x, y):
     game_folder = path.dirname(__file__)
     img_folder = path.join(game_folder, 'Image')

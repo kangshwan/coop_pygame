@@ -43,8 +43,8 @@ WEAPONS['pistol']       = {'bullet_speed': 350,
                            'spread': 4,
                            'bullet_size': (6,6),
                            'bullet_count': 1,
-                           'barrel_offset': vec(34, -5),
-                           'barrel_offset_fliped': vec(34, 5)}
+                           'barrel_offset': vec(38, -5),
+                           'barrel_offset_fliped': vec(38, 5)}
 
 WEAPONS['shotgun']      = {'bullet_speed': 300,
                            'bullet_lifetime': 350,
@@ -53,8 +53,8 @@ WEAPONS['shotgun']      = {'bullet_speed': 300,
                            'spread': 20,
                            'bullet_size': (3,3),
                            'bullet_count': 12,
-                           'barrel_offset': vec(34,-4),
-                           'barrel_offset_fliped': vec(34,4)}
+                           'barrel_offset': vec(34, -4),
+                           'barrel_offset_fliped': vec(34, 4)}
 
 WEAPONS['sniper']       = {'bullet_speed': 500,
                            'bullet_lifetime': 1000,
@@ -73,8 +73,8 @@ WEAPONS['flamethrower'] = {'bullet_speed': 500,
                            'spread': 20,
                            'bullet_size': (3,3),
                            'bullet_count': 15,
-                           'barrel_offset': vec(40,-4),
-                           'barrel_offset_fliped': vec(40,4)}
+                           'barrel_offset': vec(40, -4),
+                           'barrel_offset_fliped': vec(40, 4)}
 
 # grenade properties
 GRENADE_SPEED = 600

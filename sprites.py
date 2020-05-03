@@ -82,6 +82,8 @@ class Player(pg.sprite.Sprite):
         self.flip = False
         self.standing = True
         self.walking = 0
+        self.right = True
+        self.left = False
 
     def load_images(self):
         self.image = self.weapon_img[self.gun_select]
@@ -118,12 +120,17 @@ class Player(pg.sprite.Sprite):
             self.orig_image = self.weapon_img[self.gun_select]
         if keys[pg.K_a]:
             self.acc.x = -PLAYER_ACC
+            self.left = True
+            self.right = False
         if keys[pg.K_d]:
             self.acc.x = PLAYER_ACC
+            self.left = False
+            self.right = True
         if keys[pg.K_w]:
             self.acc.y = -PLAYER_ACC
         if keys[pg.K_s]:
             self.acc.y = PLAYER_ACC
+
         # add acceleration when press w,a,s,d / w,a,s,d를 눌렀을때 가속을 더해줌.
         key = pg.mouse.get_pressed()
         if key[0]:
@@ -218,9 +225,10 @@ class Player(pg.sprite.Sprite):
             self.walking = 0
         else:
             self.standing = False
+
     def draw_body(self):
         self.body = [self.game.move1_img, self.game.move2_img]
-        if self.acc.x < 0 :
+        if self.left :
             #this means moving to left:
             self.body[0] = pg.transform.flip(self.body[0], True, False)
             self.body[1] = pg.transform.flip(self.body[1], True, False)

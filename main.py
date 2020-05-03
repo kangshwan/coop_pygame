@@ -62,6 +62,7 @@ class Game:
         self.ground      = pg.sprite.Group()
         self.feed_pos = []
         self.enemy_pos = []
+        
         for row, tiles in enumerate(self.map.data):
             #enumerate는 한 배열에 대하여 index와 그 값을 동시에 가져올수 있음. -> 자세한건 구글링
             for col, tile in enumerate(tiles):
