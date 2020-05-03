@@ -97,3 +97,4 @@ WEAPON_IMGS.append('glock.png')#pistol image
 WEAPON_IMGS.append('shotgun.png')#shotgun image
 WEAPON_IMGS.append('sniper_2.png')#sniper image
 WEAPON_IMGS.append('flamethrower.png')#flamethrower image
+GRENADE_IMG = 'grenade.png'
