@@ -1,5 +1,6 @@
 import random
 import sys
+
 from setting import *
 from sprites import *
 from tilemap import *
@@ -9,6 +10,7 @@ from time import sleep
 import random
 import time
 import threading
+
 vec = pg.math.Vector2
 
 
@@ -18,6 +20,7 @@ class Game:
         # initialize game window, etc
         pg.init()
         #pg.mixer.init() # for use of music
+        #pg.mixer.init('')
         self.screen = pg.display.set_mode(WINDOW_SIZE)
         # make a screen for the game / 게임을 하기위한 screen 생성(창 크기 설정)
         pg.display.set_caption(TITLE)
@@ -25,7 +28,16 @@ class Game:
         self.clock = pg.time.Clock()
         self.running = True
         self.start = True
-        self.load_data()    
+
+        self.load_data()
+    
+
+    
+                #메뉴판 만들고
+                #button -> game start 누르면 self.game_running()
+
+    
+    
 
     def run(self):
         #pg.mixer.music.play(loops = -1)   #bg play. loops == false -> play gain , Ture -> once
@@ -37,8 +49,11 @@ class Game:
             self.dt = self.clock.tick(FPS)/1000
             #set the frame per second / FPS를 구하기 위함. 이후 dt는 총알구현에 있어서 중요하게 사용됨.
             self.events()
+            if not self.paused:
+            #if self.paused == 0:
+                self.update()
             #events for keyboard and mouse input / 이벤트를 처리하기 위함. 항상 pygame은 event 이벤트발생(사용자의 입력) -> update(입력에 따른 변화를 업데이트해줌) -> draw 이후 그림을 그림
-            self.update()
+            
             self.draw()
 
     def new(self):
@@ -62,6 +77,7 @@ class Game:
         self.ground      = pg.sprite.Group()
         self.feed_pos = []
         self.enemy_pos = []
+        self.paused = False 
         
         for row, tiles in enumerate(self.map.data):
             #enumerate는 한 배열에 대하여 index와 그 값을 동시에 가져올수 있음. -> 자세한건 구글링
@@ -176,6 +192,7 @@ class Game:
 
     def events(self):
         # game loop events
+        key_1 = pg.key.get_pressed()
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 if self.playing:
@@ -185,6 +202,8 @@ class Game:
                 self.start = False
             if event.type == pg.MOUSEBUTTONDOWN:
                 pass
+            if key_1[pg.K_p]:
+                self.paused = not self.paused
             
     def draw_grid(self):
         for x in range(0, WIDTH, TILESIZE):
@@ -236,5 +255,4 @@ while g.start:
     while g.running:
         # this g.running will take control of game over or not
         g.new()
-pg.quit()
-
+    pg.quit()

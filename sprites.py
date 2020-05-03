@@ -1,5 +1,5 @@
-# this file is for every game objects.
 import os
+import pytweening as tween
 import pygame as pg
 import random
 from setting import *
@@ -457,7 +457,8 @@ class Enemy(pg.sprite.Sprite):
         self.speed = random.choice(ENEMY_SPEED)
         self.rot = 0
         self.health = ENEMY_HEALTH
-        
+        self.target = game.player
+
     def avoid_enemys(self):
         for enemy in self.game.enemys:
             if enemy != self:
@@ -466,8 +467,10 @@ class Enemy(pg.sprite.Sprite):
                     self.acc += dist.normalize()
 
     def update(self):
+        target_dist = self.target.pos - self.pos 
+        #if target_dist.length_squared() < DETECT_RADIUS**2:
         #self.rect.x -= self.speedy 
-        self.rot = (self.game.player.pos - self.pos).angle_to(vec(1, 0))
+        self.rot = target_dist.angle_to(vec(1, 0)) #target_dist == (self.game.player.pos - self.pos)
         self.image = pg.transform.rotate(self.origin_image, self.rot)
         self.rect = self.image.get_rect()
         self.rect.center = self.pos
@@ -483,6 +486,7 @@ class Enemy(pg.sprite.Sprite):
         collide_with_gameobject(self, self.game.walls, 'y')
         self.rect.center = self.hitbox.center
         #bullet이랑 enemy가 충돌시 둘 다 kill
+        #ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ주석if밑으로 여기까지 한칸씩 tap해주면 enemy와 player가 일정 거리이상 벌어지면 추격Xㅡㅡㅡㅡ
         if self.health <= 0:
             self.game.player.money += 100
             self.kill()
@@ -502,15 +506,27 @@ class Feed(pg.sprite.Sprite):
         self.groups = game.all_sprites, game.feeds
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        self.image = pg.Surface((TILESIZE,TILESIZE))
+        self.image = pg.Surface((TILESIZE/2,TILESIZE/2))
         self.image.fill(WHITE)
         self.rect = self.image.get_rect()
         self.pos = vec(x,y)
         self.rect.x = self.pos.x*TILESIZE
         self.rect.y = self.pos.y*TILESIZE
         # 추후 random을 통해 바꿔야함.
-        #self.item_no = random.choice(ITEM_KIND)
-        self.item_no = 4
+        self.item_no = random.choice(ITEM_KIND)
+        self.tween = tween.easeInOutSine
+        self.step = 0
+        self.dir = 1
+    def update(self): #아이템 흔들거리게 해놨는데 좌표값이 이상함 수정 요망
+        offset = FEED_RANGE * (self.tween(self.step / FEED_RANGE) - 0.5)
+        self.rect.y = self.pos.y+ 120 + offset * self.dir
+        self.step += FEED_SPEED
+        
+
+        if self.step > FEED_RANGE:
+            self.step = 0
+            self.dir *= -1
+       
 
 class Explode(pg.sprite.Sprite):
     def __init__(self, game, pos):

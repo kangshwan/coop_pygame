@@ -112,3 +112,9 @@ GRENADE_IMG = 'grenade.png'
 GRENADE_THROW_IMG = 'grenade_throw.png'
 PLAYER_IMG1 = 'move1.png'
 PLAYER_IMG2 = 'move2.png'
+
+#FEED shake up and down 
+FEED_RANGE = 20
+FEED_SPEED = 0.6
+#enemy and player distance
+DETECT_RADIUS = 400
