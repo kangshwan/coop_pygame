@@ -100,6 +100,10 @@ class Player(pg.sprite.Sprite):
             self.acc.y = -PLAYER_ACC
         if keys[pg.K_s]:
             self.acc.y = PLAYER_ACC
+        
+            
+
+            
         #if keys[pg.K_p]:           p키를 누르면 paused를 구현하고 싶었으나 화면 pause가 아닌 게임pause가 된다.
             #self.game.paused += 1
            # if self.game.paused%2 == 0:
@@ -375,7 +379,7 @@ class Enemy(pg.sprite.Sprite):
         self.rot = 0
         self.health = ENEMY_HEALTH
         self.target = game.player
-        
+
     def avoid_enemys(self):
         for enemy in self.game.enemys:
             if enemy != self:
@@ -437,6 +441,7 @@ class Feed(pg.sprite.Sprite):
         offset = FEED_RANGE * (self.tween(self.step / FEED_RANGE) - 0.5)
         self.rect.y = self.pos.y+ 120 + offset * self.dir
         self.step += FEED_SPEED
+        
 
         if self.step > FEED_RANGE:
             self.step = 0
