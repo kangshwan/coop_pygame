@@ -574,3 +574,57 @@ class Ground(pg.sprite.Sprite):
         self.pos = vec(x,y)
         self.rect.x = self.pos.x*TILESIZE
         self.rect.y = self.pos.y*TILESIZE
+
+class Select(pg.sprite.Sprite):
+
+    def __init__(self, game):
+        pg.sprite.Sprite.__init__(self)
+        self.game = game
+        self.image = pg.Surface((120,40))
+        self.image.blit(self.game.menu_select, (0, 0))
+        self.image.set_alpha(0)
+        self.image.set_colorkey(WHITE)
+        self.rect = self.image.get_rect()
+        self.rect.center = (WIDTH - 70, HEIGHT - 340)
+        self.select_number = 0
+
+    def update(self):
+        self.acc = vec(0, 0)
+        keys = pg.key.get_pressed()
+        if keys[pg.K_UP]:
+            self.select_number -= 1
+            if self.select_number < 0:
+                self.select_number = 2
+            if self.select_number == 0:
+                self.rect.center = (WIDTH - 70, HEIGHT - 340)
+                sleep(0.14)
+            elif self.select_number == 1:
+                self.rect.center = (WIDTH - 70, HEIGHT - 290)
+                sleep(0.14)
+            elif self.select_number == 2:
+                self.rect.center = (WIDTH - 70, HEIGHT - 240)
+                sleep(0.14)
+
+        if keys[pg.K_DOWN]:
+            self.select_number += 1
+            if self.select_number > 2:
+                self.select_number = 0
+            if self.select_number == 0:
+                self.rect.center = (WIDTH - 70, HEIGHT - 340)
+                sleep(0.14)
+            elif self.select_number == 1:
+                self.rect.center = (WIDTH - 70, HEIGHT - 290)
+                sleep(0.14)
+            elif self.select_number == 2:
+                self.rect.center = (WIDTH - 70, HEIGHT - 240)
+                sleep(0.14)
+
+        if keys[pg.K_z] and self.select_number == 0:
+            self.game.openning()
+
+        if keys[pg.K_z] and self.select_number == 1:
+            self.game.start_playing = False
+
+        if keys[pg.K_z] and self.select_number == 2:
+            pg.quit()
+            quit()

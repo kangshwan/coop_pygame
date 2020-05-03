@@ -28,8 +28,11 @@ class Game:
         self.clock = pg.time.Clock()
         self.running = True
         self.start = True
-
+        self.selecting = True
         self.load_data()
+        self.font_dir = os.path.dirname(__file__)
+        fnt_dir = os.path.join(self.font_dir, 'font')
+        self.brankovic_font = os.path.join(fnt_dir, 'brankovic.ttf')
     
 
     
@@ -75,6 +78,8 @@ class Game:
         self.feeds       = pg.sprite.Group()
         self.explode     = pg.sprite.Group()
         self.ground      = pg.sprite.Group()
+       
+        
         self.feed_pos = []
         self.enemy_pos = []
         self.paused = False 
@@ -247,13 +252,81 @@ class Game:
         self.flamethrower_img = pg.transform.scale(pg.image.load(path.join(img_folder, WEAPON_IMGS[3])).convert_alpha(),(70,18))
         self.move1_img = pg.image.load(path.join(img_folder, PLAYER_IMG1)).convert_alpha()
         self.move2_img = pg.image.load(path.join(img_folder, PLAYER_IMG2)).convert_alpha()
+        self.start_screen = pg.image.load(path.join(img_folder, START_SCREEN)).convert_alpha()
+        self.menu_select = pg.image.load(os.path.join(img_folder, PLAYER_IMG1))
         pass
+    
+    def show_start_screen(self):
+        #GAME START시에 나타낼 스크린
+        #pg.mixer.music.load(os.path.join(self.snd_dir, 'Mysterious.ogg'))
+        #pg.mixer.music.play(loops=-1)
+        self.running = True
+        self.start_new()
+        #pg.mixer.music.fadeoRut(500)
+
+    def start_new(self):
+        self.start_group = pg.sprite.Group()
+        self.select = Select(self)
+        self.start_group.add(self.select)
+        self.start_run()
+
+    def start_run(self):
+        #start loop
+        self.start_playing = True
+        while self.start_playing:
+            self.clock.tick(FPS)
+            self.start_events()
+            self.start_update()
+            self.start_draw()
+
+    def start_events(self):
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                if self.start_playing:
+                    self.start_playing = False
+                self.start = False
+
+
+
+    def start_update(self):
+        self.start_group.update()
+
+    def start_draw(self):
+        self.screen.blit(self.start_screen, (0,0))
+        self.start_group.draw(self.screen)
+        if self.select.select_number == 0:
+           
+            self.draw_text("START", 22, BLACK, WIDTH - 52, HEIGHT - 300)
+            self.draw_text("START", 22, DARKGREY, WIDTH - 54, HEIGHT - 303)
+            self.draw_text("EXIT", 22, BLACK, WIDTH - 48, HEIGHT - 250)
+            self.draw_text("EXIT", 22, DARKGREY, WIDTH - 50, HEIGHT - 253)
+        if self.select.select_number == 1:
+           
+            self.draw_text("START", 30, BLACK, WIDTH - 52, HEIGHT - 300)
+            self.draw_text("START", 30, DARKGREY, WIDTH - 54, HEIGHT - 303)
+            self.draw_text("EXIT", 22, BLACK, WIDTH - 48, HEIGHT - 250)
+            self.draw_text("EXIT", 22, DARKGREY, WIDTH - 50, HEIGHT - 253)
+        if self.select.select_number == 2:
+            
+            self.draw_text("START", 22, BLACK, WIDTH - 52, HEIGHT - 300)
+            self.draw_text("START", 22, DARKGREY, WIDTH - 54, HEIGHT - 303)
+            self.draw_text("EXIT", 30, BLACK, WIDTH - 48, HEIGHT - 250)
+            self.draw_text("EXIT", 30, DARKGREY, WIDTH - 50, HEIGHT - 253)
+        pg.display.update()
+
+    def draw_text(self, text, size, color, x, y):
+        font = pg.font.Font(self.brankovic_font, size)
+        text_surface = font.render(text, True, color)
+        text_rect = text_surface.get_rect()
+        text_rect.midtop = (x, y)
+        self.screen.blit(text_surface, text_rect)
 
 
 g = Game()
 while g.start:
-    # Game start when g.start is True
-    while g.running:
-        # this g.running will take control of game over or not
-        g.new()
-    pg.quit()
+    g.show_start_screen()
+    # # Game start when g.start is True
+    # while g.running:
+    #     # this g.running will take control of game over or not
+    #     g.new()
+    # pg.quit()

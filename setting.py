@@ -112,6 +112,7 @@ GRENADE_IMG = 'grenade.png'
 GRENADE_THROW_IMG = 'grenade_throw.png'
 PLAYER_IMG1 = 'move1.png'
 PLAYER_IMG2 = 'move2.png'
+START_SCREEN = 'main.jpg'
 
 #FEED shake up and down 
 FEED_RANGE = 20
