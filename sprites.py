@@ -167,7 +167,7 @@ class Player(pg.sprite.Sprite):
                 pos = self.pos + WEAPONS[self.weapon]['barrel_offset'].rotate(self.rot)
             for i in range(WEAPONS[self.weapon]['bullet_count']):
                 spread = random.uniform(-WEAPONS[self.weapon]['spread'], WEAPONS[self.weapon]['spread'])
-                Bullet(self.game, pos, dir.rotate(spread))
+                Bullet(self.game, pos, dir.rotate(spread), gun_select)
 
             self.gun_status[self.gun_select][1] -= WEAPONS[self.weapon]['bullet_count'] 
             if self.gun_select == 0:
@@ -306,22 +306,30 @@ class Player(pg.sprite.Sprite):
         self.rect = self.image.get_rect(center=self.rect.center)
 
 class Bullet(pg.sprite.Sprite):
-    def __init__(self, game, pos, dir):
+    def __init__(self, game, pos, dir, select):
         self.groups = game.all_sprites, game.bullets
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        self.size = WEAPONS[game.player.weapon]['bullet_size']
+        self.select = select
         self.load_images()
+        self.origin_images = self.image.copy()
+        radius, angle = dir.as_polar()
+        if select != 3:
+            self.image = pg.transform.rotate(self.origin_images, -angle)
         self.rect = self.image.get_rect()
         self.pos = vec(pos)
         self.rect.center = pos
+
         #spread = random.uniform(-BULLET_SPREAD,BULLET_SPREAD)
         self.vel = dir * WEAPONS[game.player.weapon]['bullet_speed']
         self.spawn_time = pg.time.get_ticks()
 
     def load_images(self):
-        self.image = pg.Surface(self.size, pg.SRCALPHA)
-        self.image.fill(RED)
+        self.image = self.game.bullet[self.select]
+        if self.select == 3:
+            self.image = pg.transform.scale(self.image, (5,5))
+        #self.image = pg.Surface(self.size, pg.SRCALPHA)
+        #self.image.fill(RED)
         pass
 
     def update(self):

@@ -10,7 +10,6 @@ from time import sleep
 import random
 import time
 import threading
-import pygame.freetype
 
 vec = pg.math.Vector2
 
@@ -277,6 +276,7 @@ class Game:
         game_folder = path.dirname(__file__)
         img_folder = path.join(game_folder, 'Image')
         font_folder = path.join(game_folder, 'Font')
+        self.bullet = []
         self.map = Map(path.join(game_folder,'map','map.txt'))
         self.ground_img = pg.image.load(path.join(img_folder, GROUND_IMG)).convert_alpha()
         self.grenade_img = pg.image.load(path.join(img_folder, GRENADE_THROW_IMG)).convert_alpha()
@@ -286,6 +286,11 @@ class Game:
         self.flamethrower_img = pg.transform.scale(pg.image.load(path.join(img_folder, WEAPON_IMGS[3][1])).convert_alpha(),(70,18))
         self.move1_img = pg.image.load(path.join(img_folder, PLAYER_IMG1)).convert_alpha()
         self.move2_img = pg.image.load(path.join(img_folder, PLAYER_IMG2)).convert_alpha()
+        self.bullet.append(pg.image.load(path.join(img_folder, BULLET_IMGS[0])).convert_alpha())
+        self.bullet.append(pg.image.load(path.join(img_folder, BULLET_IMGS[1])).convert_alpha())
+        self.bullet.append(pg.image.load(path.join(img_folder, BULLET_IMGS[2])).convert_alpha())
+        self.bullet.append(pg.image.load(path.join(img_folder, BULLET_IMGS[3])).convert_alpha())
+
         self.poke_font = path.join(font_folder, 'PokemonGb-RAeo.ttf')
         pass
 

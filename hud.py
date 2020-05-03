@@ -101,6 +101,6 @@ def draw_grenade(surf, x, y):
 
 def draw_money(surf, x, y, money_amount, in_font):
     font = pg.font.Font(in_font, 30)
-    text = font.render(f"Money: {money_amount}",True, BLACK)
-    surf.blit(text, (x,y))
+    text = font.render(f"Money: {money_amount}",True, GOLD)
+    surf.blit(text, (x,y))  
     pass
