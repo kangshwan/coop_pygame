@@ -151,11 +151,46 @@ class Game:
             else:
                 self.player.health -= ENEMY_DAMAGE
             hit.vel = vec(0, 0)
+            hit.acc = vec(0,0)
             if self.player.health <= 0:
                 self.playing = False
         if hits:
             self.player.pos += vec(ENEMY_KNOCKBACK, 0).rotate(-hits[0].rot)
-        
+
+        # player collide with the feed
+        hits = pg.sprite.pygame.sprite.spritecollide(self.player, self.feeds, True, collide_hit_rect)
+        for hit in hits:
+            print('collide')
+            if hit.item_no == 0:
+                self.player.max_speed = 10
+                self.player.last_speed = pg.time.get_ticks()
+                self.player.gun_status[1] = [True, 240]
+                self.player.gun_status[2] = [True, 10]
+                self.player.gun_status[3] = [True, 500]
+
+            if hit.item_no == 1:
+                self.player.weapon_rate *= 0.001
+                self.player.last_weapon_speed = pg.time.get_ticks()
+
+            if hit.item_no == 2:
+                self.player.weapon_damage *= 2.0
+                self.player.last_weapon_damage = pg.time.get_ticks()
+
+            if hit.item_no == 3:
+                self.player.health += 50
+                if self.player.health > PLAYER_HEALTH :
+                    self.player.health = PLAYER_HEALTH
+            
+            if hit.item_no == 4:
+                self.player.gun_status[1] = [True, 12]
+                self.player.gun_status[2] = [True, 1]
+                self.player.gun_status[3] = [True, 1000]
+                self.player.amor = AMOR_HEALTH # 체력이 아니라 armor (일정 시간이 지나면 사라짐) / 초록색이 아니라 체력과 따로 흰색으로 표시되도록
+                self.player.max_health = PLAYER_HEALTH + AMOR_HEALTH
+                self.player.max_health = self.health + self.amor
+                if self.player.max_health < PLAYER_HEALTH:
+                    self.player.max_health = PLAYER_HEALTH
+
         # bullet hit the mob
         if self.player.gun_select in [2,3]:
             hits = pg.sprite.groupcollide(self.enemys, self.bullets, False, False)
@@ -189,7 +224,9 @@ class Game:
             hit.health -= GRENADE_DAMAGE
             hit.vel = vec(0, 0)
             hit.pos += vec(EXPLOSION_KNOCKBACK, 0).rotate(-hit.rot)
-
+        
+        if self.playing == False:
+            self.runnig = False
     def events(self):
         # game loop events
         key_1 = pg.key.get_pressed()
@@ -243,7 +280,7 @@ class Game:
         self.grenade_img = pg.image.load(path.join(img_folder, GRENADE_THROW_IMG)).convert_alpha()
         self.pistol_img = pg.image.load(path.join(img_folder, WEAPON_IMGS[0][1])).convert_alpha()
         self.shotgun_img = pg.transform.scale(pg.image.load(path.join(img_folder, WEAPON_IMGS[1][1])).convert_alpha(), (62,16))
-        self.sniper_img = pg.transform.scale(pg.image.load(path.join(img_folder, WEAPON_IMGS[2])).convert_alpha(),(89,25))
+        self.sniper_img = pg.transform.scale(pg.image.load(path.join(img_folder, WEAPON_IMGS[2][1])).convert_alpha(),(89,18))
         self.flamethrower_img = pg.transform.scale(pg.image.load(path.join(img_folder, WEAPON_IMGS[3])).convert_alpha(),(70,18))
         self.move1_img = pg.image.load(path.join(img_folder, PLAYER_IMG1)).convert_alpha()
         self.move2_img = pg.image.load(path.join(img_folder, PLAYER_IMG2)).convert_alpha()
@@ -253,7 +290,10 @@ class Game:
 g = Game()
 while g.start:
     # Game start when g.start is True
+    g.running = True
     while g.running:
         # this g.running will take control of game over or not
         g.new()
+    if g.running == False:
+        pg.quit()
     pg.quit()

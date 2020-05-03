@@ -106,7 +106,7 @@ GROUND_IMG = 'ground.png'
 WEAPON_IMGS = []
 WEAPON_IMGS.append(['glock.png','glock_hand.png'])#pistol image
 WEAPON_IMGS.append(['shotgun.png','shotgun_hand.png'])#shotgun image
-WEAPON_IMGS.append('sniper_2.png')#sniper image
+WEAPON_IMGS.append(['sniper_rifle.png', 'sniper_rifle_hand.png'])#sniper image
 WEAPON_IMGS.append('flamethrower.png')#flamethrower image
 GRENADE_IMG = 'grenade.png'
 GRENADE_THROW_IMG = 'grenade_throw.png'

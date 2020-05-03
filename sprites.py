@@ -206,7 +206,7 @@ class Player(pg.sprite.Sprite):
         #self.collide_with_enemy('x')
         #self.hitbox.centery = self.pos.y
         #self.collide_with_enemy('y')
-        self.collide_with_feed()
+        #self.collide_with_feed()
         self.rect.center = self.hitbox.center
 
         if self.now - self.last_speed > SPEEDUP_RATE:
@@ -242,26 +242,6 @@ class Player(pg.sprite.Sprite):
             self.walking += 1
             #self.game.screen.blit(self.body[self.walking%len(self.body)], (self.game.camera.camera.x+self.hitbox.x, self.game.camera.camera.y+self.hitbox.y-18))
         self.game.screen.blit(self.image, self.game.camera.apply(self.game.player))
-
-    def collide_with_enemy(self,dir):
-        if dir == 'x':
-            hits = pg.sprite.spritecollide(self, self.game.enemys, False)
-            if hits:
-                if self.vel.x > 0:
-                    self.pos.x = hits[0].rect.left - self.rect.width/2
-                if self.vel.x < 0:
-                    self.pos.x = hits[0].rect.right + self.rect.width/2
-                self.vel.x = 0
-                self.rect.centerx = self.pos.x
-        if dir == 'y':
-            hits = pg.sprite.spritecollide(self, self.game.enemys, False)
-            if hits:
-                if self.vel.y > 0:
-                    self.pos.y = hits[0].rect.top - self.rect.height/2
-                if self.vel.y < 0:
-                    self.pos.y = hits[0].rect.bottom + self.rect.height/2
-                self.vel.y = 0
-                self.rect.centery = self.pos.y
 
     def collide_with_feed(self):
         hits = pg.sprite.spritecollide(self, self.game.feeds, True)
@@ -472,7 +452,7 @@ class Enemy(pg.sprite.Sprite):
         #if target_dist.length_squared() < DETECT_RADIUS**2:
         #self.rect.x -= self.speedy 
         self.rot = target_dist.angle_to(vec(1, 0)) #target_dist == (self.game.player.pos - self.pos)
-        self.image = pg.transform.rotate(self.origin_image, self.rot)
+        self.image = pg.transform.rotate(self.origin_image, 0)
         self.rect = self.image.get_rect()
         self.rect.center = self.pos
         self.acc = vec(1, 0).rotate(-self.rot)
