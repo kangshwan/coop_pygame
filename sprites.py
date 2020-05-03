@@ -62,7 +62,7 @@ class Player(pg.sprite.Sprite):
         self.acc = vec(0,0)
         self.rot = 0
         self.last_shot = 0
-        self.gun_status = [[True,1], [False, 0],[False, 0],[False, 0]]
+        self.gun_status = [[True,1], [True, 100000],[False, 0],[False, 0]]
         # 0 is pistol, 1 is shotgun, 2 is sniper 3 is flamethrower
         self.last_grenade = 0
         #0 is pistol 1 is shotgun
@@ -80,6 +80,8 @@ class Player(pg.sprite.Sprite):
         self.grenade = [True, 3]
         self.money = 0
         self.flip = False
+        self.standing = True
+        self.walking = 0
 
     def load_images(self):
         self.image = self.weapon_img[self.gun_select]
@@ -210,13 +212,26 @@ class Player(pg.sprite.Sprite):
             self.weapon_damage = WEAPONS[self.weapon]['damage']
         if self.amor <= 0:
             self.amor = 0
-    
+
+        if self.vel.length() < 0.5:
+            self.standing = True
+            self.walking = 0
+        else:
+            self.standing = False
     def draw_body(self):
-        col = BROWN
-        self.body = self.game.move1_img
-        
-#        pg.draw.rect(self.game.screen, col, self.body)
-        self.game.screen.blit(self.body, (self.game.camera.camera.x+self.hitbox.x, self.game.camera.camera.y+self.hitbox.y-18))
+        self.body = [self.game.move1_img, self.game.move2_img]
+        if self.acc.x < 0 :
+            #this means moving to left:
+            self.body[0] = pg.transform.flip(self.body[0], True, False)
+            self.body[1] = pg.transform.flip(self.body[1], True, False)
+        if self.walking + 1 >= FPS:
+            self.walking = 0
+        if self.standing:
+            self.game.screen.blit(self.body[self.walking], (self.game.camera.camera.x+self.hitbox.x, self.game.camera.camera.y+self.hitbox.y-18))
+        else:
+            print(self.walking)
+            self.game.screen.blit(self.body[self.walking%2], (self.game.camera.camera.x+self.hitbox.x, self.game.camera.camera.y+self.hitbox.y-18))
+            self.walking += 1
         self.game.screen.blit(self.image, self.game.camera.apply(self.game.player))
 
     def collide_with_enemy(self,dir):
@@ -273,14 +288,7 @@ class Player(pg.sprite.Sprite):
                 if self.max_health < PLAYER_HEALTH:
                     self.max_health = PLAYER_HEALTH
                 
-                            
-            # self.max_speed = 10
-            # self.last_speed = pg.time.get_ticks()
-            # self.gun_status[1] = [True, 240]
-            # self.gun_status[2] = [True, 10]
             
-            
-
     def rotate(self):
         # The vector to the target (the mouse position).
         mouse_pos = pg.mouse.get_pos()

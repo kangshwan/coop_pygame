@@ -70,7 +70,7 @@ WEAPONS['flamethrower'] = {'bullet_speed': 500,
                            'bullet_lifetime': 400,
                            'rate': 0,
                            'damage': 3,
-                           'spread': 3,
+                           'spread': 20,
                            'bullet_size': (3,3),
                            'bullet_count': 15,
                            'barrel_offset': vec(40,-4),
@@ -105,7 +105,7 @@ TEST = "test.png"
 GROUND_IMG = 'ground.png'
 WEAPON_IMGS = []
 WEAPON_IMGS.append(['glock.png','glock_hand.png'])#pistol image
-WEAPON_IMGS.append('shotgun.png')#shotgun image
+WEAPON_IMGS.append(['shotgun.png','shotgun_hand.png'])#shotgun image
 WEAPON_IMGS.append('sniper_2.png')#sniper image
 WEAPON_IMGS.append('flamethrower.png')#flamethrower image
 GRENADE_IMG = 'grenade.png'

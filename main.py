@@ -44,8 +44,6 @@ class Game:
     def new(self):
         #when start a new game
         self.score = 0
-        self.money = 5000
-        #이후 player sprite로 들어갈 가능성 있음.
         self.phase = 0
         #이후 1페이즈, 2페이즈 등 결정할때 사용
         self.zombie_remain = 1000 
@@ -223,7 +221,7 @@ class Game:
         self.ground_img = pg.image.load(path.join(img_folder, GROUND_IMG)).convert_alpha()
         self.grenade_img = pg.image.load(path.join(img_folder, GRENADE_THROW_IMG)).convert_alpha()
         self.pistol_img = pg.image.load(path.join(img_folder, WEAPON_IMGS[0][1])).convert_alpha()
-        self.shotgun_img = pg.transform.scale(pg.image.load(path.join(img_folder, WEAPON_IMGS[1])).convert_alpha(), (62,16))
+        self.shotgun_img = pg.transform.scale(pg.image.load(path.join(img_folder, WEAPON_IMGS[1][1])).convert_alpha(), (62,16))
         self.sniper_img = pg.transform.scale(pg.image.load(path.join(img_folder, WEAPON_IMGS[2])).convert_alpha(),(89,25))
         self.flamethrower_img = pg.transform.scale(pg.image.load(path.join(img_folder, WEAPON_IMGS[3])).convert_alpha(),(70,18))
         self.move1_img = pg.image.load(path.join(img_folder, PLAYER_IMG1)).convert_alpha()
