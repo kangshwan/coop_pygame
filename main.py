@@ -1,25 +1,26 @@
-import os
 import random
-import pygame as pg
 import sys
+
 from setting import *
 from sprites import *
 from tilemap import *
+from hud import *
 from os import path
-import time 
 from time import sleep
-from numpy import random
+import random
 import time
 import threading
 
-
 vec = pg.math.Vector2
+
+
 
 class Game:
     def __init__(self):
         # initialize game window, etc
         pg.init()
         #pg.mixer.init() # for use of music
+        #pg.mixer.init('')
         self.screen = pg.display.set_mode(WINDOW_SIZE)
         # make a screen for the game / 게임을 하기위한 screen 생성(창 크기 설정)
         pg.display.set_caption(TITLE)
@@ -27,7 +28,16 @@ class Game:
         self.clock = pg.time.Clock()
         self.running = True
         self.start = True
+
         self.load_data()
+    
+
+    
+                #메뉴판 만들고
+                #button -> game start 누르면 self.game_running()
+
+    
+    
 
     def run(self):
         #pg.mixer.music.play(loops = -1)   #bg play. loops == false -> play gain , Ture -> once
@@ -39,46 +49,59 @@ class Game:
             self.dt = self.clock.tick(FPS)/1000
             #set the frame per second / FPS를 구하기 위함. 이후 dt는 총알구현에 있어서 중요하게 사용됨.
             self.events()
+            if not self.paused:
+            #if self.paused == 0:
+                self.update()
             #events for keyboard and mouse input / 이벤트를 처리하기 위함. 항상 pygame은 event 이벤트발생(사용자의 입력) -> update(입력에 따른 변화를 업데이트해줌) -> draw 이후 그림을 그림
-            self.update()
+            
             self.draw()
 
     def new(self):
         #when start a new game
         self.score = 0
-        self.money = 5000
-        #이후 player sprite로 들어갈 가능성 있음.
         self.phase = 0
         #이후 1페이즈, 2페이즈 등 결정할때 사용
         self.zombie_remain = 1000 
+        self.enemy_spawned = 0
+        self.item_spawned = 0
         #sprite gruop
         self.all_sprites = pg.sprite.Group()
-        self.zombies = pg.sprite.Group()
-        self.bullets = pg.sprite.Group()
-        self.obstacle = pg.sprite.Group()
-        self.walls = pg.sprite.Group()
-        self.enemys = pg.sprite.Group()
-        self.feeds = pg.sprite.Group()
+        self.zombies     = pg.sprite.Group()
+        self.bullets     = pg.sprite.Group()
+        self.grenades    = pg.sprite.Group()
+        self.obstacle    = pg.sprite.Group()
+        self.walls       = pg.sprite.Group()
+        self.enemys      = pg.sprite.Group()
+        self.feeds       = pg.sprite.Group()
+        self.explode     = pg.sprite.Group()
+        self.ground      = pg.sprite.Group()
         self.feed_pos = []
-        #draw map in here / 여기서부터 맵을 그림.
+        self.enemy_pos = []
+        self.paused = False 
+        
         for row, tiles in enumerate(self.map.data):
             #enumerate는 한 배열에 대하여 index와 그 값을 동시에 가져올수 있음. -> 자세한건 구글링
             for col, tile in enumerate(tiles):
+                Ground(self, col, row, self.ground_img)
                 if tile == '1':
                     Wall(self, col, row, LIGHTBLUE)
                 if tile == '2':
                     Wall(self, col, row, BROWN)
+        #draw map in here / 여기서부터 맵을 그림.
+        for row, tiles in enumerate(self.map.data):
+            #enumerate는 한 배열에 대하여 index와 그 값을 동시에 가져올수 있음. -> 자세한건 구글링
+            for col, tile in enumerate(tiles):
                 if tile == 'P':
                     self.player = Player(self, col, row)
                 if tile == 'I':
-                    self.feed_pos.append((col,row))
+                    self.feed_pos.append([(col,row),False])
+                if tile == 'E':
+                    self.enemy_pos.append((col,row))
+                    Enemy(self, col, row, RED)
+                    #enemy_pos에 col,row 저장. 추후 feed처럼 append하여 생성하면 좋아보임.
         self.camera = Camera(self.map.width, self.map.height)
         # make Camera class / 카메라 객체 생성
         
-        test = random.randint(0,len(self.feed_pos)-1)
-        Feed(self, self.feed_pos[test][0],self.feed_pos[test][1])
-
-
         #아이템or스킬상자가 랜덤한 위치에 드랍되게 / 상자를 먹으면 사라지고 일정 효과가 발동되도록 만들어주기
         #일정 주기마다 생성되도록 만들어주기 - 완료
         #def item_box():
@@ -91,30 +114,85 @@ class Game:
         #    threading.Timer(3, item_box).start()
         #item_box()
 
-     
-
-        for z in range(6,16): #한 블럭이 -1씩 이동  
-            enemy(self,z,12)	            
-    
         self.start_tick = pg.time.get_ticks()
 
         self.run()
 
     def update(self):
+        self.now = pg.time.get_ticks()
         # game loop update
         self.all_sprites.update()
         self.camera.update(self.player)
+        if self.now - self.item_spawned > 3000:    
+            #test = random.randint(0,len(self.feed_pos)-1)
+            #if self.feed_pos[test][1] == True:
+            #    Feed(self, self.feed_pos[test][0][0],self.feed_pos[test][0][1])
+            chosen_item = random.choice(self.feed_pos)
+            if chosen_item[1] == False:
+                Feed(self, chosen_item[0][0], chosen_item[0][1])
+                chosen_item[1] = True
 
+            self.item_spawned = self.now
+        #update에서 Enemy 생성
+        if self.now - self.enemy_spawned > 10000:
+            for e_position in self.enemy_pos:
+                #3초마다 해당 장소에서 생성. 추후 enemy_pos를 list로 쓸경우 for문 안에넣고 index들로 접근해서 생성하면 될듯.
+                Enemy(self, e_position[0], e_position[1], RED)
+                self.enemy_spawned = self.now
         self.second = ((pg.time.get_ticks() - self.start_tick)/1000)
+
         #hits -> used sprite collide method, (x, y, default boolean) collision check
-        hit = pg.sprite.pygame.sprite.spritecollide(self.player, self.enemys, False)
+        hits = pg.sprite.pygame.sprite.spritecollide(self.player, self.enemys, False, collide_hit_rect)
+        for hit in hits:
+            if self.player.amor != 0:
+                self.player.amor -= ENEMY_DAMAGE
+                if self.player.amor < 0:
+                    self.player.health += self.player.amor
+            else:
+                self.player.health -= ENEMY_DAMAGE
+            hit.vel = vec(0, 0)
+            if self.player.health <= 0:
+                self.playing = False
+        if hits:
+            self.player.pos += vec(ENEMY_KNOCKBACK, 0).rotate(-hits[0].rot)
+        
+        # bullet hit the mob
+        if self.player.gun_select in [2,3]:
+            hits = pg.sprite.groupcollide(self.enemys, self.bullets, False, False)
+            for hit in hits:
+                hit.health -= self.player.weapon_damage
+                hit.vel = vec(0, 0)
+        else:
+            hits = pg.sprite.groupcollide(self.enemys, self.bullets, False, True)
+            for hit in hits:
+                hit.health -= self.player.weapon_damage * len(hits[hit])
+                hit.vel = vec(0, 0)
 
-        if hit: #적이랑 부딪히면 게임 종료
-            pg.quit()
-
+        # explosion hit the player
+        hits = pg.sprite.pygame.sprite.spritecollide(self.player, self.explode, False, collide_hit_rect)
+        for hit in hits:
+            if self.player.amor > 0:
+                self.player.amor -= GRENADE_DAMAGE
+                if self.player.amor < 0:
+                    self.player.health += self.player.amor
+            else:
+                self.player.health -= GRENADE_DAMAGE
+            hit.vel = vec(0, 0)
+            if self.player.health <= 0:
+                self.playing = False
+            rot = (self.player.pos - hit.pos).angle_to(vec(1,0))
+            self.player.pos += vec(EXPLOSION_KNOCKBACK, 0).rotate(-rot)
+        
+        # explosion hit the mob
+        hits = pg.sprite.groupcollide(self.enemys, self.explode, False, False)
+        for hit in hits:
+            hit.health -= GRENADE_DAMAGE
+            hit.vel = vec(0, 0)
+            hit.pos += vec(EXPLOSION_KNOCKBACK, 0).rotate(-hit.rot)
 
     def events(self):
         # game loop events
+        key_1 = pg.key.get_pressed()
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 if self.playing:
@@ -124,26 +202,51 @@ class Game:
                 self.start = False
             if event.type == pg.MOUSEBUTTONDOWN:
                 pass
+            if key_1[pg.K_p]:
+                self.paused = not self.paused
+                self.player.standing = True
             
     def draw_grid(self):
         for x in range(0, WIDTH, TILESIZE):
             pg.draw.line(self.screen, LIGHTGREY, (x,0), (x, HEIGHT))
             for y in range(0, HEIGHT, TILESIZE):
                 pg.draw.line(self.screen, LIGHTGREY, (0,y), (WIDTH,y))
-                
+
     def draw(self):
         # game loop - draw
         self.screen.fill(DARKGREY)
-        self.draw_grid()
+        #self.draw_grid()
         for sprite in self.all_sprites:
-            self.screen.blit(sprite.image, self.camera.apply(sprite))
+            if isinstance(sprite, Enemy):
+                sprite.draw_health()
+            if isinstance(sprite, Player):
+                sprite.draw_body()
+                #self.screen.blit(sprite.image, self.camera.apply(sprite))
+                pass
+            else:
+                self.screen.blit(sprite.image, self.camera.apply(sprite))
 
+        #pg.draw.rect(self.screen, WHITE, self.player.hitbox,2)
+        
+        # HUD functions
+        draw_player_health(self.screen, 10, HEIGHT - 40, self.player.health, self.player.amor ,self.player.max_health)
+        draw_gun_list(self.screen, self.player.gun_status, self.player.gun_select)
+        draw_grenade_list(self.screen, self.player.grenade[1])
         pg.display.update()
-
+        
     def load_data(self):
         # load map to the game
         game_folder = path.dirname(__file__)
-        self.map = Map(path.join(game_folder,'map','map2.txt'))
+        img_folder = path.join(game_folder, 'Image')
+        self.map = Map(path.join(game_folder,'map','map.txt'))
+        self.ground_img = pg.image.load(path.join(img_folder, GROUND_IMG)).convert_alpha()
+        self.grenade_img = pg.image.load(path.join(img_folder, GRENADE_THROW_IMG)).convert_alpha()
+        self.pistol_img = pg.image.load(path.join(img_folder, WEAPON_IMGS[0][1])).convert_alpha()
+        self.shotgun_img = pg.transform.scale(pg.image.load(path.join(img_folder, WEAPON_IMGS[1][1])).convert_alpha(), (62,16))
+        self.sniper_img = pg.transform.scale(pg.image.load(path.join(img_folder, WEAPON_IMGS[2])).convert_alpha(),(89,25))
+        self.flamethrower_img = pg.transform.scale(pg.image.load(path.join(img_folder, WEAPON_IMGS[3])).convert_alpha(),(70,18))
+        self.move1_img = pg.image.load(path.join(img_folder, PLAYER_IMG1)).convert_alpha()
+        self.move2_img = pg.image.load(path.join(img_folder, PLAYER_IMG2)).convert_alpha()
         pass
 
 
@@ -153,5 +256,4 @@ while g.start:
     while g.running:
         # this g.running will take control of game over or not
         g.new()
-pg.quit()
-sys.exit()
+    pg.quit()
