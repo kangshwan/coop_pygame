@@ -220,6 +220,11 @@ class Game:
         self.map = Map(path.join(game_folder,'map','map.txt'))
         self.ground_img = pg.image.load(path.join(img_folder, GROUND_IMG)).convert_alpha()
         self.grenade_img = pg.image.load(path.join(img_folder, GRENADE_THROW_IMG)).convert_alpha()
+        self.pistol_img = pg.image.load(path.join(img_folder, WEAPON_IMGS[0])).convert_alpha()
+        self.shotgun_img = pg.image.load(path.join(img_folder, WEAPON_IMGS[1])).convert_alpha()
+        self.sniper_img = pg.transform.scale(pg.image.load(path.join(img_folder, WEAPON_IMGS[2])).convert_alpha(),(89,25))
+        self.flamethrower_img = pg.transform.scale(pg.image.load(path.join(img_folder, WEAPON_IMGS[3])).convert_alpha(),(80,20))
+        
         
         pass
 

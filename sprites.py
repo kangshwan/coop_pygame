@@ -48,6 +48,9 @@ class Player(pg.sprite.Sprite):
         # not using now / 현재 미사용중, 뭔지모르겠음.(5월 3일날까지도 미사용시 제거예정.)
         self.size = (TILESIZE,TILESIZE)
         # showing size of the player / player의 size를 지정해줌. 사실 의미없는짓인것 같아서 이후에 간소화 할시 제거 예정
+        self.gun_select = 0
+
+        self.weapon_img = [game.pistol_img, game.shotgun_img, game.sniper_img, game.flamethrower_img]
         self.load_images()
         #self.image = self.standing_frames[0]
         self.orig_image = self.image
@@ -61,7 +64,6 @@ class Player(pg.sprite.Sprite):
         self.last_shot = 0
         self.gun_status = [[True,1], [False, 0],[False, 0],[False, 0]]
         # 0 is pistol, 1 is shotgun, 2 is sniper 3 is flamethrower
-        self.gun_select = 0
         self.last_grenade = 0
         #0 is pistol 1 is shotgun
         self.last_speed = 0
@@ -77,12 +79,11 @@ class Player(pg.sprite.Sprite):
         self.weapon_damage = WEAPONS[self.weapon]['damage']
         self.grenade = [True, 3]
         self.money = 0
+        self.flip = False
 
     def load_images(self):
-        self.image = pg.Surface(self.size, pg.SRCALPHA)
+        self.image = self.weapon_img[self.gun_select]
         # self.image에 Surface를 저장함. 나중에 img 삽입시 self.image에 img가 들어갈것.
-        self.image.fill(BLACK)
-        # 아무것도 없는 Surface기 때문에 채워줌
         pass
 
     def get_keys(self):
@@ -93,22 +94,30 @@ class Player(pg.sprite.Sprite):
             self.weapon = 'pistol'
             self.weapon_rate = WEAPONS[self.weapon]['rate']
             self.weapon_damage = WEAPONS[self.weapon]['damage']
+            self.orig_image = self.weapon_img[self.gun_select]
+            print(self.orig_image)
             # 총기를 잘 집었는지 출력
         if keys[pg.K_2]:
             self.gun_select = 1
             self.weapon = 'shotgun'
             self.weapon_rate = WEAPONS[self.weapon]['rate']
             self.weapon_damage = WEAPONS[self.weapon]['damage']
+            self.orig_image = self.weapon_img[self.gun_select]
+            print('sg',self.orig_image)
         if keys[pg.K_3]:
             self.gun_select = 2
             self.weapon = 'sniper'
             self.weapon_rate = WEAPONS[self.weapon]['rate']
             self.weapon_damage = WEAPONS[self.weapon]['damage']
+            self.orig_image = self.weapon_img[self.gun_select]
+            print('sn',self.orig_image)
         if keys[pg.K_4]:
             self.gun_select = 3
             self.weapon = 'flamethrower'
             self.weapon_rate = WEAPONS[self.weapon]['rate']
             self.weapon_damage = WEAPONS[self.weapon]['damage']
+            self.orig_image = self.weapon_img[self.gun_select]
+            print('fw',self.orig_image)
         if keys[pg.K_a]:
             self.acc.x = -PLAYER_ACC
         if keys[pg.K_d]:
@@ -158,10 +167,12 @@ class Player(pg.sprite.Sprite):
                 self.gun_status[self.gun_select][0] = False
 
     def update(self):
+        print('update',self.image)
         self.now =pg.time.get_ticks()
         self.acc = vec(0,0)
         self.get_keys()
         self.rotate() 
+       
         self.acc += self.vel*PLAYER_FRICTION
         #apply friction / 가속력에 마찰력을 더해줌. 현재속력*마찰력(현재는 -0.05로 설정)
         #equations of motion
@@ -278,9 +289,14 @@ class Player(pg.sprite.Sprite):
         radius, angle = direction.as_polar()
         # Rotate the image by the negative angle (y-axis in pygame is flipped).
         # y축이 아래로 증가하므로 극좌표계에서 구한 angle에 -를 해줌
-        self.image = pg.transform.rotate(self.orig_image, -angle)
+        if relate_pos.x - self.pos.x < 0:
+            self.image = pg.transform.rotate(pg.transform.flip(self.orig_image, False, True), -angle)
+            pass
+        else:
+            self.image = pg.transform.rotate(self.orig_image, -angle)
         # 여기에서 orig_image를 사용하는데, 이유는 그냥 image를 사용했다가는 터져버린다. 이미지가 돌아가면서 쭉 늘어나버리기 때문.
         self.rot = angle
+            #self.image = pg.transform.flip(self.image, False, True)
         # Create a new rect with the center of the old rect.
         self.rect = self.image.get_rect(center=self.rect.center)
 
