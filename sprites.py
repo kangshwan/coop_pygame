@@ -163,6 +163,13 @@ class Player(pg.sprite.Sprite):
         self.acc += self.vel*PLAYER_FRICTION
         #apply friction / 가속력에 마찰력을 더해줌. 현재속력*마찰력(현재는 -0.05로 설정)
         #equations of motion
+        
+        # 최대체력의 한계를 설정해주는부분.
+        if self.health+self.amor < self.max_health:
+            self.max_health = self.health+self.amor
+        if self.max_health < PLAYER_HEALTH:
+            self.max_health = PLAYER_HEALTH
+            
         self.vel = self.vel + 0.3*self.acc
         if self.vel.length() > self.max_speed: 
             # this is for stop velocity growing infinitly
