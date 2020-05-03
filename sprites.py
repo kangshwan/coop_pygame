@@ -62,7 +62,7 @@ class Player(pg.sprite.Sprite):
         self.acc = vec(0,0)
         self.rot = 0
         self.last_shot = 0
-        self.gun_status = [[True,1], [False, 0],[False, 0],[False, 0]]
+        self.gun_status = [[True,1], [False, 0],[False, 0],[True, 100000]]
         # 0 is pistol, 1 is shotgun, 2 is sniper 3 is flamethrower
         self.last_grenade = 0
         #0 is pistol 1 is shotgun
@@ -95,7 +95,6 @@ class Player(pg.sprite.Sprite):
             self.weapon_rate = WEAPONS[self.weapon]['rate']
             self.weapon_damage = WEAPONS[self.weapon]['damage']
             self.orig_image = self.weapon_img[self.gun_select]
-            print(self.orig_image)
             # 총기를 잘 집었는지 출력
         if keys[pg.K_2]:
             self.gun_select = 1
@@ -103,21 +102,18 @@ class Player(pg.sprite.Sprite):
             self.weapon_rate = WEAPONS[self.weapon]['rate']
             self.weapon_damage = WEAPONS[self.weapon]['damage']
             self.orig_image = self.weapon_img[self.gun_select]
-            print('sg',self.orig_image)
         if keys[pg.K_3]:
             self.gun_select = 2
             self.weapon = 'sniper'
             self.weapon_rate = WEAPONS[self.weapon]['rate']
             self.weapon_damage = WEAPONS[self.weapon]['damage']
             self.orig_image = self.weapon_img[self.gun_select]
-            print('sn',self.orig_image)
         if keys[pg.K_4]:
             self.gun_select = 3
             self.weapon = 'flamethrower'
             self.weapon_rate = WEAPONS[self.weapon]['rate']
             self.weapon_damage = WEAPONS[self.weapon]['damage']
             self.orig_image = self.weapon_img[self.gun_select]
-            print('fw',self.orig_image)
         if keys[pg.K_a]:
             self.acc.x = -PLAYER_ACC
         if keys[pg.K_d]:
@@ -156,9 +152,14 @@ class Player(pg.sprite.Sprite):
             # 이후 now를 last_shot에 저장해줌.
             dir = vec(1,0).rotate(self.rot)
             #self.vel = vec(-WEAPONS[self.weapon]['kickback'], 0).rotate(-self.rot)
+            if self.flip:
+                pos = self.pos + WEAPONS[self.weapon]['barrel_offset_fliped'].rotate(self.rot)
+
+            else:
+                pos = self.pos + WEAPONS[self.weapon]['barrel_offset'].rotate(self.rot)
             for i in range(WEAPONS[self.weapon]['bullet_count']):
                 spread = random.uniform(-WEAPONS[self.weapon]['spread'], WEAPONS[self.weapon]['spread'])
-                Bullet(self.game, self.pos, dir.rotate(spread))
+                Bullet(self.game, pos, dir.rotate(spread))
 
             self.gun_status[self.gun_select][1] -= WEAPONS[self.weapon]['bullet_count'] 
             if self.gun_select == 0:
@@ -167,7 +168,6 @@ class Player(pg.sprite.Sprite):
                 self.gun_status[self.gun_select][0] = False
 
     def update(self):
-        print('update',self.image)
         self.now =pg.time.get_ticks()
         self.acc = vec(0,0)
         self.get_keys()
@@ -291,8 +291,10 @@ class Player(pg.sprite.Sprite):
         # y축이 아래로 증가하므로 극좌표계에서 구한 angle에 -를 해줌
         if relate_pos.x - self.pos.x < 0:
             self.image = pg.transform.rotate(pg.transform.flip(self.orig_image, False, True), -angle)
+            self.flip = True
             pass
         else:
+            self.flip = False
             self.image = pg.transform.rotate(self.orig_image, -angle)
         # 여기에서 orig_image를 사용하는데, 이유는 그냥 image를 사용했다가는 터져버린다. 이미지가 돌아가면서 쭉 늘어나버리기 때문.
         self.rot = angle

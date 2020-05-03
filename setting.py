@@ -1,4 +1,6 @@
 import pygame as pg
+vec = pg.math.Vector2
+
 # this file is basic settings of game
 TITLE = "Zombie Survival"
 WIDTH = 960
@@ -39,7 +41,9 @@ WEAPONS['pistol']       = {'bullet_speed': 350,
                            'damage': 10,
                            'spread': 4,
                            'bullet_size': (6,6),
-                           'bullet_count': 1}
+                           'bullet_count': 1,
+                           'barrel_offset': vec(23, -6),
+                           'barrel_offset_fliped': vec(23, 6)}
 
 WEAPONS['shotgun']      = {'bullet_speed': 300,
                            'bullet_lifetime': 350,
@@ -47,7 +51,9 @@ WEAPONS['shotgun']      = {'bullet_speed': 300,
                            'damage': 5,
                            'spread': 20,
                            'bullet_size': (3,3),
-                           'bullet_count': 12}
+                           'bullet_count': 12,
+                           'barrel_offset': vec(32,-4),
+                           'barrel_offset_fliped': vec(32,4)}
 
 WEAPONS['sniper']       = {'bullet_speed': 500,
                            'bullet_lifetime': 1000,
@@ -55,7 +61,9 @@ WEAPONS['sniper']       = {'bullet_speed': 500,
                            'damage': 13,
                            'spread': 0,
                            'bullet_size': (3,3),
-                           'bullet_count': 1}
+                           'bullet_count': 1,
+                           'barrel_offset': vec(48, 0),
+                           'barrel_offset_fliped': vec(48, 0)}
 
 WEAPONS['flamethrower'] = {'bullet_speed': 500,
                            'bullet_lifetime': 400,
@@ -63,8 +71,10 @@ WEAPONS['flamethrower'] = {'bullet_speed': 500,
                            'damage': 3,
                            'spread': 3,
                            'bullet_size': (3,3),
-                           'bullet_count': 15}
-#'flamethrower 추가 바람
+                           'bullet_count': 15,
+                           'barrel_offset': vec(40,-4),
+                           'barrel_offset_fliped': vec(40,4)}
+BARREL_OFFSET = vec(30, 0)
 
 # grenade properties
 GRENADE_SPEED = 600
@@ -89,6 +99,7 @@ AVOID_RADIUS = 50
 SPEEDUP_RATE = 5000
 ITEM_KIND = [0, 1, 2, 3, 4]
 AMOR_HEALTH = 25
+
 #image
 TEST = "test.png"
 GROUND_IMG = 'ground.png'
