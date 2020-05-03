@@ -56,7 +56,7 @@ def draw_gun(surf, x, y, possible, gun_kind, gun_now):
     game_folder = path.dirname(__file__)
     img_folder = path.join(game_folder, 'Image')
     if gun_kind == 0:
-        image = pg.image.load(path.join(img_folder, WEAPON_IMGS[gun_kind])).convert_alpha()
+        image = pg.image.load(path.join(img_folder, WEAPON_IMGS[gun_kind][0])).convert_alpha()
         rotated = pg.transform.scale(pg.transform.rotate(image, 40),(48, 48))
     if gun_kind == 1:
         image = pg.image.load(path.join(img_folder, WEAPON_IMGS[gun_kind])).convert_alpha()

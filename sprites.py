@@ -55,14 +55,14 @@ class Player(pg.sprite.Sprite):
         #self.image = self.standing_frames[0]
         self.orig_image = self.image
         self.rect = self.image.get_rect()
-        self.hitbox = PLAYER_HIT_BOX
+        self.hitbox = PLAYER_HIT_BOX.copy()
         self.hitbox.center = self.rect.center
         self.pos = vec(x, y)*TILESIZE
         self.vel = vec(0,0)
         self.acc = vec(0,0)
         self.rot = 0
         self.last_shot = 0
-        self.gun_status = [[True,1], [False, 0],[False, 0],[True, 100000]]
+        self.gun_status = [[True,1], [False, 0],[False, 0],[False, 0]]
         # 0 is pistol, 1 is shotgun, 2 is sniper 3 is flamethrower
         self.last_grenade = 0
         #0 is pistol 1 is shotgun
@@ -140,7 +140,7 @@ class Player(pg.sprite.Sprite):
                     self.grenade[1] -= 1
                     if self.grenade[1] <= 0:
                         self.grenade[0] = False
-
+    
     def shoot(self, gun_select):
         now = pg.time.get_ticks()
         # bring the time when clicked / 딱 클릭된 순간의 시간을 가져옴
@@ -154,7 +154,6 @@ class Player(pg.sprite.Sprite):
             #self.vel = vec(-WEAPONS[self.weapon]['kickback'], 0).rotate(-self.rot)
             if self.flip:
                 pos = self.pos + WEAPONS[self.weapon]['barrel_offset_fliped'].rotate(self.rot)
-
             else:
                 pos = self.pos + WEAPONS[self.weapon]['barrel_offset'].rotate(self.rot)
             for i in range(WEAPONS[self.weapon]['bullet_count']):
@@ -192,7 +191,7 @@ class Player(pg.sprite.Sprite):
         self.pos += self.vel
         self.hitbox.centerx = self.pos.x
         collide_with_gameobject(self, self.game.walls,'x')
-        self.hitbox.centery = self.pos.y
+        self.hitbox.centery = self.pos.y 
         collide_with_gameobject(self, self.game.walls,'y')
         #self.hitbox.centerx = self.pos.x
         #self.collide_with_enemy('x')
@@ -211,6 +210,14 @@ class Player(pg.sprite.Sprite):
             self.weapon_damage = WEAPONS[self.weapon]['damage']
         if self.amor <= 0:
             self.amor = 0
+    
+    def draw_body(self):
+        col = BROWN
+        self.body = self.game.move1_img
+        
+#        pg.draw.rect(self.game.screen, col, self.body)
+        self.game.screen.blit(self.image, self.game.camera.apply(self.game.player))
+        self.game.screen.blit(self.body, (self.game.camera.camera.x+self.hitbox.x, self.game.camera.camera.y+self.hitbox.y-18))
 
     def collide_with_enemy(self,dir):
         if dir == 'x':

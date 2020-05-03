@@ -25,7 +25,7 @@ class Game:
         self.clock = pg.time.Clock()
         self.running = True
         self.start = True
-        self.load_data()
+        self.load_data()    
 
     def run(self):
         #pg.mixer.music.play(loops = -1)   #bg play. loops == false -> play gain , Ture -> once
@@ -201,7 +201,9 @@ class Game:
             if isinstance(sprite, Enemy):
                 sprite.draw_health()
             if isinstance(sprite, Player):
-                self.screen.blit(sprite.image, self.camera.apply(sprite))
+                sprite.draw_body()
+                #self.screen.blit(sprite.image, self.camera.apply(sprite))
+                pass
             else:
                 self.screen.blit(sprite.image, self.camera.apply(sprite))
 
@@ -220,10 +222,12 @@ class Game:
         self.map = Map(path.join(game_folder,'map','map.txt'))
         self.ground_img = pg.image.load(path.join(img_folder, GROUND_IMG)).convert_alpha()
         self.grenade_img = pg.image.load(path.join(img_folder, GRENADE_THROW_IMG)).convert_alpha()
-        self.pistol_img = pg.image.load(path.join(img_folder, WEAPON_IMGS[0])).convert_alpha()
-        self.shotgun_img = pg.image.load(path.join(img_folder, WEAPON_IMGS[1])).convert_alpha()
+        self.pistol_img = pg.image.load(path.join(img_folder, WEAPON_IMGS[0][1])).convert_alpha()
+        self.shotgun_img = pg.transform.scale(pg.image.load(path.join(img_folder, WEAPON_IMGS[1])).convert_alpha(), (62,16))
         self.sniper_img = pg.transform.scale(pg.image.load(path.join(img_folder, WEAPON_IMGS[2])).convert_alpha(),(89,25))
-        self.flamethrower_img = pg.transform.scale(pg.image.load(path.join(img_folder, WEAPON_IMGS[3])).convert_alpha(),(80,20))
+        self.flamethrower_img = pg.transform.scale(pg.image.load(path.join(img_folder, WEAPON_IMGS[3])).convert_alpha(),(70,18))
+        self.move1_img = pg.image.load(path.join(img_folder, PLAYER_IMG1)).convert_alpha()
+        self.move2_img = pg.image.load(path.join(img_folder, PLAYER_IMG2)).convert_alpha()
         
         
         pass

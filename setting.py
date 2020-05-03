@@ -31,19 +31,20 @@ SILVER    = (192,192,192)
 PLAYER_ACC = 0.45
 PLAYER_FRICTION = -0.05
 PLAYER_HIT_BOX = pg.Rect(0, 0, 35, 35)
+PLAYER_HIT_BOX_OFFSET = vec(20,20)
 PLAYER_HEALTH = 100
 
 # Weapon setting
 WEAPONS = {}
 WEAPONS['pistol']       = {'bullet_speed': 350,
                            'bullet_lifetime': 700,
-                           'rate': 200,
+                           'rate': 1,
                            'damage': 10,
                            'spread': 4,
                            'bullet_size': (6,6),
                            'bullet_count': 1,
-                           'barrel_offset': vec(23, -6),
-                           'barrel_offset_fliped': vec(23, 6)}
+                           'barrel_offset': vec(55, -6),
+                           'barrel_offset_fliped': vec(55, 6)}
 
 WEAPONS['shotgun']      = {'bullet_speed': 300,
                            'bullet_lifetime': 350,
@@ -52,8 +53,8 @@ WEAPONS['shotgun']      = {'bullet_speed': 300,
                            'spread': 20,
                            'bullet_size': (3,3),
                            'bullet_count': 12,
-                           'barrel_offset': vec(32,-4),
-                           'barrel_offset_fliped': vec(32,4)}
+                           'barrel_offset': vec(34,-4),
+                           'barrel_offset_fliped': vec(34,4)}
 
 WEAPONS['sniper']       = {'bullet_speed': 500,
                            'bullet_lifetime': 1000,
@@ -74,7 +75,6 @@ WEAPONS['flamethrower'] = {'bullet_speed': 500,
                            'bullet_count': 15,
                            'barrel_offset': vec(40,-4),
                            'barrel_offset_fliped': vec(40,4)}
-BARREL_OFFSET = vec(30, 0)
 
 # grenade properties
 GRENADE_SPEED = 600
@@ -104,9 +104,11 @@ AMOR_HEALTH = 25
 TEST = "test.png"
 GROUND_IMG = 'ground.png'
 WEAPON_IMGS = []
-WEAPON_IMGS.append('glock.png')#pistol image
+WEAPON_IMGS.append(['glock.png','glock_hand.png'])#pistol image
 WEAPON_IMGS.append('shotgun.png')#shotgun image
 WEAPON_IMGS.append('sniper_2.png')#sniper image
 WEAPON_IMGS.append('flamethrower.png')#flamethrower image
 GRENADE_IMG = 'grenade.png'
 GRENADE_THROW_IMG = 'grenade_throw.png'
+PLAYER_IMG1 = 'move1.png'
+PLAYER_IMG2 = 'move2.png'
