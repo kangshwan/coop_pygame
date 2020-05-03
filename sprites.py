@@ -180,7 +180,7 @@ class Player(pg.sprite.Sprite):
         self.acc = vec(0,0)
         self.get_keys()
         self.rotate() 
-       
+        print(self.money)
         self.acc += self.vel*PLAYER_FRICTION
         #apply friction / 가속력에 마찰력을 더해줌. 현재속력*마찰력(현재는 -0.05로 설정)
         #equations of motion
@@ -227,19 +227,20 @@ class Player(pg.sprite.Sprite):
             self.standing = False
 
     def draw_body(self):
-        self.body = [self.game.move1_img, self.game.move2_img]
+        self.body = [self.game.move1_img, self.game.move1_img, self.game.move1_img, self.game.move1_img, self.game.move1_img, self.game.move2_img, self.game.move2_img, self.game.move2_img, self.game.move2_img, self.game.move2_img]
         if self.left :
             #this means moving to left:
-            self.body[0] = pg.transform.flip(self.body[0], True, False)
-            self.body[1] = pg.transform.flip(self.body[1], True, False)
+            for i in range(len(self.body)):
+                self.body[i] = pg.transform.flip(self.body[i], True, False)
         if self.walking + 1 >= FPS:
             self.walking = 0
         if self.standing:
             self.game.screen.blit(self.body[self.walking//FPS], (self.game.camera.camera.x+self.hitbox.x, self.game.camera.camera.y+self.hitbox.y-18))
         else:
-            print(self.walking)
-            self.game.screen.blit(self.body[self.walking%2], (self.game.camera.camera.x+self.hitbox.x, self.game.camera.camera.y+self.hitbox.y-18))
+
+            self.game.screen.blit(self.body[self.walking%len(self.body)], (self.game.camera.camera.x+self.hitbox.x, self.game.camera.camera.y+self.hitbox.y-18))
             self.walking += 1
+            #self.game.screen.blit(self.body[self.walking%len(self.body)], (self.game.camera.camera.x+self.hitbox.x, self.game.camera.camera.y+self.hitbox.y-18))
         self.game.screen.blit(self.image, self.game.camera.apply(self.game.player))
 
     def collide_with_enemy(self,dir):
