@@ -61,7 +61,7 @@ WEAPONS['flamethrower'] = {'bullet_speed': 500,
                            'bullet_lifetime': 400,
                            'rate': 0,
                            'damage': 3,
-                           'spread': 7,
+                           'spread': 3,
                            'bullet_size': (3,3),
                            'bullet_count': 15}
 #'flamethrower 추가 바람
@@ -93,7 +93,7 @@ AMOR_HEALTH = 25
 TEST = "test.png"
 GROUND_IMG = 'ground.png'
 WEAPON_IMGS = []
-WEAPON_IMGS.append('pistol.png')#pistol image
-WEAPON_IMGS.append('pistol.png')#shotgun image
-WEAPON_IMGS.append('pistol.png')#sniper image
-WEAPON_IMGS.append('pistol.png')#flamethrower image
+WEAPON_IMGS.append('glock.png')#pistol image
+WEAPON_IMGS.append('shotgun.png')#shotgun image
+WEAPON_IMGS.append('sniper_2.png')#sniper image
+WEAPON_IMGS.append('flamethrower.png')#flamethrower image

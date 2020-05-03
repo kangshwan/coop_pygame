@@ -75,6 +75,7 @@ class Player(pg.sprite.Sprite):
         self.weapon = 'pistol'
         self.weapon_rate = WEAPONS[self.weapon]['rate']
         self.weapon_damage = WEAPONS[self.weapon]['damage']
+        self.grenade = [True, 5]
 
     def load_images(self):
         self.image = pg.Surface(self.size, pg.SRCALPHA)
@@ -91,7 +92,6 @@ class Player(pg.sprite.Sprite):
             self.weapon = 'pistol'
             self.weapon_rate = WEAPONS[self.weapon]['rate']
             self.weapon_damage = WEAPONS[self.weapon]['damage']
-
             # 총기를 잘 집었는지 출력
         if keys[pg.K_2]:
             self.gun_select = 1
@@ -119,19 +119,23 @@ class Player(pg.sprite.Sprite):
         # add acceleration when press w,a,s,d / w,a,s,d를 눌렀을때 가속을 더해줌.
         key = pg.mouse.get_pressed()
         if key[0]:
-            if self.gun_status[0][0]:
+            if self.gun_status[self.gun_select][0]:
+                print("passed test")
                 self.shoot(self.gun_select)
         if key[2]:
             #마우스 우클릭시
-            now = pg.time.get_ticks()
-            print('clicked')
-            if now - self.last_grenade > GRENADE_RATE:
-                self.last_grenade = now
-                dir = vec(1,0).rotate(self.rot)
-                relate_pos = vec(pg.mouse.get_pos()[0] - self.game.camera.camera.x, pg.mouse.get_pos()[1] - self.game.camera.camera.y)
-                dir_size = relate_pos-self.pos
-                Grenade(self.game, self.pos, dir, dir_size.length())
-                print('fire in the hole!')
+            if self.grenade[0]:
+                now = pg.time.get_ticks()
+                if now - self.last_grenade > GRENADE_RATE:
+                    self.last_grenade = now
+                    dir = vec(1,0).rotate(self.rot)
+                    relate_pos = vec(pg.mouse.get_pos()[0] - self.game.camera.camera.x, pg.mouse.get_pos()[1] - self.game.camera.camera.y)
+                    dir_size = relate_pos-self.pos
+                    Grenade(self.game, self.pos, dir, dir_size.length())
+                    self.grenade[1] -= 1
+                    if self.grenade[1] <= 0:
+                        self.grenade[0] = False
+                    print('fire in the hole!')
 
     def shoot(self, gun_select):
         now = pg.time.get_ticks()
@@ -153,6 +157,7 @@ class Player(pg.sprite.Sprite):
                 pass
             elif self.gun_status[self.gun_select][1] <= 0:
                 self.gun_status[self.gun_select][0] = False
+                print("no longer use")
             print('left bullet', self.gun_status[self.gun_select][1])
 
     def update(self):
@@ -244,6 +249,9 @@ class Player(pg.sprite.Sprite):
                     self.health = PLAYER_HEALTH
             
             if hit.item_no == 4:
+                self.gun_status[1] = [True, 12]
+                self.gun_status[2] = [True, 1]
+                self.gun_status[3] = [True, 1000]
                 self.amor = AMOR_HEALTH # 체력이 아니라 armor (일정 시간이 지나면 사라짐) / 초록색이 아니라 체력과 따로 흰색으로 표시되도록
                 self.max_health = PLAYER_HEALTH + AMOR_HEALTH
                 self.max_health = self.health + self.amor

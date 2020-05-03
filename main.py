@@ -160,10 +160,8 @@ class Game:
                 self.player.amor -= GRENADE_DAMAGE
                 print(self.player.amor)
                 if self.player.amor < 0:
-                    print('passed')
                     self.player.health += self.player.amor
             else:
-                print("fuck~!")
                 self.player.health -= GRENADE_DAMAGE
                 print(self.player.health)
             hit.vel = vec(0, 0)
@@ -213,8 +211,8 @@ class Game:
         
         # HUD functions
         draw_player_health(self.screen, 10, HEIGHT - 40, self.player.health, self.player.amor ,self.player.max_health)
-        draw_gun_list(self.screen, self.player.gun_status)
-
+        draw_gun_list(self.screen, self.player.gun_status, self.player.gun_select)
+        draw_grenade_list(self.screen, self.player.grenade[1])
         pg.display.update()
         
     def load_data(self):
