@@ -61,7 +61,7 @@ class Player(pg.sprite.Sprite):
         self.vel = vec(0,0)
         self.acc = vec(0,0)
         self.rot = 0
-        self.last_shot = 0
+        self.last_shot = -3000
         self.gun_status = [[True,1], [True, 100000],[True, 10000],[True, 10000000]]
         # 0 is pistol, 1 is shotgun, 2 is sniper 3 is flamethrower
         self.last_grenade = 0

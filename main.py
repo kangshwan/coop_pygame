@@ -10,6 +10,7 @@ from time import sleep
 import random
 import time
 import threading
+import pygame.freetype
 
 vec = pg.math.Vector2
 
@@ -186,7 +187,7 @@ class Game:
                 self.player.gun_status[3] = [True, 1000]
                 self.player.amor = AMOR_HEALTH # 체력이 아니라 armor (일정 시간이 지나면 사라짐) / 초록색이 아니라 체력과 따로 흰색으로 표시되도록
                 self.player.max_health = PLAYER_HEALTH + AMOR_HEALTH
-                self.player.max_health = self.health + self.amor
+                self.player.max_health = self.player.health + self.player.amor
                 if self.player.max_health < PLAYER_HEALTH:
                     self.player.max_health = PLAYER_HEALTH
 
@@ -268,12 +269,14 @@ class Game:
         draw_player_health(self.screen, 10, HEIGHT - 40, self.player.health, self.player.amor ,self.player.max_health)
         draw_gun_list(self.screen, self.player.gun_status, self.player.gun_select)
         draw_grenade_list(self.screen, self.player.grenade[1])
+        draw_money(self.screen, 10, 10, self.player.money,self.poke_font)
         pg.display.update()
         
     def load_data(self):
         # load map to the game
         game_folder = path.dirname(__file__)
         img_folder = path.join(game_folder, 'Image')
+        font_folder = path.join(game_folder, 'Font')
         self.map = Map(path.join(game_folder,'map','map.txt'))
         self.ground_img = pg.image.load(path.join(img_folder, GROUND_IMG)).convert_alpha()
         self.grenade_img = pg.image.load(path.join(img_folder, GRENADE_THROW_IMG)).convert_alpha()
@@ -283,6 +286,7 @@ class Game:
         self.flamethrower_img = pg.transform.scale(pg.image.load(path.join(img_folder, WEAPON_IMGS[3][1])).convert_alpha(),(70,18))
         self.move1_img = pg.image.load(path.join(img_folder, PLAYER_IMG1)).convert_alpha()
         self.move2_img = pg.image.load(path.join(img_folder, PLAYER_IMG2)).convert_alpha()
+        self.poke_font = path.join(font_folder, 'PokemonGb-RAeo.ttf')
         pass
 
 
