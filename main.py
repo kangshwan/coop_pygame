@@ -83,8 +83,10 @@ class Game:
 
         self.feed_pos = []
         self.enemy_pos = []
-        self.paused = False 
-        
+        self.paused = False
+        self.boss = pg.sprite.Group()
+        self.boss_pos = ()
+        self.boss_spawn = False
         #for row, tiles in enumerate(self.map.data):
         #    #enumerate는 한 배열에 대하여 index와 그 값을 동시에 가져올수 있음. -> 자세한건 구글링
         #    block = ''
@@ -153,8 +155,9 @@ class Game:
                 Enemy(self, tile_object.x, tile_object.y)
             if tile_object.name == 'wall':
                 Obstacle(self, tile_object.x, tile_object.y, tile_object.width, tile_object.height)
-            
-                
+            if tile_object.name == 'boss':
+                self.boss_pos = (col,row)
+
         self.camera = Camera(self.map.width, self.map.height)
         self.draw_debug = True
         # make Camera class / 카메라 객체 생성
@@ -201,6 +204,16 @@ class Game:
                 
                 self.enemy_spawned = self.now
         self.second = ((pg.time.get_ticks() - self.start_tick)/1000)
+
+        #update에서 Boss 생성
+        if self.player.kill_enemy > 0:
+            if not self.boss_spawn:
+                for b_position in self.boss_pos:
+                    #3초마다 해당 장소에서 생성. 추후 enemy_pos를 list로 쓸경우 for문 안에넣고 index들로 접근해서 생성하면 될듯.
+                    Boss(self, b_position[0], b_position[1], BLACK)
+                    self.boss_spawn = not self.boss_spawn
+                
+        
 
         #hits -> used sprite collide method, (x, y, default boolean) collision check
         hits = pg.sprite.pygame.sprite.spritecollide(self.player, self.enemys, False, collide_hit_box)
@@ -262,6 +275,20 @@ class Game:
             for hit in hits:
                 hit.health -= self.player.weapon_damage * len(hits[hit])
                 hit.vel = vec(0, 0)
+        
+        # bullet hit the boss
+        if self.player.gun_select in [2,3]:
+            hits = pg.sprite.groupcollide(self.boss, self.bullets, False, False)
+            for hit in hits:
+                hit.health -= self.player.weapon_damage
+                hit.vel = vec(0, 0)
+        else:
+            hits = pg.sprite.groupcollide(self.boss, self.bullets, False, True)
+            for hit in hits:
+                hit.health -= self.player.weapon_damage * len(hits[hit])
+                hit.vel = vec(0, 0)
+        #explosion hiy the boss도 만들어야함
+
 
         # explosion hit the player
         hits = pg.sprite.pygame.sprite.spritecollide(self.player, self.explode, False, collide_hit_box)
@@ -314,6 +341,8 @@ class Game:
         #self.draw_grid()
         self.screen.blit(self.map_img, self.camera.apply_rect(self.map_rect))
         for sprite in self.all_sprites:
+            if isinstance(sprite, Boss):
+                sprite.draw_health()
             if isinstance(sprite, Enemy):
                 sprite.draw_health()
                 sprite.draw_body()

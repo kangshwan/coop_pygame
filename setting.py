@@ -100,9 +100,11 @@ ENEMY_FRICTION = -1
 ENEMY_HIT_BOX = pg.Rect(0, 0, 32, 60)
 AVOID_RADIUS = 50
 
+BOSS_HEALTH = 10000
+
 # item properties
 SPEEDUP_RATE = 5000
-ITEM_KIND = [0, 1, 2, 3, 4]
+ITEM_KIND = [0, 1, 2, 3, 4]  
 AMOR_HEALTH = 25
 
 #image
