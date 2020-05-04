@@ -19,8 +19,9 @@ class Game:
     def __init__(self):
         # initialize game window, etc
         pg.init()
-        #pg.mixer.init() # for use of music
-        #pg.mixer.init('')
+        pg.mixer.init() # for use of music
+        pg.mixer.music.load('Sound/sound1.mp3')
+        pg.mixer.music.play()
         self.screen = pg.display.set_mode(WINDOW_SIZE)
        
 
@@ -260,6 +261,7 @@ class Game:
         self.move2_img = pg.image.load(path.join(img_folder, PLAYER_IMG2)).convert_alpha()
         self.start_screen = pg.image.load(path.join(img_folder, START_SCREEN)).convert_alpha()
         self.menu_select = pg.image.load(os.path.join(img_folder, PLAYER_IMG1))
+    
         pass
     
     def show_start_screen(self):
@@ -319,7 +321,7 @@ class Game:
         self.draw_text("START", 30, DARKGREY, WIDTH - 754, HEIGHT - 203)
         self.draw_text("EXIT", 30, BLACK, WIDTH - 748, HEIGHT - 150)
         self.draw_text("EXIT", 30, DARKGREY, WIDTH - 750, HEIGHT - 153)
-        print(self.screen)
+       
         pg.display.update()
 
     def draw_text(self, text, size, color, x, y):
