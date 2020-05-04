@@ -8,7 +8,7 @@ from time import sleep
 import math
 vec = pg.math.Vector2
 
-def collide_with_gameobject(sprite,group,dir):
+def collide_with_gameobject(sprite, group, dir):
     if dir == 'x':
         # see collide with x axis
         # x 방향으로 충돌 확인
@@ -16,13 +16,49 @@ def collide_with_gameobject(sprite,group,dir):
         if hits:
             if hits[0].rect.centerx > sprite.hitbox.centerx:
                 sprite.pos.x = hits[0].rect.left - sprite.hitbox.width/2
-                # x 방향 속도가 양수일 경우 -> 오른쪽으로 진행하고있음 따라서 position을 다시 세팅해줌
+                # 왼쪽에서 박을경우
             if hits[0].rect.centerx < sprite.hitbox.centerx:
                 sprite.pos.x = hits[0].rect.right + sprite.hitbox.width/2
-                # x 방향 속도가 음수일 경우 -> 왼쪽으로 진행하고있음 따라서 position을 다시 세팅해줌
+                # 오른쪽에서 받아올경우
             sprite.vel.x = 0
+            #sprite.acc.x = 0
             # 부딫혔으니 x방향 속도를 0으로 해줌.
             sprite.hitbox.centerx = sprite.pos.x
+            
+    if dir == 'y':
+        hits = pg.sprite.spritecollide(sprite, group, False,collide_hit_rect)
+        if hits:
+            if hits[0].rect.centery > sprite.hitbox.centery:
+                sprite.pos.y = hits[0].rect.top - sprite.hitbox.height/2
+                # y 방향 속도가 양수일 경우 -> 아래으로 진행하고있음 따라서 position을 다시 세팅해줌
+            if hits[0].rect.centery < sprite.hitbox.centery:
+                sprite.pos.y = hits[0].rect.bottom + sprite.hitbox.height/2
+                # y 방향 속도가 양수일 경우 -> 위쪽으로 진행하고있음 따라서 position을 다시 세팅해줌
+            sprite.vel.y = 0
+            # 부딫혔으니 y방향 속도를 0으로 해줌
+            sprite.hitbox.centery = sprite.pos.y
+def enemy_collide_with_gameobject(sprite, group, dir):
+    if dir == 'x':
+        # see collide with x axis
+        # x 방향으로 충돌 확인
+        hits = pg.sprite.spritecollide(sprite, group, False, collide_hit_rect)
+        if hits:
+            print('before:', sprite.pos.x)
+            if hits[0].rect.centerx > sprite.hitbox.centerx:
+                sprite.pos.x = hits[0].rect.left - sprite.hitbox.width/2
+                # 왼쪽에서 박을경우
+            if hits[0].rect.centerx < sprite.hitbox.centerx:
+                sprite.pos.x = hits[0].rect.right + sprite.hitbox.width/2
+                # 오른쪽에서 받아올경우
+                print('from right',hits[0].rect.right, sprite.hitbox.width/2)
+            sprite.vel.x = 0
+            #sprite.acc.x = 0
+            # 부딫혔으니 x방향 속도를 0으로 해줌.
+            print('after:', sprite.pos.x)
+            sprite.hitbox.centerx = sprite.pos.x
+            print('last change',sprite.hitbox.centerx, sprite.pos.x)
+            return True
+
     if dir == 'y':
         hits = pg.sprite.spritecollide(sprite, group, False,collide_hit_rect)
         if hits:
@@ -42,14 +78,13 @@ class Player(pg.sprite.Sprite):
         self.groups = game.all_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        self.current_frame = 0
+        #self.current_frame = 0
         # not using now / 현재 미사용중, 이후 img를 넣었을때 frame별로 동작하게 하려고 했으나...(할지 모르겠음)
-        self.last_update = 0
+        #self.last_update = 0
         # not using now / 현재 미사용중, 뭔지모르겠음.(5월 3일날까지도 미사용시 제거예정.)
-        self.size = (TILESIZE,TILESIZE)
+        #self.size = (TILESIZE,TILESIZE)
         # showing size of the player / player의 size를 지정해줌. 사실 의미없는짓인것 같아서 이후에 간소화 할시 제거 예정
         self.gun_select = 0
-
         self.weapon_img = [game.pistol_img, game.shotgun_img, game.sniper_img, game.flamethrower_img]
         self.load_images()
         #self.image = self.standing_frames[0]
@@ -57,12 +92,12 @@ class Player(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.hitbox = PLAYER_HIT_BOX.copy()
         self.hitbox.center = self.rect.center
-        self.pos = vec(x, y)*TILESIZE
+        self.pos = vec(x, y)
         self.vel = vec(0,0)
         self.acc = vec(0,0)
         self.rot = 0
-        self.last_shot = 0
-        self.gun_status = [[True,1], [True, 100000],[False, 0],[False, 0]]
+        self.last_shot = -3000
+        self.gun_status = [[True,1], [True, 100000],[True, 10000],[True, 10000000]]
         # 0 is pistol, 1 is shotgun, 2 is sniper 3 is flamethrower
         self.last_grenade = 0
         #0 is pistol 1 is shotgun
@@ -83,7 +118,6 @@ class Player(pg.sprite.Sprite):
         self.flip = False
         self.standing = True
         self.walking = 0
-        self.right = True
         self.left = False
 
     def load_images(self):
@@ -122,11 +156,9 @@ class Player(pg.sprite.Sprite):
         if keys[pg.K_a]:
             self.acc.x = -PLAYER_ACC
             self.left = True
-            self.right = False
         if keys[pg.K_d]:
             self.acc.x = PLAYER_ACC
             self.left = False
-            self.right = True
         if keys[pg.K_w]:
             self.acc.y = -PLAYER_ACC
         if keys[pg.K_s]:
@@ -137,6 +169,7 @@ class Player(pg.sprite.Sprite):
         if key[0]:
             if self.gun_status[self.gun_select][0]:
                 self.shoot(self.gun_select)
+
         if key[2]:
             #마우스 우클릭시
             if self.grenade[0]:
@@ -162,13 +195,14 @@ class Player(pg.sprite.Sprite):
             # 이후 now를 last_shot에 저장해줌.
             dir = vec(1,0).rotate(self.rot)
             #self.vel = vec(-WEAPONS[self.weapon]['kickback'], 0).rotate(-self.rot)
+            pos = 0
             if self.flip:
                 pos = self.pos + WEAPONS[self.weapon]['barrel_offset_fliped'].rotate(self.rot)
             else:
                 pos = self.pos + WEAPONS[self.weapon]['barrel_offset'].rotate(self.rot)
             for i in range(WEAPONS[self.weapon]['bullet_count']):
                 spread = random.uniform(-WEAPONS[self.weapon]['spread'], WEAPONS[self.weapon]['spread'])
-                Bullet(self.game, pos, dir.rotate(spread))
+                Bullet(self.game, pos, dir.rotate(spread), gun_select)
 
             self.gun_status[self.gun_select][1] -= WEAPONS[self.weapon]['bullet_count'] 
             if self.gun_select == 0:
@@ -184,6 +218,7 @@ class Player(pg.sprite.Sprite):
         #print(self.money)
         #print(self.kill_enemy)
         
+
         self.acc += self.vel*PLAYER_FRICTION
         #apply friction / 가속력에 마찰력을 더해줌. 현재속력*마찰력(현재는 -0.05로 설정)
         #equations of motion
@@ -209,7 +244,7 @@ class Player(pg.sprite.Sprite):
         #self.collide_with_enemy('x')
         #self.hitbox.centery = self.pos.y
         #self.collide_with_enemy('y')
-        self.collide_with_feed()
+        #self.collide_with_feed()
         self.rect.center = self.hitbox.center
 
         if self.now - self.last_speed > SPEEDUP_RATE:
@@ -238,33 +273,12 @@ class Player(pg.sprite.Sprite):
         if self.walking + 1 >= FPS:
             self.walking = 0
         if self.standing:
-            self.game.screen.blit(self.body[self.walking//FPS], (self.game.camera.camera.x+self.hitbox.x, self.game.camera.camera.y+self.hitbox.y-18))
+            self.game.screen.blit(self.body[self.walking//FPS], (self.game.camera.camera.x+self.hitbox.x, self.game.camera.camera.y+self.hitbox.y-24))
         else:
-
-            self.game.screen.blit(self.body[self.walking%len(self.body)], (self.game.camera.camera.x+self.hitbox.x, self.game.camera.camera.y+self.hitbox.y-18))
+            self.game.screen.blit(self.body[self.walking%len(self.body)], (self.game.camera.camera.x+self.hitbox.x, self.game.camera.camera.y+self.hitbox.y-24))
             self.walking += 1
             #self.game.screen.blit(self.body[self.walking%len(self.body)], (self.game.camera.camera.x+self.hitbox.x, self.game.camera.camera.y+self.hitbox.y-18))
         self.game.screen.blit(self.image, self.game.camera.apply(self.game.player))
-
-    def collide_with_enemy(self,dir):
-        if dir == 'x':
-            hits = pg.sprite.spritecollide(self, self.game.enemys, False)
-            if hits:
-                if self.vel.x > 0:
-                    self.pos.x = hits[0].rect.left - self.rect.width/2
-                if self.vel.x < 0:
-                    self.pos.x = hits[0].rect.right + self.rect.width/2
-                self.vel.x = 0
-                self.rect.centerx = self.pos.x
-        if dir == 'y':
-            hits = pg.sprite.spritecollide(self, self.game.enemys, False)
-            if hits:
-                if self.vel.y > 0:
-                    self.pos.y = hits[0].rect.top - self.rect.height/2
-                if self.vel.y < 0:
-                    self.pos.y = hits[0].rect.bottom + self.rect.height/2
-                self.vel.y = 0
-                self.rect.centery = self.pos.y
 
     def collide_with_boss(self,dir):
         if dir == 'x':
@@ -320,8 +334,7 @@ class Player(pg.sprite.Sprite):
                 self.max_health = self.health + self.amor
                 if self.max_health < PLAYER_HEALTH:
                     self.max_health = PLAYER_HEALTH
-
-            
+                    
     def rotate(self):
         # The vector to the target (the mouse position).
         mouse_pos = pg.mouse.get_pos()
@@ -351,30 +364,44 @@ class Player(pg.sprite.Sprite):
         self.rect = self.image.get_rect(center=self.rect.center)
 
 class Bullet(pg.sprite.Sprite):
-    def __init__(self, game, pos, dir):
+    def __init__(self, game, pos, dir, select):
         self.groups = game.all_sprites, game.bullets
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        self.size = WEAPONS[game.player.weapon]['bullet_size']
+        self.select = select
         self.load_images()
+        self.origin_images = self.image.copy()
+        radius, angle = dir.as_polar()
+        self.angle = angle
+        if select != 3:
+            self.image = pg.transform.rotate(self.origin_images, -angle)
         self.rect = self.image.get_rect()
+        self.hitbox =self.rect
         self.pos = vec(pos)
+
+        self.start_pos = vec(self.pos)
         self.rect.center = pos
         #spread = random.uniform(-BULLET_SPREAD,BULLET_SPREAD)
         self.vel = dir * WEAPONS[game.player.weapon]['bullet_speed']
         self.spawn_time = pg.time.get_ticks()
+        self.trace_status = True
 
     def load_images(self):
-        self.image = pg.Surface(self.size, pg.SRCALPHA)
-        self.image.fill(RED)
+        self.image = self.game.bullet_img[self.select]
+        self.image = pg.transform.scale(self.image, WEAPONS[self.game.player.weapon]['size'])
+        #self.image = pg.Surface(self.size, pg.SRCALPHA)
+        #self.image.fill(RED)
         pass
 
     def update(self):
         self.pos += self.vel * self.game.dt
         self.rect.center = self.pos
+        if self.game.player.pos.x < WIDTH and self.game.player.pos.y < HEIGHT:
+            pass
+        else:
+            self.start_pos -= vec(self.game.player.pos.x, -self.game.player.pos.y)
         if pg.sprite.spritecollideany(self, self.game.walls):
             self.kill()
-
         if pg.time.get_ticks() - self.spawn_time > WEAPONS[self.game.player.weapon]['bullet_lifetime']:
             self.kill()
         
@@ -393,7 +420,7 @@ class Grenade(pg.sprite.Sprite):
         self.speed = GRENADE_SPEED
         self.spawn_time = pg.time.get_ticks()
         self.rot = 0
-        
+        self.hitbox = self.rect
         self.power = magnitude
         if self.power > 300:
             pass
@@ -459,30 +486,32 @@ class Grenade(pg.sprite.Sprite):
         self.dir = self.dir.reflect(pg.math.Vector2(NV))
 
 class Enemy(pg.sprite.Sprite):
-    def __init__(self, game, x, y, color):
+    def __init__(self, game, x, y):
         self.groups = game.all_sprites, game.enemys
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.image = pg.Surface((TILESIZE,TILESIZE), pg.SRCALPHA)
-        self.image.fill(color)
         self.origin_image = self.image
         self.rect = self.image.get_rect()
         self.hitbox = ENEMY_HIT_BOX.copy()
         self.hitbox.center = self.rect.center
-        self.image.fill(RED)
-        self.pos = vec(x, y) * TILESIZE
+        self.pos = vec(x, y)
         self.vel = vec(0, 0)
         self.acc = vec(0, 0)
         self.rect.center = self.pos
+        self.rot = 0
+        self.contact = False
         #self.rect.x = self.pos.x*TILESIZE
         #self.rect.y = self.pos.y*TILESIZE
         #제 생각에 문제는 단 한번으로 좌표를 할당해도되는데 좌표할당행위를 나눠서 여러번 해서 
         #문제가 생겼던것 같습니다. 이렇게 하니 잘 되는것같네요!
-
         self.speed = random.choice(ENEMY_SPEED)
-        self.rot = 0
         self.health = ENEMY_HEALTH
         self.target = game.player
+        self.right = False
+        self.walking = 0
+        self.standing = False
+        print('init',self.pos)
 
     def avoid_enemys(self):
         for enemy in self.game.enemys:
@@ -493,29 +522,39 @@ class Enemy(pg.sprite.Sprite):
 
     def update(self):
         target_dist = self.target.pos - self.pos 
-        #if target_dist.length_squared() < DETECT_RADIUS**2:
+        if target_dist.length_squared() < DETECT_RADIUS**2:
         #self.rect.x -= self.speedy 
-        self.rot = target_dist.angle_to(vec(1, 0)) #target_dist == (self.game.player.pos - self.pos)
-        self.image = pg.transform.rotate(self.origin_image, self.rot)
-        self.rect = self.image.get_rect()
-        self.rect.center = self.pos
-        self.acc = vec(1, 0).rotate(-self.rot)
-        self.avoid_enemys()
-        self.acc.scale_to_length(self.speed)
-        self.acc += self.vel * ENEMY_FRICTION
-        self.vel += self.acc * self.game.dt
-        self.pos += self.vel * self.game.dt + 0.5 * self.acc * self.game.dt**2
-        self.hitbox.centerx = self.pos.x
-        collide_with_gameobject(self, self.game.walls, 'x')
-        self.hitbox.centery = self.pos.y
-        collide_with_gameobject(self, self.game.walls, 'y')
-        self.rect.center = self.hitbox.center
+            self.rot = target_dist.angle_to(vec(1, 0)) #target_dist == (self.game.player.pos - self.pos)
+            self.image = pg.transform.rotate(self.origin_image, self.rot) # check later! 꼮 반드시
+            self.rect = self.image.get_rect()
+            self.rect.center = self.pos
+            self.acc = vec(1, 0).rotate(-self.rot)
+            self.avoid_enemys()
+            try:
+                self.acc.scale_to_length(self.speed)
+            except ValueError:
+                pass
+            self.acc += self.vel * ENEMY_FRICTION
+            self.vel += self.acc * self.game.dt
+            self.pos += self.vel * self.game.dt + 0.5 * self.acc * self.game.dt**2
+            self.hitbox.centerx = self.pos.x
+            collide_with_gameobject(self, self.game.walls, 'x')
+            self.hitbox.centery = self.pos.y
+            collide_with_gameobject(self, self.game.walls, 'y')
+            self.rect.center = self.hitbox.center
+
         #bullet이랑 enemy가 충돌시 둘 다 kill
         #ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ주석if밑으로 여기까지 한칸씩 tap해주면 enemy와 player가 일정 거리이상 벌어지면 추격Xㅡㅡㅡㅡ
+
         if self.health <= 0:
             self.game.player.money += 100
             self.game.player.kill_enemy += 1
             self.kill()
+        if target_dist.x > 0:
+            self.right = True
+        else:
+            self.right = False
+        print('last',self.rect.x, self.rect.centerx)
 
     def draw_health(self):
         col = YELLOW
@@ -526,6 +565,22 @@ class Enemy(pg.sprite.Sprite):
             pg.draw.rect(self.image, col, self.health_bar)
             pg.draw.rect(self.image, WHITE, self.outer_edge, 1)
 
+    def draw_body(self):
+        self.body = []
+        for i in range(len(self.game.zombie1_img)):
+            for j in range(5):
+                self.body.append(self.game.zombie1_img[i])
+        if self.right:
+            for i in range(len(self.body)):
+                self.body[i] = pg.transform.flip(self.body[i], True, False)
+        if self.walking + 1 >= FPS:
+            self.walking = 0
+        if self.standing:
+            self.game.screen.blit(self.body[self.walking//FPS], (self.game.camera.camera.x+self.hitbox.x, self.game.camera.camera.y+self.hitbox.y+2))
+        else:
+            self.game.screen.blit(self.body[self.walking%len(self.body)], (self.game.camera.camera.x+self.hitbox.x, self.game.camera.camera.y+self.hitbox.y+2))
+            self.walking += 1
+        
 #아이템 상자 생성
 class Feed(pg.sprite.Sprite):
     def __init__(self, game, x, y):
@@ -543,7 +598,6 @@ class Feed(pg.sprite.Sprite):
         self.tween = tween.easeInOutSine
         self.step = 0
         self.dir = 1
-        print(self.pos)
 
     def update(self): #아이템 흔들거리게 해놨는데 좌표값이 이상함 수정 요망
         offset = FEED_RANGE * (self.tween(self.step / FEED_RANGE) - 0.5)
@@ -553,7 +607,6 @@ class Feed(pg.sprite.Sprite):
             self.step = 0
             self.dir *= -1
        
-
 class Explode(pg.sprite.Sprite):
     def __init__(self, game, pos):
         self.groups = game.all_sprites, game.explode
@@ -565,131 +618,71 @@ class Explode(pg.sprite.Sprite):
         self.pos = vec(pos)
         self.rect.center = pos
         self.spawn_time = pg.time.get_ticks()
-
+        self.hitbox = self.rect
     def load_images(self):
-        self.image = pg.Surface(self.size, pg.SRCALPHA)
-        self.image.fill(ORANGE)
+        self.image_list = self.game.explode_img
+        self.image = self.image_list[0]
         pass
 
     def update(self):
-        if pg.time.get_ticks() - self.spawn_time > EXPLOSION_LITETIME:
+        tick = pg.time.get_ticks() - self.spawn_time
+        if tick > EXPLOSION_LIFETIME:
             self.kill()
-        pass
+        #for i in range(len(self.game.explode_img)-1, -1, -1):
+        #    print(i)
+        #    if tick > (EXPLOSION_LIFETIME*i)/len(self.game.explode_img):
+        #        self.image = self.image_list[i]
+        if tick > (EXPLOSION_LIFETIME*6)/7:
+            self.image = self.image_list[6]
+        elif tick > (EXPLOSION_LIFETIME*5)/7:
+            self.image = self.image_list[5]
+        elif tick > (EXPLOSION_LIFETIME*4)/7:
+            self.image = self.image_list[4]
+        elif tick > (EXPLOSION_LIFETIME*3)/7:
+            self.image = self.image_list[3]
+        elif tick > (EXPLOSION_LIFETIME*2)/7:
+            self.image = self.image_list[2]
+        elif tick > (EXPLOSION_LIFETIME)/7:
+            self.image = self.image_list[1]
     pass
 
 class Wall(pg.sprite.Sprite):
-    def __init__(self, game, x, y, color):
+    def __init__(self, game, x, y, color, img):
         self.groups = game.all_sprites, game.walls
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        self.image = pg.Surface((TILESIZE,TILESIZE))
-        self.image.fill(color)
+        if img != None:
+            self.image = img
+        else:
+            self.image = pg.Surface((TILESIZE,TILESIZE))
+            self.image.fill(color)
         self.rect = self.image.get_rect()
         self.pos = vec(x,y)
         self.rect.x = self.pos.x*TILESIZE
         self.rect.y = self.pos.y*TILESIZE
+
+class Obstacle(pg.sprite.Sprite):
+    def __init__(self, game, x, y, w, h):
+        self.groups = game.walls
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.rect = pg.Rect(x, y, w, h)
+        self.x = x
+        self.y = y
+        self.rect.x = self.x
+        self.rect.y = self.y   
 
 class Ground(pg.sprite.Sprite):
     def __init__(self, game, x, y, image):
         self.groups = game.all_sprites, game.ground
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        self.image = game.ground_img
+        self.image = image
         self.rect = self.image.get_rect()
         self.pos = vec(x,y)
         self.rect.x = self.pos.x*TILESIZE
         self.rect.y = self.pos.y*TILESIZE
 
-# class Button(pg.sprite.Sprite):
-#     def __init__(self, surface, x, y, width, height, state='', function=0, color=(255,255,255), hover_color=(255,255,255), border=True, border_width=2, border_color=(0,0,0), text='', font_name='arial', text_size=20, text_color=(0,0,0), bold_text=False):
-#         self.groups = game.all_sprites, game.buttons
-#         pg.sprite.Sprite.__init__(self, self.groups)
-#         self.game = game
-#         self.x = x
-#         self.y = y
-#         self.pos = vec(x,y)
-#         self.width = width
-#         self.height = height
-#         self.surface = surface.self.image = pg.Surface((width, height))
-#         self.rect = self.image.get_rect()
-#         self.rect.topleft = self.pos
-#         self.state = state
-#         self.function = function
-#         self.color = color
-#         self.hover_color = hover_color
-#         self.border = border
-#         self.border_width = border_width
-#         self.border_color = border_color
-#         self.text = text
-#         self.font_name = font_name
-#         self.text_size = text_size
-#         self.text_color = text_color
-#         self.bold_text = bold_text
-#         self.hovered = False
-
-#         #좌표 이렇게 하는건가?
-#         self.rect.centerx = WIDTH/2
-#         self.rect.centery = HEIGHT/2
-
-#         #update에서 함수를 그릴 수 있음
-#         def update(self):
-#             if self.mouse_hovering(pos):
-#                 self.hovered = True
-#             else:
-#                 self.hovered = False
-            # def buy_shotgun():
-
-            # def buy_sniper():
-
-            # def buy_firethrower():
-
-
-
-        # def draw_buy_button(self):
-        #     if self.border:
-        #         self.image.fill(self.border_color)
-        #         if self.hovered:
-        #             pg.draw.rect(self.image, self.hover_color, (self.border_width, self.border_width, self.width-(self.border_width*2), self.height-(self.border_width*2)))
-        #         else:
-        #             pg.draw.rect(self.image, self.self.color, (self.border_width, self.border_width, self.width-(self.border_width*2), self.height-(self.border_width*2)))
-
-        #     else:
-        #         self.image.fill(self.color)
-        #     if len(self.text) > 0:
-        #         self.show_text()
-        #     self.surface.blit(self.image, self.pos)
-
-        # def show_text(self):
-        #     font = pg.font.SysFont(self.font_name, self.text_size, bold=self.bold_text)
-        #     text = font.render(self.text, False, self.text_color)
-        #     size = text.get_size()
-        #     x, y = self.width//2-(size[0]//2), self.height//2-(size[1]//2)
-        #     pos = vec(x, y)
-        #     self.image.blit(text, pos)
-
-        # def mouse_hovering(self, pos):
-        #     if pos[0] > self.pos[0] and pos[0] < self.pos[0]+self.width:
-        #         if pos[1] > self.pos[1] and pos[1] < self.pos[1]+self.height:
-        #             return True
-        #     return False
-
-        # 마우스 버튼을 클릭 할 때마다 게임에서 함수가 호출됨
-        # def click():
-        #     if self.function != 0: #함수가 그 곳에 있는지 확인
-        #         self.function()
-        #         self.buy_shotgun()
-        #         self.buy_sniper()
-        #         self.buy_firethrower()
-
-        # def buy_shotgun():
-
-        # def buy_sniper():
-
-        # def buy_firethrower():   --------->>>>> 이 3개 함수 update에서 만듬?
-
-        #클릭 했을 때 호출되는 함수 만들어야함 (update에서)
-        #버튼 이미지
-        #버튼 좌표?
 
 
 class Boss(pg.sprite.Sprite):
@@ -749,4 +742,43 @@ class Boss(pg.sprite.Sprite):
             self.kill()
 
 
-    
+class button():
+    def __init__(self, x, y, width, height):
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+ 
+    def isOver(self, pos):
+        if pos[0] > self.x and pos[0] < self.x + self.width:
+            if pos[1] > self.y and pos[1] < self.y + self.height:
+                return True
+   
+
+class Trace(pg.sprite.Sprite):
+    def __init__(self, game, pos, angle, vel, weapon_name):
+        self.groups = game.all_sprites, game.trace
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.size = (1,1)
+        self.load_images()
+        self.rect = self.image.get_rect()
+        self.pos = vec(pos)
+        self.rect.center = pos
+        self.spawn_time = pg.time.get_ticks()
+        self.vel = vel
+        self.weapon_name = weapon_name
+
+    def load_images(self):
+        self.image = pg.Surface(self.size, pg.SRCALPHA)
+        self.image.fill(RED)
+        pass
+
+    def update(self):
+        self.pos += self.vel*self.game.dt
+        self.rect.center = self.pos
+        if pg.sprite.spritecollideany(self, self.game.walls):
+            self.kill()
+        if pg.time.get_ticks() - self.spawn_time > WEAPONS[self.weapon_name]['bullet_lifetime']:
+            self.kill()
+
