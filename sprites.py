@@ -49,7 +49,6 @@ class Player(pg.sprite.Sprite):
         #self.size = (TILESIZE,TILESIZE)
         # showing size of the player / player의 size를 지정해줌. 사실 의미없는짓인것 같아서 이후에 간소화 할시 제거 예정
         self.gun_select = 0
-
         self.weapon_img = [game.pistol_img, game.shotgun_img, game.sniper_img, game.flamethrower_img]
         self.load_images()
         #self.image = self.standing_frames[0]
@@ -430,9 +429,9 @@ class Enemy(pg.sprite.Sprite):
         self.groups = game.all_sprites, game.enemys
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        self.image = pg.Surface((TILESIZE,TILESIZE), pg.SRCALPHA)
+        self.image = pg.Surface((TILESIZE,TILESIZE*3), pg.SRCALPHA)
         #self.image.fill(RED)
-        #self.origin_image = self.image
+        self.origin_image = self.image
         self.rect = self.image.get_rect()
         self.hitbox = ENEMY_HIT_BOX.copy()
         self.hitbox.center = self.rect.center
@@ -465,12 +464,15 @@ class Enemy(pg.sprite.Sprite):
         #if target_dist.length_squared() < DETECT_RADIUS**2:
         #self.rect.x -= self.speedy 
         self.rot = target_dist.angle_to(vec(1, 0)) #target_dist == (self.game.player.pos - self.pos)
-        #self.image = pg.transform.rotate(self.origin_image, 0)
+        self.image = pg.transform.rotate(self.origin_image, 0)
         self.rect = self.image.get_rect()
         self.rect.center = self.pos
         self.acc = vec(1, 0).rotate(-self.rot)
         self.avoid_enemys()
-        self.acc.scale_to_length(self.speed)
+        try:
+            self.acc.scale_to_length(self.speed)
+        except ValueError:
+            pass
         self.acc += self.vel * ENEMY_FRICTION
         self.vel += self.acc * self.game.dt
         self.pos += self.vel * self.game.dt + 0.5 * self.acc * self.game.dt**2

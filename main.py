@@ -147,7 +147,7 @@ class Game:
         self.second = ((pg.time.get_ticks() - self.start_tick)/1000)
 
         #hits -> used sprite collide method, (x, y, default boolean) collision check
-        hits = pg.sprite.pygame.sprite.spritecollide(self.player, self.enemys, False, collide_hit_rect)
+        hits = pg.sprite.pygame.sprite.spritecollide(self.player, self.enemys, False, collide_hit_box)
         for hit in hits:
             if self.player.amor != 0:
                 self.player.amor -= ENEMY_DAMAGE

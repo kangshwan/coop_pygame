@@ -31,7 +31,7 @@ GOLD      = (178,151,  0)
 #player properties
 PLAYER_ACC = 0.45
 PLAYER_FRICTION = -0.05
-PLAYER_HIT_BOX = pg.Rect(0, 0, 35, 35)
+PLAYER_HIT_BOX = pg.Rect(0, 0, 32, 32)
 PLAYER_HIT_BOX_OFFSET = vec(20,20)
 PLAYER_HEALTH = 100
 
