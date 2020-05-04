@@ -23,7 +23,7 @@ class Game:
         #pg.mixer.init('')
         self.screen = pg.display.set_mode(WINDOW_SIZE)
        
-        print(self.screen)
+
         # make a screen for the game / 게임을 하기위한 screen 생성(창 크기 설정)
         pg.display.set_caption(TITLE)
         # this is the tiltle of the game you'll see in the window / 창의 제목 결정
@@ -313,12 +313,12 @@ class Game:
     def start_draw(self):
         self.screen.blit(self.start_screen, (0,0))
         self.start_group.draw(self.screen)
-        pg.draw.rect(self.screen, WHITE,[450, 330, 100, 40])
-        pg.draw.rect(self.screen, WHITE,[450, 380, 100, 40])
-        self.draw_text("START", 22, BLACK, WIDTH - 452, HEIGHT - 300)
-        self.draw_text("START", 22, DARKGREY, WIDTH - 454, HEIGHT - 303)
-        self.draw_text("EXIT", 22, BLACK, WIDTH - 448, HEIGHT - 250)
-        self.draw_text("EXIT", 22, DARKGREY, WIDTH - 450, HEIGHT - 253)
+        # pg.draw.rect(self.screen, WHITE,[155, 440, 100, 40])
+        # pg.draw.rect(self.screen, WHITE,[155, 485, 100, 40])
+        self.draw_text("START", 30, BLACK, WIDTH - 752, HEIGHT - 200)
+        self.draw_text("START", 30, DARKGREY, WIDTH - 754, HEIGHT - 203)
+        self.draw_text("EXIT", 30, BLACK, WIDTH - 748, HEIGHT - 150)
+        self.draw_text("EXIT", 30, DARKGREY, WIDTH - 750, HEIGHT - 153)
         print(self.screen)
         pg.display.update()
 
@@ -331,8 +331,8 @@ class Game:
     
 
 
-startbutton = button(450,330,100,40)
-exitbutton = button(450,380,100,40)
+startbutton = button(155, 440, 100, 40)
+exitbutton = button(155, 485, 100, 40)
 g = Game()
 while g.start:
     g.show_start_screen() 
