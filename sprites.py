@@ -496,27 +496,27 @@ class Enemy(pg.sprite.Sprite):
 
     def update(self):
         target_dist = self.target.pos - self.pos 
-        #if target_dist.length_squared() > DETECT_RADIUS**2:
-        #    self.contact = not self.contact
+        if target_dist.length_squared() < DETECT_RADIUS**2:
         #self.rect.x -= self.speedy 
-        self.rot = target_dist.angle_to(vec(1, 0)) #target_dist == (self.game.player.pos - self.pos)
-        self.image = pg.transform.rotate(self.origin_image, 0)
-        self.rect = self.image.get_rect()
-        self.rect.center = self.pos
-        self.acc = vec(1, 0).rotate(-self.rot)
-        self.avoid_enemys()
-        try:
-            self.acc.scale_to_length(self.speed)
-        except ValueError:
-            pass
-        self.acc += self.vel * ENEMY_FRICTION
-        self.vel += self.acc * self.game.dt
-        self.pos += self.vel * self.game.dt + 0.5 * self.acc * self.game.dt**2
-        self.hitbox.centerx = self.pos.x
-        enemy_collide_with_gameobject(self, self.game.walls, 'x')
-        self.hitbox.centery = self.pos.y
-        enemy_collide_with_gameobject(self, self.game.walls, 'y')
-        self.rect.center = self.hitbox.center
+            self.rot = target_dist.angle_to(vec(1, 0)) #target_dist == (self.game.player.pos - self.pos)
+            self.image = pg.transform.rotate(self.origin_image, self.rot) # check later! 꼮 반드시
+            self.rect = self.image.get_rect()
+            self.rect.center = self.pos
+            self.acc = vec(1, 0).rotate(-self.rot)
+            self.avoid_enemys()
+            try:
+                self.acc.scale_to_length(self.speed)
+            except ValueError:
+                pass
+            self.acc += self.vel * ENEMY_FRICTION
+            self.vel += self.acc * self.game.dt
+            self.pos += self.vel * self.game.dt + 0.5 * self.acc * self.game.dt**2
+            self.hitbox.centerx = self.pos.x
+            collide_with_gameobject(self, self.game.walls, 'x')
+            self.hitbox.centery = self.pos.y
+            collide_with_gameobject(self, self.game.walls, 'y')
+            self.rect.center = self.hitbox.center
+
         #bullet이랑 enemy가 충돌시 둘 다 kill
         #ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ주석if밑으로 여기까지 한칸씩 tap해주면 enemy와 player가 일정 거리이상 벌어지면 추격Xㅡㅡㅡㅡ
 
@@ -656,6 +656,20 @@ class Ground(pg.sprite.Sprite):
         self.rect.x = self.pos.x*TILESIZE
         self.rect.y = self.pos.y*TILESIZE
 
+
+class button():
+    def __init__(self, x, y, width, height):
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+ 
+    def isOver(self, pos):
+        if pos[0] > self.x and pos[0] < self.x + self.width:
+            if pos[1] > self.y and pos[1] < self.y + self.height:
+                return True
+   
+
 class Trace(pg.sprite.Sprite):
     def __init__(self, game, pos, angle, vel, weapon_name):
         self.groups = game.all_sprites, game.trace
@@ -682,3 +696,4 @@ class Trace(pg.sprite.Sprite):
             self.kill()
         if pg.time.get_ticks() - self.spawn_time > WEAPONS[self.weapon_name]['bullet_lifetime']:
             self.kill()
+

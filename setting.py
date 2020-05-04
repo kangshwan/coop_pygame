@@ -5,8 +5,10 @@ vec = pg.math.Vector2
 TITLE = "Zombie Survival"
 WIDTH = 960
 HEIGHT = 640
+
 FPS = 60
 WINDOW_SIZE = [WIDTH,HEIGHT]
+
 
 TILESIZE = 32
 GRIDWIDTH = WIDTH/TILESIZE
@@ -129,6 +131,7 @@ EXPLODE_IMG = ['explosion1_1.png', 'explosion1_2.png', 'explosion1_3.png','explo
 
 PLAYER_IMG1 = 'move1.png'
 PLAYER_IMG2 = 'move2.png'
+START_SCREEN = 'main.jpg'
 
 ZOMBIE1_IMG = ['zombie1_1.png', 'zombie1_2.png', 'zombie1_3.png', 'zombie1_4.png', 'zombie1_5.png', 'zombie1_6.png', 'zombie1_7.png']
 

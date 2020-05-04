@@ -19,17 +19,25 @@ class Game:
     def __init__(self):
         # initialize game window, etc
         pg.init()
-        #pg.mixer.init() # for use of music
-        #pg.mixer.init('')
+        pg.mixer.init() # for use of music
+        pg.mixer.music.load('Sound/sound1.mp3')
+        pg.mixer.music.play()
         self.screen = pg.display.set_mode(WINDOW_SIZE)
+       
+
         # make a screen for the game / 게임을 하기위한 screen 생성(창 크기 설정)
         pg.display.set_caption(TITLE)
         # this is the tiltle of the game you'll see in the window / 창의 제목 결정
         self.clock = pg.time.Clock()
         self.running = True
         self.start = True
-
+        self.selecting = True
         self.load_data()
+
+        self.font_dir = os.path.dirname(__file__)
+        fnt_dir = os.path.join(self.font_dir, 'font')
+        self.brankovic_font = os.path.join(fnt_dir, 'brankovic.ttf')
+
                 #메뉴판 만들고
                 #button -> game start 누르면 self.game_running()
 
@@ -50,6 +58,7 @@ class Game:
             #events for keyboard and mouse input / 이벤트를 처리하기 위함. 항상 pygame은 event 이벤트발생(사용자의 입력) -> update(입력에 따른 변화를 업데이트해줌) -> draw 이후 그림을 그림
             
             self.draw()
+           
 
     def new(self):
         #when start a new game
@@ -71,6 +80,7 @@ class Game:
         self.explode     = pg.sprite.Group()
         self.ground      = pg.sprite.Group()
         self.trace       = pg.sprite.Group()
+
         self.feed_pos = []
         self.enemy_pos = []
         self.paused = False 
@@ -280,6 +290,7 @@ class Game:
     def events(self):
         # game loop events
         key_1 = pg.key.get_pressed()
+        
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 if self.playing:
@@ -296,11 +307,6 @@ class Game:
             if key_1[pg.K_PERIOD]:
                 self.draw_debug = not self.draw_debug
             
-    #def draw_grid(self):
-    #    for x in range(0, WIDTH, TILESIZE):
-    #        pg.draw.line(self.screen, LIGHTGREY, (x,0), (x, HEIGHT))
-    #        for y in range(0, HEIGHT, TILESIZE):
-    #            pg.draw.line(self.screen, LIGHTGREY, (0,y), (WIDTH,y))
 
     def draw(self):
         # game loop - draw
@@ -375,9 +381,89 @@ class Game:
             self.zombie1_img.append(pg.transform.scale(pg.image.load(path.join(enemy_folder, ZOMBIE1_IMG[i])).convert_alpha(), (35,56)))
         pass
         self.poke_font = path.join(font_folder, 'PokemonGb-RAeo.ttf')
+        self.start_screen = pg.image.load(path.join(img_folder, START_SCREEN)).convert_alpha()
+        self.menu_select = pg.image.load(os.path.join(img_folder, PLAYER_IMG1))
+    
+        pass
+    
+    def show_start_screen(self):
+        #GAME START시에 나타낼 스크린
+        #pg.mixer.music.load(os.path.join(self.snd_dir, 'Mysterious.ogg'))
+        #pg.mixer.music.play(loops=-1)
+        self.running = True
+        self.start_new()
+        
+        #pg.mixer.music.fadeoRut(500)
 
+    def start_new(self):
+        self.start_group = pg.sprite.Group()
+        
+        self.start_run()
+
+
+    def start_run(self):
+        #start loop
+        
+            
+        self.start_playing = True
+        while self.start_playing:
+            self.clock.tick(FPS)
+            self.start_events()
+            self.start_update()
+            #self.check_range()
+            self.start_draw()
+            
+    def start_events(self):
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                if self.start_playing:
+                    self.start_playing = False
+                self.start = False
+           
+            if event.type == pg.MOUSEBUTTONDOWN:
+                pos = pg.mouse.get_pos()
+                if startbutton.isOver(pos):
+                    while g.running:
+    #     # this g.running will take control of game over or not
+                        g.new()
+                    pg.quit()
+                elif exitbutton.isOver(pos):
+                    pg.quit()
+                    quit()
+                    
+            
+    def start_update(self):
+        self.start_group.update()
+
+    def start_draw(self):
+        self.screen.blit(self.start_screen, (0,0))
+        self.start_group.draw(self.screen)
+        # pg.draw.rect(self.screen, WHITE,[155, 440, 100, 40])
+        # pg.draw.rect(self.screen, WHITE,[155, 485, 100, 40])
+        self.draw_text("START", 30, BLACK, WIDTH - 752, HEIGHT - 200)
+        self.draw_text("START", 30, DARKGREY, WIDTH - 754, HEIGHT - 203)
+        self.draw_text("EXIT", 30, BLACK, WIDTH - 748, HEIGHT - 150)
+        self.draw_text("EXIT", 30, DARKGREY, WIDTH - 750, HEIGHT - 153)
+       
+        pg.display.update()
+
+    def draw_text(self, text, size, color, x, y):
+        font = pg.font.Font(self.brankovic_font, size)
+        text_surface = font.render(text, True, color)
+        text_rect = text_surface.get_rect()
+        text_rect.midtop = (x, y)
+        self.screen.blit(text_surface, text_rect)
+    
+
+
+startbutton = button(155, 440, 100, 40)
+exitbutton = button(155, 485, 100, 40)
 g = Game()
 while g.start:
+
+    g.show_start_screen() 
+    
+    
     # Game start when g.start is True
     g.running = True
     while g.running:
@@ -386,3 +472,4 @@ while g.start:
     if g.running == False:
         pg.quit()
     pg.quit()
+
