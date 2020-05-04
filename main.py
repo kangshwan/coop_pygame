@@ -141,7 +141,6 @@ class Game:
             if tile_object.name == 'enemy_spawn':
                 self.enemy_pos.append((tile_object.x, tile_object.y))
                 Enemy(self, tile_object.x, tile_object.y)
-                print('First pos', tile_object.x, tile_object.y)
             if tile_object.name == 'wall':
                 Obstacle(self, tile_object.x, tile_object.y, tile_object.width, tile_object.height)
             
@@ -265,7 +264,7 @@ class Game:
                 self.player.health -= GRENADE_DAMAGE
             hit.vel = vec(0, 0)
             if self.player.health <= 0:
-                self.playing = False
+                self.playing = False    
             rot = (self.player.pos - hit.pos).angle_to(vec(1,0))
             self.player.pos += vec(EXPLOSION_KNOCKBACK, 0).rotate(-rot)
         
@@ -312,8 +311,8 @@ class Game:
             if isinstance(sprite, Enemy):
                 sprite.draw_health()
                 sprite.draw_body()
+                print('after drawbody')
             if self.draw_debug:
-                pg.draw.rect(self.screen, RED, self.camera.apply_rect(sprite.rect),1)
                 pg.draw.rect(self.screen, CYAN, self.camera.apply_rect(sprite.hitbox),1)
 
             if isinstance(sprite, Player):
@@ -321,9 +320,11 @@ class Game:
                 #self.screen.blit(sprite.image, self.camera.apply(sprite))
                 if self.draw_debug:
                     pg.draw.rect(self.screen, CYAN, self.camera.apply_rect(sprite.hitbox),1)
-                    pg.draw.rect(self.screen, CYAN, self.camera.apply_rect(sprite.rect),1)
+                    pg.draw.rect(self.screen, RED, self.camera.apply_rect(sprite.rect),1)
             else:
+                print('this is that sprite')
                 self.screen.blit(sprite.image, self.camera.apply(sprite))
+                print(sprite.rect)
             if self.draw_debug:
                 for wall in self.walls:
                     pg.draw.rect(self.screen, CYAN, self.camera.apply_rect(wall.rect),1)

@@ -8,7 +8,7 @@ from time import sleep
 import math
 vec = pg.math.Vector2
 
-def collide_with_gameobject(sprite,group,dir):
+def collide_with_gameobject(sprite, group, dir):
     if dir == 'x':
         # see collide with x axis
         # x 방향으로 충돌 확인
@@ -16,14 +16,14 @@ def collide_with_gameobject(sprite,group,dir):
         if hits:
             if hits[0].rect.centerx > sprite.hitbox.centerx:
                 sprite.pos.x = hits[0].rect.left - sprite.hitbox.width/2
-                # x 방향 속도가 양수일 경우 -> 오른쪽으로 진행하고있음 따라서 position을 다시 세팅해줌
+                # 왼쪽에서 박을경우
             if hits[0].rect.centerx < sprite.hitbox.centerx:
                 sprite.pos.x = hits[0].rect.right + sprite.hitbox.width/2
-                # x 방향 속도가 음수일 경우 -> 왼쪽으로 진행하고있음 따라서 position을 다시 세팅해줌
+                # 오른쪽에서 받아올경우
             sprite.vel.x = 0
+            sprite.acc.x = 0
             # 부딫혔으니 x방향 속도를 0으로 해줌.
             sprite.hitbox.centerx = sprite.pos.x
-            return True
             
     if dir == 'y':
         hits = pg.sprite.spritecollide(sprite, group, False,collide_hit_rect)
@@ -37,7 +37,40 @@ def collide_with_gameobject(sprite,group,dir):
             sprite.vel.y = 0
             # 부딫혔으니 y방향 속도를 0으로 해줌
             sprite.hitbox.centery = sprite.pos.y
+def enemy_collide_with_gameobject(sprite, group, dir):
+    if dir == 'x':
+        # see collide with x axis
+        # x 방향으로 충돌 확인
+        hits = pg.sprite.spritecollide(sprite, group, False, collide_hit_rect)
+        if hits:
+            print('before:', sprite.pos.x)
+            if hits[0].rect.centerx > sprite.hitbox.centerx:
+                sprite.pos.x = hits[0].rect.left - sprite.hitbox.width/2
+                # 왼쪽에서 박을경우
+            if hits[0].rect.centerx < sprite.hitbox.centerx:
+                sprite.pos.x = hits[0].rect.right + sprite.hitbox.width/2
+                # 오른쪽에서 받아올경우
+                print('from right',hits[0].rect.right, sprite.hitbox.width/2)
+            sprite.vel.x = 0
+            sprite.acc.x = 0
+            # 부딫혔으니 x방향 속도를 0으로 해줌.
+            print('after:', sprite.pos.x)
+            sprite.hitbox.centerx = sprite.pos.x
+            print('last change',sprite.hitbox.centerx, sprite.pos.x)
+            return True
 
+    if dir == 'y':
+        hits = pg.sprite.spritecollide(sprite, group, False,collide_hit_rect)
+        if hits:
+            if hits[0].rect.centery > sprite.hitbox.centery:
+                sprite.pos.y = hits[0].rect.top - sprite.hitbox.height/2
+                # y 방향 속도가 양수일 경우 -> 아래으로 진행하고있음 따라서 position을 다시 세팅해줌
+            if hits[0].rect.centery < sprite.hitbox.centery:
+                sprite.pos.y = hits[0].rect.bottom + sprite.hitbox.height/2
+                # y 방향 속도가 양수일 경우 -> 위쪽으로 진행하고있음 따라서 position을 다시 세팅해줌
+            sprite.vel.y = 0
+            # 부딫혔으니 y방향 속도를 0으로 해줌
+            sprite.hitbox.centery = sprite.pos.y
 
 class Player(pg.sprite.Sprite):
     
@@ -439,6 +472,7 @@ class Enemy(pg.sprite.Sprite):
         self.pos = vec(x, y)
         self.vel = vec(0, 0)
         self.acc = vec(0, 0)
+        self.rect.center = self.pos
         self.rot = 0
         self.contact = False
         #self.rect.x = self.pos.x*TILESIZE
@@ -462,6 +496,8 @@ class Enemy(pg.sprite.Sprite):
 
     def update(self):
         target_dist = self.target.pos - self.pos 
+        #if target_dist.length_squared() > DETECT_RADIUS**2:
+        #    self.contact = not self.contact
         #self.rect.x -= self.speedy 
         self.rot = target_dist.angle_to(vec(1, 0)) #target_dist == (self.game.player.pos - self.pos)
         self.image = pg.transform.rotate(self.origin_image, 0)
@@ -475,27 +511,18 @@ class Enemy(pg.sprite.Sprite):
             pass
         self.acc += self.vel * ENEMY_FRICTION
         self.vel += self.acc * self.game.dt
-        if target_dist.length_squared() > DETECT_RADIUS**2:
-            self.contact = not self.contact
-        if not self.contact:
-            self.acc = vec(0,0)
-            self.vel = vec(0,0)
-            self.hitbox.x = self.pos.x
-            self.hitbox.y = self.pos.y
-            self.rect.center = self.hitbox.center
-        #
-        #    self.vel = vec(0,0)
-        #    self.acc = vec(0,0)
-        #else:
-        #    self.pos += self.vel * self.game.dt + 0.5 * self.acc * self.game.dt**2
-        #    print('after',self.pos)
-        #    self.hitbox.x = self.pos.x
-        #    collide_with_gameobject(self, self.game.walls, 'x')
-        #    self.hitbox.y = self.pos.y
-        #    collide_with_gameobject(self, self.game.walls, 'y')
-        #    self.rect.center = self.hitbox.center
+        self.pos += self.vel * self.game.dt + 0.5 * self.acc * self.game.dt**2
+        print(self.hitbox.x, self.pos.x)
+        self.hitbox.x = self.pos.x
+        if enemy_collide_with_gameobject(self, self.game.walls, 'x'):
+            print('True?',self.hitbox.x, self.hitbox.centerx)
+            print('then,', self.pos.x)
+        self.hitbox.y = self.pos.y
+        enemy_collide_with_gameobject(self, self.game.walls, 'y')
+        self.rect.center = self.hitbox.center
         #bullet이랑 enemy가 충돌시 둘 다 kill
         #ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ주석if밑으로 여기까지 한칸씩 tap해주면 enemy와 player가 일정 거리이상 벌어지면 추격Xㅡㅡㅡㅡ
+
         if self.health <= 0:
             self.game.player.money += 100
             self.kill()
@@ -503,6 +530,7 @@ class Enemy(pg.sprite.Sprite):
             self.right = True
         else:
             self.right = False
+        print('last',self.rect.x, self.rect.centerx)
 
     def draw_health(self):
         col = YELLOW
@@ -514,7 +542,6 @@ class Enemy(pg.sprite.Sprite):
             pg.draw.rect(self.image, WHITE, self.outer_edge, 1)
 
     def draw_body(self):
-        print('draw',self.pos)
         self.body = []
         for i in range(len(self.game.zombie1_img)):
             for j in range(5):
