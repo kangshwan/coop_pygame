@@ -33,7 +33,7 @@ class Game:
         self.font_dir = os.path.dirname(__file__)
         fnt_dir = os.path.join(self.font_dir, 'font')
         self.brankovic_font = os.path.join(fnt_dir, 'brankovic.ttf')
-    
+        
 
     
                 #메뉴판 만들고
@@ -78,8 +78,9 @@ class Game:
         self.feeds       = pg.sprite.Group()
         self.explode     = pg.sprite.Group()
         self.ground      = pg.sprite.Group()
-       
+
         
+       
         self.feed_pos = []
         self.enemy_pos = []
         self.paused = False 
@@ -198,6 +199,7 @@ class Game:
     def events(self):
         # game loop events
         key_1 = pg.key.get_pressed()
+        
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 if self.playing:
@@ -210,6 +212,8 @@ class Game:
             if key_1[pg.K_p]:
                 self.paused = not self.paused
                 self.player.standing = True
+            
+
             
     def draw_grid(self):
         for x in range(0, WIDTH, TILESIZE):
@@ -269,49 +273,43 @@ class Game:
         self.select = Select(self)
         self.start_group.add(self.select)
         self.start_run()
+        
 
     def start_run(self):
         #start loop
+        
+            
         self.start_playing = True
         while self.start_playing:
             self.clock.tick(FPS)
             self.start_events()
             self.start_update()
+            #self.check_range()
             self.start_draw()
+            
 
     def start_events(self):
+       
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 if self.start_playing:
                     self.start_playing = False
                 self.start = False
+            
 
-
-
+   
     def start_update(self):
         self.start_group.update()
 
     def start_draw(self):
         self.screen.blit(self.start_screen, (0,0))
         self.start_group.draw(self.screen)
-        if self.select.select_number == 0:
-           
-            self.draw_text("START", 22, BLACK, WIDTH - 52, HEIGHT - 300)
-            self.draw_text("START", 22, DARKGREY, WIDTH - 54, HEIGHT - 303)
-            self.draw_text("EXIT", 22, BLACK, WIDTH - 48, HEIGHT - 250)
-            self.draw_text("EXIT", 22, DARKGREY, WIDTH - 50, HEIGHT - 253)
-        if self.select.select_number == 1:
-           
-            self.draw_text("START", 30, BLACK, WIDTH - 52, HEIGHT - 300)
-            self.draw_text("START", 30, DARKGREY, WIDTH - 54, HEIGHT - 303)
-            self.draw_text("EXIT", 22, BLACK, WIDTH - 48, HEIGHT - 250)
-            self.draw_text("EXIT", 22, DARKGREY, WIDTH - 50, HEIGHT - 253)
-        if self.select.select_number == 2:
-            
-            self.draw_text("START", 22, BLACK, WIDTH - 52, HEIGHT - 300)
-            self.draw_text("START", 22, DARKGREY, WIDTH - 54, HEIGHT - 303)
-            self.draw_text("EXIT", 30, BLACK, WIDTH - 48, HEIGHT - 250)
-            self.draw_text("EXIT", 30, DARKGREY, WIDTH - 50, HEIGHT - 253)
+        pg.draw.rect(self.screen, WHITE,[450, 330, 100, 40])
+        self.draw_text("START", 22, BLACK, WIDTH - 452, HEIGHT - 300)
+        self.draw_text("START", 22, DARKGREY, WIDTH - 454, HEIGHT - 303)
+        self.draw_text("EXIT", 22, BLACK, WIDTH - 448, HEIGHT - 250)
+        self.draw_text("EXIT", 22, DARKGREY, WIDTH - 450, HEIGHT - 253)
+      
         pg.display.update()
 
     def draw_text(self, text, size, color, x, y):
@@ -320,6 +318,8 @@ class Game:
         text_rect = text_surface.get_rect()
         text_rect.midtop = (x, y)
         self.screen.blit(text_surface, text_rect)
+    def check(self, )
+
 
 
 g = Game()

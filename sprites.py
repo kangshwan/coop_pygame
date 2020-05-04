@@ -589,10 +589,20 @@ class Select(pg.sprite.Sprite):
         self.select_number = 0
 
     def update(self):
-        self.acc = vec(0, 0)
+        self.button = True
         keys = pg.mouse.get_pressed()
         
-        if keys[0]:
         
-            pg.quit()
-            quit()
+
+class button(pg.sprite.Sprite):
+    def __init__(self, x, y, width, height):
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+ 
+    def isOver(self, pos):
+        if pos[0] > self.x and pos[0] < self.x + self.width:
+            if pos[1] > self.y and pos[1] < self.y + self.height:
+                return True
+   
