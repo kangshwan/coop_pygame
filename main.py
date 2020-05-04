@@ -96,10 +96,14 @@ class Game:
                     self.player = Player(self, col, row)
                 if tile == 'I':
                     self.feed_pos.append([(col,row),False])
+
+        for row, tiles in enumerate(self.map.data):
+            #enumerate는 한 배열에 대하여 index와 그 값을 동시에 가져올수 있음. -> 자세한건 구글링
+            for col, tile in enumerate(tiles):
                 if tile == 'E':
                     self.enemy_pos.append((col,row))
-                    #Enemy(self, col, row, RED)
-                    #enemy_pos에 col,row 저장. 추후 feed처럼 append하여 생성하면 좋아보임.
+                    Enemy(self, col, row, RED)        
+        #enemy_pos에 col,row 저장. 추후 feed처럼 append하여 생성하면 좋아보임.
         self.camera = Camera(self.map.width, self.map.height)
         # make Camera class / 카메라 객체 생성
         
@@ -256,6 +260,7 @@ class Game:
         for sprite in self.all_sprites:
             if isinstance(sprite, Enemy):
                 sprite.draw_health()
+                sprite.draw_body()
             if isinstance(sprite, Player):
                 sprite.draw_body()
                 #self.screen.blit(sprite.image, self.camera.apply(sprite))
@@ -280,6 +285,7 @@ class Game:
         font_folder = path.join(game_folder, 'Font')
         self.bullet_img = []
         self.explode_img = []
+        self.zombie1_img = []
         self.map = Map(path.join(game_folder,'map','map.txt'))
         self.ground_img = pg.image.load(path.join(img_folder, GROUND_IMG)).convert_alpha()
         self.grenade_img = pg.image.load(path.join(img_folder, GRENADE_THROW_IMG)).convert_alpha()
@@ -294,6 +300,8 @@ class Game:
         for i in range(7):
             self.explode_img.append(pg.image.load(path.join(img_folder, EXPLODE_IMG[i])).convert_alpha())
         self.poke_font = path.join(font_folder, 'PokemonGb-RAeo.ttf')
+        for i in range(7):
+            self.zombie1_img.append(pg.transform.scale(pg.image.load(path.join(img_folder, ZOMBIE1_IMG[i])).convert_alpha(), (35,56)))
         pass
 
 

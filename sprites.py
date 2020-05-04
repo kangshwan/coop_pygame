@@ -42,11 +42,11 @@ class Player(pg.sprite.Sprite):
         self.groups = game.all_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        self.current_frame = 0
+        #self.current_frame = 0
         # not using now / 현재 미사용중, 이후 img를 넣었을때 frame별로 동작하게 하려고 했으나...(할지 모르겠음)
-        self.last_update = 0
+        #self.last_update = 0
         # not using now / 현재 미사용중, 뭔지모르겠음.(5월 3일날까지도 미사용시 제거예정.)
-        self.size = (TILESIZE,TILESIZE)
+        #self.size = (TILESIZE,TILESIZE)
         # showing size of the player / player의 size를 지정해줌. 사실 의미없는짓인것 같아서 이후에 간소화 할시 제거 예정
         self.gun_select = 0
 
@@ -82,7 +82,6 @@ class Player(pg.sprite.Sprite):
         self.flip = False
         self.standing = True
         self.walking = 0
-        self.right = True
         self.left = False
 
     def load_images(self):
@@ -121,11 +120,12 @@ class Player(pg.sprite.Sprite):
         if keys[pg.K_a]:
             self.acc.x = -PLAYER_ACC
             self.left = True
-            self.right = False
+
+
         if keys[pg.K_d]:
             self.acc.x = PLAYER_ACC
             self.left = False
-            self.right = True
+
         if keys[pg.K_w]:
             self.acc.y = -PLAYER_ACC
         if keys[pg.K_s]:
@@ -237,7 +237,6 @@ class Player(pg.sprite.Sprite):
         if self.standing:
             self.game.screen.blit(self.body[self.walking//FPS], (self.game.camera.camera.x+self.hitbox.x, self.game.camera.camera.y+self.hitbox.y-21))
         else:
-
             self.game.screen.blit(self.body[self.walking%len(self.body)], (self.game.camera.camera.x+self.hitbox.x, self.game.camera.camera.y+self.hitbox.y-21))
             self.walking += 1
             #self.game.screen.blit(self.body[self.walking%len(self.body)], (self.game.camera.camera.x+self.hitbox.x, self.game.camera.camera.y+self.hitbox.y-18))
@@ -432,12 +431,12 @@ class Enemy(pg.sprite.Sprite):
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.image = pg.Surface((TILESIZE,TILESIZE), pg.SRCALPHA)
-        self.image.fill(color)
-        self.origin_image = self.image
+        #self.image.fill(color)
+        #self.origin_image = self.image
         self.rect = self.image.get_rect()
         self.hitbox = ENEMY_HIT_BOX.copy()
         self.hitbox.center = self.rect.center
-        self.image.fill(RED)
+        #self.image.fill(RED)
         self.pos = vec(x, y) * TILESIZE
         self.vel = vec(0, 0)
         self.acc = vec(0, 0)
@@ -450,6 +449,9 @@ class Enemy(pg.sprite.Sprite):
         self.rot = 0
         self.health = ENEMY_HEALTH
         self.target = game.player
+        self.right = False
+        self.walking = 0
+        self.standing = False
 
     def avoid_enemys(self):
         for enemy in self.game.enemys:
@@ -463,7 +465,7 @@ class Enemy(pg.sprite.Sprite):
         #if target_dist.length_squared() < DETECT_RADIUS**2:
         #self.rect.x -= self.speedy 
         self.rot = target_dist.angle_to(vec(1, 0)) #target_dist == (self.game.player.pos - self.pos)
-        self.image = pg.transform.rotate(self.origin_image, 0)
+        #self.image = pg.transform.rotate(self.origin_image, 0)
         self.rect = self.image.get_rect()
         self.rect.center = self.pos
         self.acc = vec(1, 0).rotate(-self.rot)
@@ -482,7 +484,10 @@ class Enemy(pg.sprite.Sprite):
         if self.health <= 0:
             self.game.player.money += 100
             self.kill()
-
+        if target_dist.x > 0:
+            self.right = True
+        else:
+            self.right = False
     def draw_health(self):
         col = YELLOW
         width = int(self.hitbox.width * self.health / ENEMY_HEALTH)
@@ -491,6 +496,23 @@ class Enemy(pg.sprite.Sprite):
         if self.health < ENEMY_HEALTH:
             pg.draw.rect(self.image, col, self.health_bar)
             pg.draw.rect(self.image, WHITE, self.outer_edge, 1)
+
+    def draw_body(self):
+        self.body = []
+        for i in range(len(self.game.zombie1_img)):
+            for j in range(5):
+                self.body.append(self.game.zombie1_img[i])
+        if self.right:
+            for i in range(len(self.body)):
+                self.body[i] = pg.transform.flip(self.body[i], True, False)
+        if self.walking + 1 >= FPS:
+            self.walking = 0
+        if self.standing:
+            self.game.screen.blit(self.body[self.walking//FPS], (self.game.camera.camera.x+self.hitbox.x, self.game.camera.camera.y+self.hitbox.y-21))
+        else:
+            self.game.screen.blit(self.body[self.walking%len(self.body)], (self.game.camera.camera.x+self.hitbox.x, self.game.camera.camera.y+self.hitbox.y-26))
+            self.walking += 1
+        
 
 #아이템 상자 생성
 class Feed(pg.sprite.Sprite):
@@ -529,7 +551,7 @@ class Explode(pg.sprite.Sprite):
         self.pos = vec(pos)
         self.rect.center = pos
         self.spawn_time = pg.time.get_ticks()
-
+        
     def load_images(self):
         self.image_list = self.game.explode_img
         self.image = self.image_list[0]
@@ -537,19 +559,23 @@ class Explode(pg.sprite.Sprite):
 
     def update(self):
         tick = pg.time.get_ticks() - self.spawn_time
-        if tick > EXPLOSION_LITETIME:
+        if tick > EXPLOSION_LIFETIME:
             self.kill()
-        elif tick > (EXPLOSION_LITETIME*6)/7:
+        #for i in range(len(self.game.explode_img)-1, -1, -1):
+        #    print(i)
+        #    if tick > (EXPLOSION_LIFETIME*i)/len(self.game.explode_img):
+        #        self.image = self.image_list[i]
+        if tick > (EXPLOSION_LIFETIME*6)/7:
             self.image = self.image_list[6]
-        elif tick > (EXPLOSION_LITETIME*5)/7:
+        elif tick > (EXPLOSION_LIFETIME*5)/7:
             self.image = self.image_list[5]
-        elif tick > (EXPLOSION_LITETIME*4)/7:
+        elif tick > (EXPLOSION_LIFETIME*4)/7:
             self.image = self.image_list[4]
-        elif tick > (EXPLOSION_LITETIME*3)/7:
+        elif tick > (EXPLOSION_LIFETIME*3)/7:
             self.image = self.image_list[3]
-        elif tick > (EXPLOSION_LITETIME*2)/7:
+        elif tick > (EXPLOSION_LIFETIME*2)/7:
             self.image = self.image_list[2]
-        elif tick > EXPLOSION_LITETIME/7:
+        elif tick > EXPLOSION_LIFETIME/7:
             self.image = self.image_list[1]
     pass
 

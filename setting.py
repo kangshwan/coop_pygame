@@ -84,7 +84,7 @@ GRENADE_RATE = 1000
 GRENADE_DAMAGE = 60
 
 # explosion properties
-EXPLOSION_LITETIME = 500
+EXPLOSION_LIFETIME = 500
 EXPLOSION_KNOCKBACK = 70
 
 # enemy properties
@@ -119,6 +119,7 @@ BULLET_IMGS.append('shotgun_bullet.png')
 BULLET_IMGS.append('sniper_rifle_bullet.png')
 BULLET_IMGS.append('tiny_flame.png')
 EXPLODE_IMG = ['explosion_1.png', 'explosion_2.png', 'explosion_3.png','explosion_4.png','explosion_5.png','explosion_6.png','explosion_7.png']
+ZOMBIE1_IMG = ['zombie1_1.png', 'zombie1_2.png', 'zombie1_3.png', 'zombie1_4.png', 'zombie1_5.png', 'zombie1_6.png', 'zombie1_7.png']
 #FEED shake up and down 
 FEED_RANGE = 20
 FEED_SPEED = 0.6
