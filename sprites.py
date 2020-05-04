@@ -590,41 +590,9 @@ class Select(pg.sprite.Sprite):
 
     def update(self):
         self.acc = vec(0, 0)
-        keys = pg.key.get_pressed()
-        if keys[pg.K_UP]:
-            self.select_number -= 1
-            if self.select_number < 0:
-                self.select_number = 2
-            if self.select_number == 0:
-                self.rect.center = (WIDTH - 70, HEIGHT - 340)
-                sleep(0.14)
-            elif self.select_number == 1:
-                self.rect.center = (WIDTH - 70, HEIGHT - 290)
-                sleep(0.14)
-            elif self.select_number == 2:
-                self.rect.center = (WIDTH - 70, HEIGHT - 240)
-                sleep(0.14)
-
-        if keys[pg.K_DOWN]:
-            self.select_number += 1
-            if self.select_number > 2:
-                self.select_number = 0
-            if self.select_number == 0:
-                self.rect.center = (WIDTH - 70, HEIGHT - 340)
-                sleep(0.14)
-            elif self.select_number == 1:
-                self.rect.center = (WIDTH - 70, HEIGHT - 290)
-                sleep(0.14)
-            elif self.select_number == 2:
-                self.rect.center = (WIDTH - 70, HEIGHT - 240)
-                sleep(0.14)
-
-        if keys[pg.K_z] and self.select_number == 0:
-            self.game.openning()
-
-        if keys[pg.K_z] and self.select_number == 1:
-            self.game.start_playing = False
-
-        if keys[pg.K_z] and self.select_number == 2:
+        keys = pg.mouse.get_pressed()
+        
+        if keys[0]:
+        
             pg.quit()
             quit()

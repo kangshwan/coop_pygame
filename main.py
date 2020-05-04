@@ -326,7 +326,7 @@ g = Game()
 while g.start:
     g.show_start_screen()
     # # Game start when g.start is True
-    # while g.running:
+    while g.running:
     #     # this g.running will take control of game over or not
-    #     g.new()
-    # pg.quit()
+        g.new()
+    pg.quit()
