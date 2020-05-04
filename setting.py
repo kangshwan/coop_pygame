@@ -42,6 +42,7 @@ WEAPONS['pistol']       = {'bullet_speed': 350,
                            'rate': 500,
                            'damage': 10,
                            'spread': 4,
+                           'size': (6,6),
                            'bullet_count': 1,
                            'barrel_offset': vec(38, -5),
                            'barrel_offset_fliped': vec(38, 5)}
@@ -51,25 +52,28 @@ WEAPONS['shotgun']      = {'bullet_speed': 300,
                            'rate': 1000,
                            'damage': 5,
                            'spread': 20,
+                           'size': (3,3),
                            'bullet_count': 12,
                            'barrel_offset': vec(34, -3),
                            'barrel_offset_fliped': vec(34, 3)}
 
-WEAPONS['sniper']       = {'bullet_speed': 500,
-                           'bullet_lifetime': 1000,
+WEAPONS['sniper']       = {'bullet_speed': 800,
+                           'bullet_lifetime': 700,
                            'rate': 1500,
                            'damage': 13,
                            'spread': 0,
+                           'size': (5,3),
                            'bullet_count': 1,
                            'barrel_offset': vec(38, -1),
                            'barrel_offset_fliped': vec(38, 1)}
 
 WEAPONS['flamethrower'] = {'bullet_speed': 100,
-                           'bullet_lifetime': 700,
+                           'bullet_lifetime': 900,
                            'rate': 0,
                            'damage': 2.3,
                            'spread': 10,
-                           'bullet_count': 15,
+                           'size': (5,5),
+                           'bullet_count': 10,
                            'barrel_offset': vec(40, -4),
                            'barrel_offset_fliped': vec(40, 4)}
 
@@ -114,7 +118,7 @@ BULLET_IMGS.append('pistol_bullet.png')
 BULLET_IMGS.append('shotgun_bullet.png')
 BULLET_IMGS.append('sniper_rifle_bullet.png')
 BULLET_IMGS.append('tiny_flame.png')
-
+EXPLODE_IMG = ['explosion_1.png', 'explosion_2.png', 'explosion_3.png','explosion_4.png','explosion_5.png','explosion_6.png','explosion_7.png']
 #FEED shake up and down 
 FEED_RANGE = 20
 FEED_SPEED = 0.6

@@ -161,6 +161,7 @@ class Player(pg.sprite.Sprite):
             # 이후 now를 last_shot에 저장해줌.
             dir = vec(1,0).rotate(self.rot)
             #self.vel = vec(-WEAPONS[self.weapon]['kickback'], 0).rotate(-self.rot)
+            pos = 0
             if self.flip:
                 pos = self.pos + WEAPONS[self.weapon]['barrel_offset_fliped'].rotate(self.rot)
             else:
@@ -275,8 +276,7 @@ class Player(pg.sprite.Sprite):
                 self.max_health = self.health + self.amor
                 if self.max_health < PLAYER_HEALTH:
                     self.max_health = PLAYER_HEALTH
-                
-            
+                  
     def rotate(self):
         # The vector to the target (the mouse position).
         mouse_pos = pg.mouse.get_pos()
@@ -314,20 +314,22 @@ class Bullet(pg.sprite.Sprite):
         self.load_images()
         self.origin_images = self.image.copy()
         radius, angle = dir.as_polar()
+        self.angle = angle
         if select != 3:
             self.image = pg.transform.rotate(self.origin_images, -angle)
         self.rect = self.image.get_rect()
         self.pos = vec(pos)
-        self.rect.center = pos
 
+        self.start_pos = vec(self.pos)
+        self.rect.center = pos
         #spread = random.uniform(-BULLET_SPREAD,BULLET_SPREAD)
         self.vel = dir * WEAPONS[game.player.weapon]['bullet_speed']
         self.spawn_time = pg.time.get_ticks()
+        self.trace_status = True
 
     def load_images(self):
-        self.image = self.game.bullet[self.select]
-        if self.select == 3:
-            self.image = pg.transform.scale(self.image, (5,5))
+        self.image = self.game.bullet_img[self.select]
+        self.image = pg.transform.scale(self.image, WEAPONS[self.game.player.weapon]['size'])
         #self.image = pg.Surface(self.size, pg.SRCALPHA)
         #self.image.fill(RED)
         pass
@@ -335,9 +337,12 @@ class Bullet(pg.sprite.Sprite):
     def update(self):
         self.pos += self.vel * self.game.dt
         self.rect.center = self.pos
+        if self.game.player.pos.x < WIDTH and self.game.player.pos.y < HEIGHT:
+            pass
+        else:
+            self.start_pos -= vec(self.game.player.pos.x, -self.game.player.pos.y)
         if pg.sprite.spritecollideany(self, self.game.walls):
             self.kill()
-
         if pg.time.get_ticks() - self.spawn_time > WEAPONS[self.game.player.weapon]['bullet_lifetime']:
             self.kill()
         
@@ -441,7 +446,6 @@ class Enemy(pg.sprite.Sprite):
         #self.rect.y = self.pos.y*TILESIZE
         #제 생각에 문제는 단 한번으로 좌표를 할당해도되는데 좌표할당행위를 나눠서 여러번 해서 
         #문제가 생겼던것 같습니다. 이렇게 하니 잘 되는것같네요!
-
         self.speed = random.choice(ENEMY_SPEED)
         self.rot = 0
         self.health = ENEMY_HEALTH
@@ -514,7 +518,6 @@ class Feed(pg.sprite.Sprite):
             self.step = 0
             self.dir *= -1
        
-
 class Explode(pg.sprite.Sprite):
     def __init__(self, game, pos):
         self.groups = game.all_sprites, game.explode
@@ -528,14 +531,26 @@ class Explode(pg.sprite.Sprite):
         self.spawn_time = pg.time.get_ticks()
 
     def load_images(self):
-        self.image = pg.Surface(self.size, pg.SRCALPHA)
-        self.image.fill(ORANGE)
+        self.image_list = self.game.explode_img
+        self.image = self.image_list[0]
         pass
 
     def update(self):
-        if pg.time.get_ticks() - self.spawn_time > EXPLOSION_LITETIME:
+        tick = pg.time.get_ticks() - self.spawn_time
+        if tick > EXPLOSION_LITETIME:
             self.kill()
-        pass
+        elif tick > (EXPLOSION_LITETIME*6)/7:
+            self.image = self.image_list[6]
+        elif tick > (EXPLOSION_LITETIME*5)/7:
+            self.image = self.image_list[5]
+        elif tick > (EXPLOSION_LITETIME*4)/7:
+            self.image = self.image_list[4]
+        elif tick > (EXPLOSION_LITETIME*3)/7:
+            self.image = self.image_list[3]
+        elif tick > (EXPLOSION_LITETIME*2)/7:
+            self.image = self.image_list[2]
+        elif tick > EXPLOSION_LITETIME/7:
+            self.image = self.image_list[1]
     pass
 
 class Wall(pg.sprite.Sprite):
@@ -560,3 +575,30 @@ class Ground(pg.sprite.Sprite):
         self.pos = vec(x,y)
         self.rect.x = self.pos.x*TILESIZE
         self.rect.y = self.pos.y*TILESIZE
+
+class Trace(pg.sprite.Sprite):
+    def __init__(self, game, pos, angle, vel, weapon_name):
+        self.groups = game.all_sprites, game.trace
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.size = (1,1)
+        self.load_images()
+        self.rect = self.image.get_rect()
+        self.pos = vec(pos)
+        self.rect.center = pos
+        self.spawn_time = pg.time.get_ticks()
+        self.vel = vel
+        self.weapon_name = weapon_name
+
+    def load_images(self):
+        self.image = pg.Surface(self.size, pg.SRCALPHA)
+        self.image.fill(RED)
+        pass
+
+    def update(self):
+        self.pos += self.vel*self.game.dt
+        self.rect.center = self.pos
+        if pg.sprite.spritecollideany(self, self.game.walls):
+            self.kill()
+        if pg.time.get_ticks() - self.spawn_time > WEAPONS[self.weapon_name]['bullet_lifetime']:
+            self.kill()

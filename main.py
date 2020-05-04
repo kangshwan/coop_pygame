@@ -75,6 +75,7 @@ class Game:
         self.feeds       = pg.sprite.Group()
         self.explode     = pg.sprite.Group()
         self.ground      = pg.sprite.Group()
+        self.trace       = pg.sprite.Group()
         self.feed_pos = []
         self.enemy_pos = []
         self.paused = False 
@@ -97,7 +98,7 @@ class Game:
                     self.feed_pos.append([(col,row),False])
                 if tile == 'E':
                     self.enemy_pos.append((col,row))
-                    Enemy(self, col, row, RED)
+                    #Enemy(self, col, row, RED)
                     #enemy_pos에 col,row 저장. 추후 feed처럼 append하여 생성하면 좋아보임.
         self.camera = Camera(self.map.width, self.map.height)
         # make Camera class / 카메라 객체 생성
@@ -223,9 +224,9 @@ class Game:
             hit.health -= GRENADE_DAMAGE
             hit.vel = vec(0, 0)
             hit.pos += vec(EXPLOSION_KNOCKBACK, 0).rotate(-hit.rot)
-        
         if self.playing == False:
             self.runnig = False
+
     def events(self):
         # game loop events
         key_1 = pg.key.get_pressed()
@@ -242,11 +243,11 @@ class Game:
                 self.paused = not self.paused
                 self.player.standing = True
             
-    def draw_grid(self):
-        for x in range(0, WIDTH, TILESIZE):
-            pg.draw.line(self.screen, LIGHTGREY, (x,0), (x, HEIGHT))
-            for y in range(0, HEIGHT, TILESIZE):
-                pg.draw.line(self.screen, LIGHTGREY, (0,y), (WIDTH,y))
+    #def draw_grid(self):
+    #    for x in range(0, WIDTH, TILESIZE):
+    #        pg.draw.line(self.screen, LIGHTGREY, (x,0), (x, HEIGHT))
+    #        for y in range(0, HEIGHT, TILESIZE):
+    #            pg.draw.line(self.screen, LIGHTGREY, (0,y), (WIDTH,y))
 
     def draw(self):
         # game loop - draw
@@ -262,6 +263,7 @@ class Game:
             else:
                 self.screen.blit(sprite.image, self.camera.apply(sprite))
 
+
         #pg.draw.rect(self.screen, WHITE, self.player.hitbox,2)
         
         # HUD functions
@@ -276,7 +278,8 @@ class Game:
         game_folder = path.dirname(__file__)
         img_folder = path.join(game_folder, 'Image')
         font_folder = path.join(game_folder, 'Font')
-        self.bullet = []
+        self.bullet_img = []
+        self.explode_img = []
         self.map = Map(path.join(game_folder,'map','map.txt'))
         self.ground_img = pg.image.load(path.join(img_folder, GROUND_IMG)).convert_alpha()
         self.grenade_img = pg.image.load(path.join(img_folder, GRENADE_THROW_IMG)).convert_alpha()
@@ -286,11 +289,10 @@ class Game:
         self.flamethrower_img = pg.transform.scale(pg.image.load(path.join(img_folder, WEAPON_IMGS[3][1])).convert_alpha(),(70,18))
         self.move1_img = pg.image.load(path.join(img_folder, PLAYER_IMG1)).convert_alpha()
         self.move2_img = pg.image.load(path.join(img_folder, PLAYER_IMG2)).convert_alpha()
-        self.bullet.append(pg.image.load(path.join(img_folder, BULLET_IMGS[0])).convert_alpha())
-        self.bullet.append(pg.image.load(path.join(img_folder, BULLET_IMGS[1])).convert_alpha())
-        self.bullet.append(pg.image.load(path.join(img_folder, BULLET_IMGS[2])).convert_alpha())
-        self.bullet.append(pg.image.load(path.join(img_folder, BULLET_IMGS[3])).convert_alpha())
-
+        for i in range(4):
+            self.bullet_img.append(pg.image.load(path.join(img_folder, BULLET_IMGS[i])).convert_alpha())
+        for i in range(7):
+            self.explode_img.append(pg.image.load(path.join(img_folder, EXPLODE_IMG[i])).convert_alpha())
         self.poke_font = path.join(font_folder, 'PokemonGb-RAeo.ttf')
         pass
 
