@@ -105,7 +105,6 @@ class Game:
 
                 if tile == 'B':
                     self.boss_pos.append((col,row))
-                    Boss(self, col, row, BLACK)
 
         self.camera = Camera(self.map.width, self.map.height)
         # make Camera class / 카메라 객체 생성
@@ -148,6 +147,14 @@ class Game:
                 Enemy(self, e_position[0], e_position[1], RED)
                 self.enemy_spawned = self.now
         self.second = ((pg.time.get_ticks() - self.start_tick)/1000)
+
+        #update에서 Boss 생성
+        if self.player.kill_enemy > 3:
+            for b_position in self.boss_pos:
+                #3초마다 해당 장소에서 생성. 추후 enemy_pos를 list로 쓸경우 for문 안에넣고 index들로 접근해서 생성하면 될듯.
+                Boss(self, b_position[0], b_position[1], BLACK)
+                
+        
 
         #hits -> used sprite collide method, (x, y, default boolean) collision check
         hits = pg.sprite.pygame.sprite.spritecollide(self.player, self.enemys, False, collide_hit_rect)

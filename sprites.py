@@ -79,6 +79,7 @@ class Player(pg.sprite.Sprite):
         self.weapon_damage = WEAPONS[self.weapon]['damage']
         self.grenade = [True, 3]
         self.money = 0
+        self.kill_enemy = 0
         self.flip = False
         self.standing = True
         self.walking = 0
@@ -180,7 +181,9 @@ class Player(pg.sprite.Sprite):
         self.acc = vec(0,0)
         self.get_keys()
         self.rotate() 
-        print(self.money)
+        #print(self.money)
+        #print(self.kill_enemy)
+        
         self.acc += self.vel*PLAYER_FRICTION
         #apply friction / 가속력에 마찰력을 더해줌. 현재속력*마찰력(현재는 -0.05로 설정)
         #equations of motion
@@ -511,6 +514,7 @@ class Enemy(pg.sprite.Sprite):
         #ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ주석if밑으로 여기까지 한칸씩 tap해주면 enemy와 player가 일정 거리이상 벌어지면 추격Xㅡㅡㅡㅡ
         if self.health <= 0:
             self.game.player.money += 100
+            self.game.player.kill_enemy += 1
             self.kill()
 
     def draw_health(self):
@@ -689,7 +693,7 @@ class Ground(pg.sprite.Sprite):
 
 
 class Boss(pg.sprite.Sprite):
-    def __init__(self, game, x, y, color):
+    def __init__(self, game, x, y, color):        
         self.groups = game.all_sprites, game.boss #boss : 객체
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
@@ -712,7 +716,7 @@ class Boss(pg.sprite.Sprite):
 #main 241번째줄 보스 체력, sprite 714번째줄 보스체력
 
     def draw_health(self):
-        col = YELLOW
+        col = RED
         width = int(self.hitbox.width * self.health / BOSS_HEALTH)
         self.health_bar = pg.Rect(0, 0, width*3.2, 15)
         self.outer_edge = pg.Rect(0, 0, self.hitbox.width*3.2, 15)
