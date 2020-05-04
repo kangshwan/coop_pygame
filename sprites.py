@@ -21,7 +21,7 @@ def collide_with_gameobject(sprite, group, dir):
                 sprite.pos.x = hits[0].rect.right + sprite.hitbox.width/2
                 # 오른쪽에서 받아올경우
             sprite.vel.x = 0
-            sprite.acc.x = 0
+            #sprite.acc.x = 0
             # 부딫혔으니 x방향 속도를 0으로 해줌.
             sprite.hitbox.centerx = sprite.pos.x
             
@@ -52,7 +52,7 @@ def enemy_collide_with_gameobject(sprite, group, dir):
                 # 오른쪽에서 받아올경우
                 print('from right',hits[0].rect.right, sprite.hitbox.width/2)
             sprite.vel.x = 0
-            sprite.acc.x = 0
+            #sprite.acc.x = 0
             # 부딫혔으니 x방향 속도를 0으로 해줌.
             print('after:', sprite.pos.x)
             sprite.hitbox.centerx = sprite.pos.x
@@ -512,12 +512,9 @@ class Enemy(pg.sprite.Sprite):
         self.acc += self.vel * ENEMY_FRICTION
         self.vel += self.acc * self.game.dt
         self.pos += self.vel * self.game.dt + 0.5 * self.acc * self.game.dt**2
-        print(self.hitbox.x, self.pos.x)
-        self.hitbox.x = self.pos.x
-        if enemy_collide_with_gameobject(self, self.game.walls, 'x'):
-            print('True?',self.hitbox.x, self.hitbox.centerx)
-            print('then,', self.pos.x)
-        self.hitbox.y = self.pos.y
+        self.hitbox.centerx = self.pos.x
+        enemy_collide_with_gameobject(self, self.game.walls, 'x')
+        self.hitbox.centery = self.pos.y
         enemy_collide_with_gameobject(self, self.game.walls, 'y')
         self.rect.center = self.hitbox.center
         #bullet이랑 enemy가 충돌시 둘 다 kill
