@@ -411,7 +411,7 @@ class Game:
         pass
         self.poke_font = path.join(font_folder, 'PokemonGb-RAeo.ttf')
         self.start_screen = pg.image.load(path.join(img_folder, START_SCREEN)).convert_alpha()
-        self.menu_select = pg.image.load(os.path.join(img_folder, PLAYER_IMG1))
+        self.menu_select = pg.image.load(os.path.join(player_folder, PLAYER_IMG1))
     
         pass
     
