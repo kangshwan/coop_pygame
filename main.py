@@ -79,6 +79,9 @@ class Game:
         self.enemy_pos = []
         self.paused = False 
         
+        self.boss = pg.sprite.Group()
+        self.boss_pos = []
+        
         for row, tiles in enumerate(self.map.data):
             #enumerate는 한 배열에 대하여 index와 그 값을 동시에 가져올수 있음. -> 자세한건 구글링
             for col, tile in enumerate(tiles):
@@ -99,6 +102,11 @@ class Game:
                     self.enemy_pos.append((col,row))
                     Enemy(self, col, row, RED)
                     #enemy_pos에 col,row 저장. 추후 feed처럼 append하여 생성하면 좋아보임.
+
+                if tile == 'B':
+                    self.boss_pos.append((col,row))
+                    Boss(self, col, row, BLACK)
+
         self.camera = Camera(self.map.width, self.map.height)
         # make Camera class / 카메라 객체 생성
         
@@ -167,6 +175,20 @@ class Game:
             for hit in hits:
                 hit.health -= self.player.weapon_damage * len(hits[hit])
                 hit.vel = vec(0, 0)
+        
+        # bullet hit the boss
+        if self.player.gun_select in [2,3]:
+            hits = pg.sprite.groupcollide(self.boss, self.bullets, False, False)
+            for hit in hits:
+                hit.health -= self.player.weapon_damage
+                hit.vel = vec(0, 0)
+        else:
+            hits = pg.sprite.groupcollide(self.boss, self.bullets, False, True)
+            for hit in hits:
+                hit.health -= self.player.weapon_damage * len(hits[hit])
+                hit.vel = vec(0, 0)
+        #explosion hiy the boss도 만들어야함
+
 
         # explosion hit the player
         hits = pg.sprite.pygame.sprite.spritecollide(self.player, self.explode, False, collide_hit_rect)
@@ -217,6 +239,8 @@ class Game:
         self.screen.fill(DARKGREY)
         #self.draw_grid()
         for sprite in self.all_sprites:
+            if isinstance(sprite, Boss):
+                sprite.draw_health()
             if isinstance(sprite, Enemy):
                 sprite.draw_health()
             if isinstance(sprite, Player):

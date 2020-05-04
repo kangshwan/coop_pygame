@@ -263,9 +263,30 @@ class Player(pg.sprite.Sprite):
                 self.vel.y = 0
                 self.rect.centery = self.pos.y
 
+    def collide_with_boss(self,dir):
+        if dir == 'x':
+            hits = pg.sprite.spritecollide(self, self.game.boss, False)
+            if hits:
+                if self.vel.x > 0:
+                    self.pos.x = hits[0].rect.left - self.rect.width/2
+                if self.vel.x < 0:
+                    self.pos.x = hits[0].rect.right + self.rect.width/2
+                self.vel.x = 0
+                self.rect.centerx = self.pos.x
+        if dir == 'y':
+            hits = pg.sprite.spritecollide(self, self.game.boss, False)
+            if hits:
+                if self.vel.y > 0:
+                    self.pos.y = hits[0].rect.top - self.rect.height/2
+                if self.vel.y < 0:
+                    self.pos.y = hits[0].rect.bottom + self.rect.height/2
+                self.vel.y = 0
+                self.rect.centery = self.pos.y
+
     def collide_with_feed(self):
         hits = pg.sprite.spritecollide(self, self.game.feeds, True)
         for hit in hits:
+            hit.item_no == 5
             print(hit.item_no)
             if hit.item_no == 0:
                 self.max_speed = 10
@@ -275,7 +296,7 @@ class Player(pg.sprite.Sprite):
                 self.gun_status[3] = [True, 500]
 
             if hit.item_no == 1:
-                self.weapon_rate *= 0.001
+                self.weapon_rate *= 0.01
                 self.last_weapon_speed = pg.time.get_ticks()
 
             if hit.item_no == 2:
@@ -296,7 +317,7 @@ class Player(pg.sprite.Sprite):
                 self.max_health = self.health + self.amor
                 if self.max_health < PLAYER_HEALTH:
                     self.max_health = PLAYER_HEALTH
-                
+
             
     def rotate(self):
         # The vector to the target (the mouse position).
@@ -575,43 +596,43 @@ class Ground(pg.sprite.Sprite):
         self.rect.x = self.pos.x*TILESIZE
         self.rect.y = self.pos.y*TILESIZE
 
-class Button(pg.sprite.Sprite):
-    def __init__(self, surface, x, y, width, height, state='', function=0, color=(255,255,255, hover_color=(255,255,255), border=True, border_width=2, border_color=(0,0,0), text='', font_name='arial', text_size=20, text_color=(0,0,0), bold_text=False):
-        self.groups = game.all_sprites, game.buttons
-        pg.sprite.Sprite.__init__(self, self.groups)
-        self.game = game
-        self.x = x
-        self.y = y
-        self.pos = vec(x,y)
-        self.width = width
-        self.height = height
-        self.surface = surfaceself.image = pygame.Surface((width, height))
-        self.rect = self.image.get_rect()
-        self.rect.topleft = self.pos
-        self.state = state
-        self.function = function
-        self.color = color
-        self.hover_color = hover_color
-        self.border = border
-        self.border_width = border_width
-        self.border_color = border_color
-        self.text = text
-        self.font_name = font_name
-        self.text_size = text_size
-        self.text_color = text_color
-        self.bold_text = bold_text
-        self.hovered = False
+# class Button(pg.sprite.Sprite):
+#     def __init__(self, surface, x, y, width, height, state='', function=0, color=(255,255,255), hover_color=(255,255,255), border=True, border_width=2, border_color=(0,0,0), text='', font_name='arial', text_size=20, text_color=(0,0,0), bold_text=False):
+#         self.groups = game.all_sprites, game.buttons
+#         pg.sprite.Sprite.__init__(self, self.groups)
+#         self.game = game
+#         self.x = x
+#         self.y = y
+#         self.pos = vec(x,y)
+#         self.width = width
+#         self.height = height
+#         self.surface = surface.self.image = pg.Surface((width, height))
+#         self.rect = self.image.get_rect()
+#         self.rect.topleft = self.pos
+#         self.state = state
+#         self.function = function
+#         self.color = color
+#         self.hover_color = hover_color
+#         self.border = border
+#         self.border_width = border_width
+#         self.border_color = border_color
+#         self.text = text
+#         self.font_name = font_name
+#         self.text_size = text_size
+#         self.text_color = text_color
+#         self.bold_text = bold_text
+#         self.hovered = False
 
-        #좌표 이렇게 하는건가?
-        self.rect.centerx = WIDTH/2
-        self.rect.centery = HEIGHT/2
+#         #좌표 이렇게 하는건가?
+#         self.rect.centerx = WIDTH/2
+#         self.rect.centery = HEIGHT/2
 
-        #update에서 함수를 그릴 수 있음
-        def update(self):
-            if self.mouse_hovering(pos):
-                self.hovered = True
-            else:
-                self.hovered = False
+#         #update에서 함수를 그릴 수 있음
+#         def update(self):
+#             if self.mouse_hovering(pos):
+#                 self.hovered = True
+#             else:
+#                 self.hovered = False
             # def buy_shotgun():
 
             # def buy_sniper():
@@ -665,4 +686,63 @@ class Button(pg.sprite.Sprite):
         #클릭 했을 때 호출되는 함수 만들어야함 (update에서)
         #버튼 이미지
         #버튼 좌표?
-        
+
+
+class Boss(pg.sprite.Sprite):
+    def __init__(self, game, x, y, color):
+        self.groups = game.all_sprites, game.boss #boss : 객체
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.image = pg.Surface((TILESIZE*3,TILESIZE*3), pg.SRCALPHA)
+        self.image.fill(color)
+        self.origin_image = self.image
+        self.rect = self.image.get_rect()
+        self.hitbox = ENEMY_HIT_BOX.copy()
+        self.hitbox.center = self.rect.center
+        self.image.fill(BLACK)
+        self.pos = vec(x, y) * TILESIZE
+        self.vel = vec(0, 0)
+        self.acc = vec(0, 0)
+        self.rect.center = self.pos
+
+        self.speed = 0
+        self.rot = 0
+        self.health = BOSS_HEALTH #setting 98번째줄 보스체력, main82번째줄 보스 그룹에 추가, main106번째줄 보스 B로추가, 맵에B타일하나추가
+        self.target = game.player #sprite700번째줄정도에 보스 : 보스내용 / Player클래스에 collide with boss(265번째줄~), main 179번째줄bullet hit boss
+#main 241번째줄 보스 체력, sprite 714번째줄 보스체력
+
+    def draw_health(self):
+        col = YELLOW
+        width = int(self.hitbox.width * self.health / BOSS_HEALTH)
+        self.health_bar = pg.Rect(0, 0, width*3.2, 15)
+        self.outer_edge = pg.Rect(0, 0, self.hitbox.width*3.2, 15)
+        if self.health < BOSS_HEALTH:
+            pg.draw.rect(self.image, col, self.health_bar)
+            pg.draw.rect(self.image, WHITE, self.outer_edge, 1)
+
+    def update(self):
+        #target_dist = self.target.pos - self.pos 
+        #if target_dist.length_squared() < DETECT_RADIUS**2:
+        #self.rect.x -= self.speedy 
+        #self.rot = target_dist.angle_to(vec(1, 0)) #target_dist == (self.game.player.pos - self.pos)
+        self.image = pg.transform.rotate(self.origin_image, self.rot)
+        #self.rect = self.image.get_rect()
+        #self.rect.center = self.pos
+        # self.acc = vec(1, 0).rotate(-self.rot)
+        # self.avoid_enemys()
+        # self.acc.scale_to_length(self.speed)
+        # self.acc += self.vel * ENEMY_FRICTION
+        # self.vel += self.acc * self.game.dt
+        # self.pos += self.vel * self.game.dt + 0.5 * self.acc * self.game.dt**2
+        self.hitbox.centerx = self.pos.x
+        collide_with_gameobject(self, self.game.walls, 'x')
+        self.hitbox.centery = self.pos.y
+        collide_with_gameobject(self, self.game.walls, 'y')
+        self.rect.center = self.hitbox.center
+        #bullet이랑 enemy가 충돌시 둘 다 kill
+        #ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ주석if밑으로 여기까지 한칸씩 tap해주면 enemy와 player가 일정 거리이상 벌어지면 추격Xㅡㅡㅡㅡ
+        if self.health <= 0:
+            self.kill()
+
+
+    
