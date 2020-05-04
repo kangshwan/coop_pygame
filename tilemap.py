@@ -3,6 +3,8 @@ from setting import *
 
 def collide_hit_rect(first, second):
     return first.hitbox.colliderect(second.rect)
+def collide_hit_box(first, second):
+    return first.hitbox.colliderect(second.hitbox)
     
 class Map:
     def __init__(self, filename):
