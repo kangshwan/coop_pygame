@@ -54,7 +54,7 @@ def draw_gun(surf, x, y, possible, gun_kind, gun_now):
     image = 0
     rotated = 0
     game_folder = path.dirname(__file__)
-    img_folder = path.join(game_folder, 'Image')
+    img_folder = path.join(game_folder, 'Image','weapon')
     if gun_kind == 0:
         image = pg.image.load(path.join(img_folder, WEAPON_IMGS[gun_kind][0])).convert_alpha()
         rotated = pg.transform.scale(pg.transform.rotate(image, 40),(48, 48))
@@ -62,10 +62,10 @@ def draw_gun(surf, x, y, possible, gun_kind, gun_now):
         image = pg.image.load(path.join(img_folder, WEAPON_IMGS[gun_kind][0])).convert_alpha()
         rotated = pg.transform.scale(pg.transform.rotate(image, 40),(48, 48))
     if gun_kind == 2:
-        image = pg.image.load(path.join(img_folder, WEAPON_IMGS[gun_kind])).convert_alpha()
+        image = pg.image.load(path.join(img_folder, WEAPON_IMGS[gun_kind][0])).convert_alpha()
         rotated = pg.transform.scale(pg.transform.rotate(image, 40),(48, 48))
     if gun_kind == 3:
-        image = pg.image.load(path.join(img_folder, WEAPON_IMGS[gun_kind])).convert_alpha()
+        image = pg.image.load(path.join(img_folder, WEAPON_IMGS[gun_kind][0])).convert_alpha()
         rotated = pg.transform.scale(pg.transform.rotate(image, 40),(48, 48))
 
     if possible[0]:
@@ -93,8 +93,14 @@ def draw_grenade_list(surf, grenade_left):
 
 def draw_grenade(surf, x, y):
     game_folder = path.dirname(__file__)
-    img_folder = path.join(game_folder, 'Image')
+    img_folder = path.join(game_folder, 'Image','weapon')
     image = pg.transform.scale(pg.image.load(path.join(img_folder, GRENADE_IMG)).convert_alpha(),(20, 24))
 
     surf.blit(image, (x, y))
+    pass
+
+def draw_money(surf, x, y, money_amount, in_font):
+    font = pg.font.Font(in_font, 30)
+    text = font.render(f"Money: {money_amount}",True, GOLD)
+    surf.blit(text, (x,y))  
     pass
