@@ -78,7 +78,6 @@ class Game:
         self.feeds       = pg.sprite.Group()
         self.explode     = pg.sprite.Group()
         self.ground      = pg.sprite.Group()
-
         
        
         self.feed_pos = []
@@ -266,6 +265,7 @@ class Game:
         #pg.mixer.music.play(loops=-1)
         self.running = True
         self.start_new()
+        
         #pg.mixer.music.fadeoRut(500)
 
     def start_new(self):
@@ -287,6 +287,7 @@ class Game:
             #self.check_range()
             self.start_draw()
             
+                
 
     def start_events(self):
        
@@ -296,7 +297,11 @@ class Game:
                     self.start_playing = False
                 self.start = False
             
-
+            if event.type == pg.MOUSEBUTTONDOWN:
+                pos = pygame.mouse.get_pos() 
+                pg.quit()
+                quit()
+            
    
     def start_update(self):
         self.start_group.update()
@@ -318,13 +323,15 @@ class Game:
         text_rect = text_surface.get_rect()
         text_rect.midtop = (x, y)
         self.screen.blit(text_surface, text_rect)
-    def check(self, )
+    
 
 
 
 g = Game()
 while g.start:
     g.show_start_screen()
+    
+        
     # # Game start when g.start is True
     while g.running:
     #     # this g.running will take control of game over or not

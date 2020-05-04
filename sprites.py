@@ -591,10 +591,13 @@ class Select(pg.sprite.Sprite):
     def update(self):
         self.button = True
         keys = pg.mouse.get_pressed()
+        # if keys[0]:
+        #     pg.quit()
+        #     quit()
         
         
 
-class button(pg.sprite.Sprite):
+class button(self):
     def __init__(self, x, y, width, height):
         self.x = x
         self.y = y
