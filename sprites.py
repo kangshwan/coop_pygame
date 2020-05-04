@@ -426,12 +426,12 @@ class Grenade(pg.sprite.Sprite):
         self.dir = self.dir.reflect(pg.math.Vector2(NV))
 
 class Enemy(pg.sprite.Sprite):
-    def __init__(self, game, x, y, color):
+    def __init__(self, game, x, y):
         self.groups = game.all_sprites, game.enemys
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.image = pg.Surface((TILESIZE,TILESIZE), pg.SRCALPHA)
-        #self.image.fill(color)
+        #self.image.fill(RED)
         #self.origin_image = self.image
         self.rect = self.image.get_rect()
         self.hitbox = ENEMY_HIT_BOX.copy()
@@ -575,7 +575,7 @@ class Explode(pg.sprite.Sprite):
             self.image = self.image_list[3]
         elif tick > (EXPLOSION_LIFETIME*2)/7:
             self.image = self.image_list[2]
-        elif tick > EXPLOSION_LIFETIME/7:
+        elif tick > (EXPLOSION_LIFETIME)/7:
             self.image = self.image_list[1]
     pass
 
