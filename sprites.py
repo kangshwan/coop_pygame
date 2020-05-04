@@ -574,3 +574,95 @@ class Ground(pg.sprite.Sprite):
         self.pos = vec(x,y)
         self.rect.x = self.pos.x*TILESIZE
         self.rect.y = self.pos.y*TILESIZE
+
+class Button(pg.sprite.Sprite):
+    def __init__(self, surface, x, y, width, height, state='', function=0, color=(255,255,255, hover_color=(255,255,255), border=True, border_width=2, border_color=(0,0,0), text='', font_name='arial', text_size=20, text_color=(0,0,0), bold_text=False):
+        self.groups = game.all_sprites, game.buttons
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.x = x
+        self.y = y
+        self.pos = vec(x,y)
+        self.width = width
+        self.height = height
+        self.surface = surfaceself.image = pygame.Surface((width, height))
+        self.rect = self.image.get_rect()
+        self.rect.topleft = self.pos
+        self.state = state
+        self.function = function
+        self.color = color
+        self.hover_color = hover_color
+        self.border = border
+        self.border_width = border_width
+        self.border_color = border_color
+        self.text = text
+        self.font_name = font_name
+        self.text_size = text_size
+        self.text_color = text_color
+        self.bold_text = bold_text
+        self.hovered = False
+
+        #좌표 이렇게 하는건가?
+        self.rect.centerx = WIDTH/2
+        self.rect.centery = HEIGHT/2
+
+        #update에서 함수를 그릴 수 있음
+        def update(self):
+            if self.mouse_hovering(pos):
+                self.hovered = True
+            else:
+                self.hovered = False
+            # def buy_shotgun():
+
+            # def buy_sniper():
+
+            # def buy_firethrower():
+
+
+
+        # def draw_buy_button(self):
+        #     if self.border:
+        #         self.image.fill(self.border_color)
+        #         if self.hovered:
+        #             pg.draw.rect(self.image, self.hover_color, (self.border_width, self.border_width, self.width-(self.border_width*2), self.height-(self.border_width*2)))
+        #         else:
+        #             pg.draw.rect(self.image, self.self.color, (self.border_width, self.border_width, self.width-(self.border_width*2), self.height-(self.border_width*2)))
+
+        #     else:
+        #         self.image.fill(self.color)
+        #     if len(self.text) > 0:
+        #         self.show_text()
+        #     self.surface.blit(self.image, self.pos)
+
+        # def show_text(self):
+        #     font = pg.font.SysFont(self.font_name, self.text_size, bold=self.bold_text)
+        #     text = font.render(self.text, False, self.text_color)
+        #     size = text.get_size()
+        #     x, y = self.width//2-(size[0]//2), self.height//2-(size[1]//2)
+        #     pos = vec(x, y)
+        #     self.image.blit(text, pos)
+
+        # def mouse_hovering(self, pos):
+        #     if pos[0] > self.pos[0] and pos[0] < self.pos[0]+self.width:
+        #         if pos[1] > self.pos[1] and pos[1] < self.pos[1]+self.height:
+        #             return True
+        #     return False
+
+        # 마우스 버튼을 클릭 할 때마다 게임에서 함수가 호출됨
+        # def click():
+        #     if self.function != 0: #함수가 그 곳에 있는지 확인
+        #         self.function()
+        #         self.buy_shotgun()
+        #         self.buy_sniper()
+        #         self.buy_firethrower()
+
+        # def buy_shotgun():
+
+        # def buy_sniper():
+
+        # def buy_firethrower():   --------->>>>> 이 3개 함수 update에서 만듬?
+
+        #클릭 했을 때 호출되는 함수 만들어야함 (update에서)
+        #버튼 이미지
+        #버튼 좌표?
+        
