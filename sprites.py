@@ -135,6 +135,7 @@ class Player(pg.sprite.Sprite):
         if key[0]:
             if self.gun_status[self.gun_select][0]:
                 self.shoot(self.gun_select)
+
         if key[2]:
             #마우스 우클릭시
             if self.grenade[0]:

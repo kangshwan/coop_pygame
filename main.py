@@ -282,27 +282,33 @@ class Game:
         # load map to the game
         game_folder = path.dirname(__file__)
         img_folder = path.join(game_folder, 'Image')
+        map_folder = path.join(img_folder,'map')
+        player_folder = path.join(img_folder,'player')
+        weapon_folder = path.join(img_folder, 'weapon')
+        enemy_folder = path.join(img_folder,'enemy')
+        vfx_folder = path.join(img_folder, 'special_effect')
         font_folder = path.join(game_folder, 'Font')
         self.bullet_img = []
         self.explode_img = []
         self.zombie1_img = []
         self.map = Map(path.join(game_folder,'map','map.txt'))
-        self.ground_img = pg.image.load(path.join(img_folder, GROUND_IMG)).convert_alpha()
-        self.grenade_img = pg.image.load(path.join(img_folder, GRENADE_THROW_IMG)).convert_alpha()
-        self.pistol_img = pg.image.load(path.join(img_folder, WEAPON_IMGS[0][1])).convert_alpha()
-        self.shotgun_img = pg.transform.scale(pg.image.load(path.join(img_folder, WEAPON_IMGS[1][1])).convert_alpha(), (62,16))
-        self.sniper_img = pg.transform.scale(pg.image.load(path.join(img_folder, WEAPON_IMGS[2][1])).convert_alpha(),(89,18))
-        self.flamethrower_img = pg.transform.scale(pg.image.load(path.join(img_folder, WEAPON_IMGS[3][1])).convert_alpha(),(70,18))
-        self.move1_img = pg.image.load(path.join(img_folder, PLAYER_IMG1)).convert_alpha()
-        self.move2_img = pg.image.load(path.join(img_folder, PLAYER_IMG2)).convert_alpha()
+        self.ground_img = pg.image.load(path.join(map_folder, GROUND_IMG)).convert_alpha()
+        self.grenade_img = pg.image.load(path.join(weapon_folder, GRENADE_THROW_IMG)).convert_alpha()
+        self.pistol_img = pg.image.load(path.join(weapon_folder, WEAPON_IMGS[0][1])).convert_alpha()
+        self.shotgun_img = pg.transform.scale(pg.image.load(path.join(weapon_folder, WEAPON_IMGS[1][1])).convert_alpha(), (62,16))
+        self.sniper_img = pg.transform.scale(pg.image.load(path.join(weapon_folder, WEAPON_IMGS[2][1])).convert_alpha(),(89,18))
+        self.flamethrower_img = pg.transform.scale(pg.image.load(path.join(weapon_folder, WEAPON_IMGS[3][1])).convert_alpha(),(70,18))
+        self.move1_img = pg.image.load(path.join(player_folder, PLAYER_IMG1)).convert_alpha()
+        self.move2_img = pg.image.load(path.join(player_folder, PLAYER_IMG2)).convert_alpha()
         for i in range(4):
-            self.bullet_img.append(pg.image.load(path.join(img_folder, BULLET_IMGS[i])).convert_alpha())
+            self.bullet_img.append(pg.image.load(path.join(weapon_folder, BULLET_IMGS[i])).convert_alpha())
         for i in range(7):
-            self.explode_img.append(pg.image.load(path.join(img_folder, EXPLODE_IMG[i])).convert_alpha())
-        self.poke_font = path.join(font_folder, 'PokemonGb-RAeo.ttf')
+            self.explode_img.append(pg.image.load(path.join(vfx_folder, EXPLODE_IMG[i])).convert_alpha())
         for i in range(7):
-            self.zombie1_img.append(pg.transform.scale(pg.image.load(path.join(img_folder, ZOMBIE1_IMG[i])).convert_alpha(), (35,56)))
+            self.zombie1_img.append(pg.transform.scale(pg.image.load(path.join(enemy_folder, ZOMBIE1_IMG[i])).convert_alpha(), (35,56)))
         pass
+        self.poke_font = path.join(font_folder, 'PokemonGb-RAeo.ttf')
+
 
 
 g = Game()
