@@ -103,23 +103,33 @@ AMOR_HEALTH = 25
 
 #image
 TEST = "test.png"
-GROUND_IMG = 'ground.png'
+GROUND_IMG = ['ground.png', 'stone_floor.png']
+WALL_IMG = 'wooden_pillar_front_left.png'
+WOOD_PILAR_IMG = ['wooden_pillar_front_left.png', 'wooden_pillar_front_mid.png', 'wooden_pillar_front_right.png', 'wooden_pillar_top.png']
+
 WEAPON_IMGS = []
 BULLET_IMGS = []
+
 WEAPON_IMGS.append(['glock.png','glock_hand.png'])#pistol image
 WEAPON_IMGS.append(['shotgun.png','shotgun_hand.png'])#shotgun image
 WEAPON_IMGS.append(['sniper_rifle.png', 'sniper_rifle_hand.png'])#sniper image
 WEAPON_IMGS.append(['flamethrower.png', 'flamethrower_hand.png'])#flamethrower image
-GRENADE_IMG = 'grenade.png'
-GRENADE_THROW_IMG = 'grenade_throw.png'
-PLAYER_IMG1 = 'move1.png'
-PLAYER_IMG2 = 'move2.png'
+
 BULLET_IMGS.append('pistol_bullet.png')
 BULLET_IMGS.append('shotgun_bullet.png')
 BULLET_IMGS.append('sniper_rifle_bullet.png')
 BULLET_IMGS.append('tiny_flame.png')
+
+GRENADE_IMG = 'grenade.png'
+GRENADE_THROW_IMG = 'grenade_throw.png'
+
 EXPLODE_IMG = ['explosion1_1.png', 'explosion1_2.png', 'explosion1_3.png','explosion1_4.png','explosion1_5.png','explosion1_6.png','explosion1_7.png']
+
+PLAYER_IMG1 = 'move1.png'
+PLAYER_IMG2 = 'move2.png'
+
 ZOMBIE1_IMG = ['zombie1_1.png', 'zombie1_2.png', 'zombie1_3.png', 'zombie1_4.png', 'zombie1_5.png', 'zombie1_6.png', 'zombie1_7.png']
+
 #FEED shake up and down 
 FEED_RANGE = 20
 FEED_SPEED = 0.6

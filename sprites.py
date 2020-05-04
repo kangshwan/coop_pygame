@@ -56,7 +56,7 @@ class Player(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.hitbox = PLAYER_HIT_BOX.copy()
         self.hitbox.center = self.rect.center
-        self.pos = vec(x, y)*TILESIZE
+        self.pos = vec(x, y)
         self.vel = vec(0,0)
         self.acc = vec(0,0)
         self.rot = 0
@@ -119,12 +119,9 @@ class Player(pg.sprite.Sprite):
         if keys[pg.K_a]:
             self.acc.x = -PLAYER_ACC
             self.left = True
-
-
         if keys[pg.K_d]:
             self.acc.x = PLAYER_ACC
             self.left = False
-
         if keys[pg.K_w]:
             self.acc.y = -PLAYER_ACC
         if keys[pg.K_s]:
@@ -235,9 +232,9 @@ class Player(pg.sprite.Sprite):
         if self.walking + 1 >= FPS:
             self.walking = 0
         if self.standing:
-            self.game.screen.blit(self.body[self.walking//FPS], (self.game.camera.camera.x+self.hitbox.x, self.game.camera.camera.y+self.hitbox.y-21))
+            self.game.screen.blit(self.body[self.walking//FPS], (self.game.camera.camera.x+self.hitbox.x, self.game.camera.camera.y+self.hitbox.y-24))
         else:
-            self.game.screen.blit(self.body[self.walking%len(self.body)], (self.game.camera.camera.x+self.hitbox.x, self.game.camera.camera.y+self.hitbox.y-21))
+            self.game.screen.blit(self.body[self.walking%len(self.body)], (self.game.camera.camera.x+self.hitbox.x, self.game.camera.camera.y+self.hitbox.y-24))
             self.walking += 1
             #self.game.screen.blit(self.body[self.walking%len(self.body)], (self.game.camera.camera.x+self.hitbox.x, self.game.camera.camera.y+self.hitbox.y-18))
         self.game.screen.blit(self.image, self.game.camera.apply(self.game.player))
@@ -583,23 +580,36 @@ class Explode(pg.sprite.Sprite):
     pass
 
 class Wall(pg.sprite.Sprite):
-    def __init__(self, game, x, y, color):
+    def __init__(self, game, x, y, color, img):
         self.groups = game.all_sprites, game.walls
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        self.image = pg.Surface((TILESIZE,TILESIZE))
-        self.image.fill(color)
+        if img != None:
+            self.image = img
+        else:
+            self.image = pg.Surface((TILESIZE,TILESIZE))
+            self.image.fill(color)
         self.rect = self.image.get_rect()
         self.pos = vec(x,y)
         self.rect.x = self.pos.x*TILESIZE
         self.rect.y = self.pos.y*TILESIZE
+
+class Obstacle(pg.sprite.Sprite):
+    def __init__(self, game, x, y, w, h):
+        self.groups = game.walls
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.rect = pg.Rect(x, y, w, h)
+        self.pos = vec(x,y)
+        self.rect.x = self.pos.x
+        self.rect.y = self.pos.y   
 
 class Ground(pg.sprite.Sprite):
     def __init__(self, game, x, y, image):
         self.groups = game.all_sprites, game.ground
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        self.image = game.ground_img
+        self.image = image
         self.rect = self.image.get_rect()
         self.pos = vec(x,y)
         self.rect.x = self.pos.x*TILESIZE

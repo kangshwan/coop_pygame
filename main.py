@@ -30,14 +30,9 @@ class Game:
         self.start = True
 
         self.load_data()
-    
-
-    
                 #메뉴판 만들고
                 #button -> game start 누르면 self.game_running()
 
-    
-    
 
     def run(self):
         #pg.mixer.music.play(loops = -1)   #bg play. loops == false -> play gain , Ture -> once
@@ -80,31 +75,73 @@ class Game:
         self.enemy_pos = []
         self.paused = False 
         
-        for row, tiles in enumerate(self.map.data):
-            #enumerate는 한 배열에 대하여 index와 그 값을 동시에 가져올수 있음. -> 자세한건 구글링
-            for col, tile in enumerate(tiles):
-                Ground(self, col, row, self.ground_img)
-                if tile == '1':
-                    Wall(self, col, row, LIGHTBLUE)
-                if tile == '2':
-                    Wall(self, col, row, BROWN)
+        #for row, tiles in enumerate(self.map.data):
+        #    #enumerate는 한 배열에 대하여 index와 그 값을 동시에 가져올수 있음. -> 자세한건 구글링
+        #    block = ''
+        #    check = False
+        #    passed = 0
+        #    for col, tile in enumerate(tiles):
+        #        if tile == '[':
+        #            check = True
+        #            passed +=1
+        #            continue
+        #        if tile == ']':
+        #            check = False
+        #        if check:
+        #            block += tile
+        #            passed+=1
+        #            continue
+        #        col -= passed
+        #        if tile == 's':
+        #            print('passed')
+        #            Ground(self, col, row, self.stone_floor_img)
+        #        else:
+        #            Ground(self, col, row, self.ground_img)
+        #        
+        #        if tile == '1':
+        #            Wall(self, col, row, LIGHTBLUE, None)
+        #        if tile == '2':
+        #            Wall(self, col, row, BROWN, None)
+        #            print(col,row)
+        #        
+        #
+        #        if block != '':
+        #            if block[1] == 's':
+        #                Ground(self, col, row, self.stone_floor_img)
+        #            if block == 'wpl':
+        #                Wall(self, col, row, None, self.wood_pillar_img[0])
+        #            if block == 'wpm':
+        #                Wall(self, col, row, None, self.wood_pillar_img[1])
+        #            if block == 'wpr':
+        #                Wall(self, col, row, None, self.wood_pillar_img[2])
+        #            if block == 'wpt':
+        #                Wall(self, col, row, None, self.wood_pillar_img[3])
+        #            
+        #            block = ''
         #draw map in here / 여기서부터 맵을 그림.
-        for row, tiles in enumerate(self.map.data):
-            #enumerate는 한 배열에 대하여 index와 그 값을 동시에 가져올수 있음. -> 자세한건 구글링
-            for col, tile in enumerate(tiles):
-                if tile == 'P':
-                    self.player = Player(self, col, row)
-                if tile == 'I':
-                    self.feed_pos.append([(col,row),False])
-
-        for row, tiles in enumerate(self.map.data):
-            #enumerate는 한 배열에 대하여 index와 그 값을 동시에 가져올수 있음. -> 자세한건 구글링
-            for col, tile in enumerate(tiles):
-                if tile == 'E':
-                    self.enemy_pos.append((col,row))
-                    Enemy(self, col, row)        
+        #for row, tiles in enumerate(self.map.data):
+        #    #enumerate는 한 배열에 대하여 index와 그 값을 동시에 가져올수 있음. -> 자세한건 구글링
+        #    for col, tile in enumerate(tiles):
+        #        if tile == 'P':
+        #            self.player = Player(self, col, row)
+        #        if tile == 'I':
+        #            self.feed_pos.append([(col,row),False])
+        #
+        #for row, tiles in enumerate(self.map.data):
+        #    #enumerate는 한 배열에 대하여 index와 그 값을 동시에 가져올수 있음. -> 자세한건 구글링
+        #    for col, tile in enumerate(tiles):
+        #        if tile == 'E':
+        #            self.enemy_pos.append((col,row))
+        #            Enemy(self, col, row)        
         #enemy_pos에 col,row 저장. 추후 feed처럼 append하여 생성하면 좋아보임.
+        for tile_object in self.map.tmxdata.objects:
+            if tile_object.name == 'player':
+                self.player = Player(self, tile_object.x, tile_object.y)
+            if tile_object.name == 'wall':
+                Obstacle(self, tile_object.x, tile_object.y, tile_object.width, tile_object.height)
+        
         self.camera = Camera(self.map.width, self.map.height)
+        self.debug = False
         # make Camera class / 카메라 객체 생성
         
         #아이템or스킬상자가 랜덤한 위치에 드랍되게 / 상자를 먹으면 사라지고 일정 효과가 발동되도록 만들어주기
@@ -132,7 +169,10 @@ class Game:
             #test = random.randint(0,len(self.feed_pos)-1)
             #if self.feed_pos[test][1] == True:
             #    Feed(self, self.feed_pos[test][0][0],self.feed_pos[test][0][1])
-            chosen_item = random.choice(self.feed_pos)
+            try:
+                chosen_item = random.choice(self.feed_pos)
+            except IndexError:
+                chosen_item = [[0,0],True]
             if chosen_item[1] == False:
                 Feed(self, chosen_item[0][0], chosen_item[0][1])
                 chosen_item[1] = True
@@ -246,6 +286,8 @@ class Game:
             if key_1[pg.K_p]:
                 self.paused = not self.paused
                 self.player.standing = True
+            if key_1[pg.K_PERIOD]:
+                self.debug = not self.debug
             
     #def draw_grid(self):
     #    for x in range(0, WIDTH, TILESIZE):
@@ -255,8 +297,9 @@ class Game:
 
     def draw(self):
         # game loop - draw
-        self.screen.fill(DARKGREY)
+        #self.screen.fill(DARKGREY)
         #self.draw_grid()
+        self.screen.blit(self.map_img, self.camera.apply_rect(self.map_rect))
         for sprite in self.all_sprites:
             if isinstance(sprite, Enemy):
                 sprite.draw_health()
@@ -282,7 +325,7 @@ class Game:
         # load map to the game
         game_folder = path.dirname(__file__)
         img_folder = path.join(game_folder, 'Image')
-        map_folder = path.join(img_folder,'map')
+        map_folder = path.join(game_folder,'map')
         player_folder = path.join(img_folder,'player')
         weapon_folder = path.join(img_folder, 'weapon')
         enemy_folder = path.join(img_folder,'enemy')
@@ -291,8 +334,12 @@ class Game:
         self.bullet_img = []
         self.explode_img = []
         self.zombie1_img = []
-        self.map = Map(path.join(game_folder,'map','map.txt'))
-        self.ground_img = pg.image.load(path.join(map_folder, GROUND_IMG)).convert_alpha()
+        self.wood_pillar_img = []
+        self.map = TiledMap(path.join(map_folder,'map.tmx'))
+        self.map_img = self.map.make_map()
+        self.map_rect = self.map_img.get_rect()
+        #self.ground_img = pg.image.load(path.join(map_folder, GROUND_IMG[0])).convert_alpha()
+        #self.stone_floor_img = pg.image.load(path.join(map_folder, GROUND_IMG[1])).convert_alpha()
         self.grenade_img = pg.image.load(path.join(weapon_folder, GRENADE_THROW_IMG)).convert_alpha()
         self.pistol_img = pg.image.load(path.join(weapon_folder, WEAPON_IMGS[0][1])).convert_alpha()
         self.shotgun_img = pg.transform.scale(pg.image.load(path.join(weapon_folder, WEAPON_IMGS[1][1])).convert_alpha(), (62,16))
@@ -300,6 +347,8 @@ class Game:
         self.flamethrower_img = pg.transform.scale(pg.image.load(path.join(weapon_folder, WEAPON_IMGS[3][1])).convert_alpha(),(70,18))
         self.move1_img = pg.image.load(path.join(player_folder, PLAYER_IMG1)).convert_alpha()
         self.move2_img = pg.image.load(path.join(player_folder, PLAYER_IMG2)).convert_alpha()
+        #for i in range(4):
+        #    self.wood_pillar_img.append(pg.image.load(path.join(map_folder, WOOD_PILAR_IMG[i])).convert_alpha())
         for i in range(4):
             self.bullet_img.append(pg.image.load(path.join(weapon_folder, BULLET_IMGS[i])).convert_alpha())
         for i in range(7):
