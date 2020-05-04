@@ -22,6 +22,8 @@ class Game:
         #pg.mixer.init() # for use of music
         #pg.mixer.init('')
         self.screen = pg.display.set_mode(WINDOW_SIZE)
+       
+        print(self.screen)
         # make a screen for the game / 게임을 하기위한 screen 생성(창 크기 설정)
         pg.display.set_caption(TITLE)
         # this is the tiltle of the game you'll see in the window / 창의 제목 결정
@@ -58,6 +60,7 @@ class Game:
             #events for keyboard and mouse input / 이벤트를 처리하기 위함. 항상 pygame은 event 이벤트발생(사용자의 입력) -> update(입력에 따른 변화를 업데이트해줌) -> draw 이후 그림을 그림
             
             self.draw()
+           
 
     def new(self):
         #when start a new game
@@ -78,7 +81,7 @@ class Game:
         self.feeds       = pg.sprite.Group()
         self.explode     = pg.sprite.Group()
         self.ground      = pg.sprite.Group()
-        
+      
        
         self.feed_pos = []
         self.enemy_pos = []
@@ -270,10 +273,8 @@ class Game:
 
     def start_new(self):
         self.start_group = pg.sprite.Group()
-        self.select = Select(self)
-        self.start_group.add(self.select)
-        self.start_run()
         
+        self.start_run()
 
     def start_run(self):
         #start loop
@@ -287,22 +288,25 @@ class Game:
             #self.check_range()
             self.start_draw()
             
-                
-
     def start_events(self):
-       
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 if self.start_playing:
                     self.start_playing = False
                 self.start = False
-            
+           
             if event.type == pg.MOUSEBUTTONDOWN:
-                pos = pygame.mouse.get_pos() 
-                pg.quit()
-                quit()
+                pos = pg.mouse.get_pos()
+                if startbutton.isOver(pos):
+                    while g.running:
+    #     # this g.running will take control of game over or not
+                        g.new()
+                    pg.quit()
+                elif exitbutton.isOver(pos):
+                    pg.quit()
+                    quit()
+                    
             
-   
     def start_update(self):
         self.start_group.update()
 
@@ -310,11 +314,12 @@ class Game:
         self.screen.blit(self.start_screen, (0,0))
         self.start_group.draw(self.screen)
         pg.draw.rect(self.screen, WHITE,[450, 330, 100, 40])
+        pg.draw.rect(self.screen, WHITE,[450, 380, 100, 40])
         self.draw_text("START", 22, BLACK, WIDTH - 452, HEIGHT - 300)
         self.draw_text("START", 22, DARKGREY, WIDTH - 454, HEIGHT - 303)
         self.draw_text("EXIT", 22, BLACK, WIDTH - 448, HEIGHT - 250)
         self.draw_text("EXIT", 22, DARKGREY, WIDTH - 450, HEIGHT - 253)
-      
+        print(self.screen)
         pg.display.update()
 
     def draw_text(self, text, size, color, x, y):
@@ -326,14 +331,13 @@ class Game:
     
 
 
-
+startbutton = button(450,330,100,40)
+exitbutton = button(450,380,100,40)
 g = Game()
 while g.start:
-    g.show_start_screen()
+    g.show_start_screen() 
+    
     
         
     # # Game start when g.start is True
-    while g.running:
-    #     # this g.running will take control of game over or not
-        g.new()
-    pg.quit()
+    

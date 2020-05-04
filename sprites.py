@@ -469,23 +469,23 @@ class Enemy(pg.sprite.Sprite):
 
     def update(self):
         target_dist = self.target.pos - self.pos 
-        #if target_dist.length_squared() < DETECT_RADIUS**2:
+        if target_dist.length_squared() < DETECT_RADIUS**2:
         #self.rect.x -= self.speedy 
-        self.rot = target_dist.angle_to(vec(1, 0)) #target_dist == (self.game.player.pos - self.pos)
-        self.image = pg.transform.rotate(self.origin_image, self.rot)
-        self.rect = self.image.get_rect()
-        self.rect.center = self.pos
-        self.acc = vec(1, 0).rotate(-self.rot)
-        self.avoid_enemys()
-        self.acc.scale_to_length(self.speed)
-        self.acc += self.vel * ENEMY_FRICTION
-        self.vel += self.acc * self.game.dt
-        self.pos += self.vel * self.game.dt + 0.5 * self.acc * self.game.dt**2
-        self.hitbox.centerx = self.pos.x
-        collide_with_gameobject(self, self.game.walls, 'x')
-        self.hitbox.centery = self.pos.y
-        collide_with_gameobject(self, self.game.walls, 'y')
-        self.rect.center = self.hitbox.center
+            self.rot = target_dist.angle_to(vec(1, 0)) #target_dist == (self.game.player.pos - self.pos)
+            self.image = pg.transform.rotate(self.origin_image, self.rot)
+            self.rect = self.image.get_rect()
+            self.rect.center = self.pos
+            self.acc = vec(1, 0).rotate(-self.rot)
+            self.avoid_enemys()
+            self.acc.scale_to_length(self.speed)
+            self.acc += self.vel * ENEMY_FRICTION
+            self.vel += self.acc * self.game.dt
+            self.pos += self.vel * self.game.dt + 0.5 * self.acc * self.game.dt**2
+            self.hitbox.centerx = self.pos.x
+            collide_with_gameobject(self, self.game.walls, 'x')
+            self.hitbox.centery = self.pos.y
+            collide_with_gameobject(self, self.game.walls, 'y')
+            self.rect.center = self.hitbox.center
         #bullet이랑 enemy가 충돌시 둘 다 kill
         #ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ주석if밑으로 여기까지 한칸씩 tap해주면 enemy와 player가 일정 거리이상 벌어지면 추격Xㅡㅡㅡㅡ
         if self.health <= 0:
@@ -575,29 +575,7 @@ class Ground(pg.sprite.Sprite):
         self.rect.x = self.pos.x*TILESIZE
         self.rect.y = self.pos.y*TILESIZE
 
-class Select(pg.sprite.Sprite):
-
-    def __init__(self, game):
-        pg.sprite.Sprite.__init__(self)
-        self.game = game
-        self.image = pg.Surface((120,40))
-        self.image.blit(self.game.menu_select, (0, 0))
-        self.image.set_alpha(0)
-        self.image.set_colorkey(WHITE)
-        self.rect = self.image.get_rect()
-        self.rect.center = (WIDTH - 70, HEIGHT - 340)
-        self.select_number = 0
-
-    def update(self):
-        self.button = True
-        keys = pg.mouse.get_pressed()
-        # if keys[0]:
-        #     pg.quit()
-        #     quit()
-        
-        
-
-class button(self):
+class button():
     def __init__(self, x, y, width, height):
         self.x = x
         self.y = y

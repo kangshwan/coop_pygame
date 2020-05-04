@@ -5,8 +5,10 @@ vec = pg.math.Vector2
 TITLE = "Zombie Survival"
 WIDTH = 960
 HEIGHT = 640
+
 FPS = 60
 WINDOW_SIZE = [WIDTH,HEIGHT]
+
 
 TILESIZE = 32
 GRIDWIDTH = WIDTH/TILESIZE
