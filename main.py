@@ -137,13 +137,17 @@ class Game:
         for tile_object in self.map.tmxdata.objects:
             if tile_object.name == 'player':
                 self.player = Player(self, tile_object.x, tile_object.y)
-            if tile_object.name == 'wall':
-                Obstacle(self, tile_object.x, tile_object.y, tile_object.width, tile_object.height)
+                
             if tile_object.name == 'enemy_spawn':
                 self.enemy_pos.append((tile_object.x, tile_object.y))
                 Enemy(self, tile_object.x, tile_object.y)
+                print('First pos', tile_object.x, tile_object.y)
+            if tile_object.name == 'wall':
+                Obstacle(self, tile_object.x, tile_object.y, tile_object.width, tile_object.height)
+            
+                
         self.camera = Camera(self.map.width, self.map.height)
-        self.draw_debug = False
+        self.draw_debug = True
         # make Camera class / 카메라 객체 생성
         
         #아이템or스킬상자가 랜덤한 위치에 드랍되게 / 상자를 먹으면 사라지고 일정 효과가 발동되도록 만들어주기
@@ -185,6 +189,7 @@ class Game:
             for e_position in self.enemy_pos:
                 #3초마다 해당 장소에서 생성. 추후 enemy_pos를 list로 쓸경우 for문 안에넣고 index들로 접근해서 생성하면 될듯.
                 Enemy(self, e_position[0], e_position[1])
+                
                 self.enemy_spawned = self.now
         self.second = ((pg.time.get_ticks() - self.start_tick)/1000)
 
@@ -244,7 +249,7 @@ class Game:
                 hit.health -= self.player.weapon_damage
                 hit.vel = vec(0, 0)
         else:
-            hits = pg.sprite.groupcollide(self.enemys, self.bullets, False, True)
+            hits = pg.sprite.groupcollide(self.enemys, self.bullets, False, True, collide_hit_box)
             for hit in hits:
                 hit.health -= self.player.weapon_damage * len(hits[hit])
                 hit.vel = vec(0, 0)
@@ -284,6 +289,7 @@ class Game:
                     self.start = False
                 self.start = False
             if event.type == pg.MOUSEBUTTONDOWN:
+                #screen button 기믹
                 pass
             if key_1[pg.K_p]:
                 self.paused = not self.paused
@@ -308,7 +314,6 @@ class Game:
                 sprite.draw_body()
             if self.draw_debug:
                 pg.draw.rect(self.screen, RED, self.camera.apply_rect(sprite.rect),1)
-
                 pg.draw.rect(self.screen, CYAN, self.camera.apply_rect(sprite.hitbox),1)
 
             if isinstance(sprite, Player):

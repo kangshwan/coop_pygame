@@ -23,6 +23,8 @@ def collide_with_gameobject(sprite,group,dir):
             sprite.vel.x = 0
             # 부딫혔으니 x방향 속도를 0으로 해줌.
             sprite.hitbox.centerx = sprite.pos.x
+            return True
+            
     if dir == 'y':
         hits = pg.sprite.spritecollide(sprite, group, False,collide_hit_rect)
         if hits:
@@ -35,6 +37,7 @@ def collide_with_gameobject(sprite,group,dir):
             sprite.vel.y = 0
             # 부딫혔으니 y방향 속도를 0으로 해줌
             sprite.hitbox.centery = sprite.pos.y
+
 
 class Player(pg.sprite.Sprite):
     
@@ -429,28 +432,26 @@ class Enemy(pg.sprite.Sprite):
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.image = pg.Surface((TILESIZE,TILESIZE), pg.SRCALPHA)
-        #self.image.fill(RED)
         self.origin_image = self.image
         self.rect = self.image.get_rect()
         self.hitbox = ENEMY_HIT_BOX.copy()
-        self.hitbox.x = self.rect.x
-        self.hitbox.y = self.rect.y
-        #self.image.fill(RED)
+        self.hitbox.center = self.rect.center
         self.pos = vec(x, y)
         self.vel = vec(0, 0)
         self.acc = vec(0, 0)
-        self.rect.center = self.pos
+        self.rot = 0
+        self.contact = False
         #self.rect.x = self.pos.x*TILESIZE
         #self.rect.y = self.pos.y*TILESIZE
         #제 생각에 문제는 단 한번으로 좌표를 할당해도되는데 좌표할당행위를 나눠서 여러번 해서 
         #문제가 생겼던것 같습니다. 이렇게 하니 잘 되는것같네요!
         self.speed = random.choice(ENEMY_SPEED)
-        self.rot = 0
         self.health = ENEMY_HEALTH
         self.target = game.player
         self.right = False
         self.walking = 0
         self.standing = False
+        print('init',self.pos)
 
     def avoid_enemys(self):
         for enemy in self.game.enemys:
@@ -461,7 +462,6 @@ class Enemy(pg.sprite.Sprite):
 
     def update(self):
         target_dist = self.target.pos - self.pos 
-        #if target_dist.length_squared() < DETECT_RADIUS**2:
         #self.rect.x -= self.speedy 
         self.rot = target_dist.angle_to(vec(1, 0)) #target_dist == (self.game.player.pos - self.pos)
         self.image = pg.transform.rotate(self.origin_image, 0)
@@ -475,12 +475,25 @@ class Enemy(pg.sprite.Sprite):
             pass
         self.acc += self.vel * ENEMY_FRICTION
         self.vel += self.acc * self.game.dt
-        self.pos += self.vel * self.game.dt + 0.5 * self.acc * self.game.dt**2
-        self.hitbox.x = self.pos.x
-        collide_with_gameobject(self, self.game.walls, 'x')
-        self.hitbox.y = self.pos.y
-        collide_with_gameobject(self, self.game.walls, 'y')
-        self.rect.center = self.hitbox.center
+        if target_dist.length_squared() > DETECT_RADIUS**2:
+            self.contact = not self.contact
+        if not self.contact:
+            self.acc = vec(0,0)
+            self.vel = vec(0,0)
+            self.hitbox.x = self.pos.x
+            self.hitbox.y = self.pos.y
+            self.rect.center = self.hitbox.center
+        #
+        #    self.vel = vec(0,0)
+        #    self.acc = vec(0,0)
+        #else:
+        #    self.pos += self.vel * self.game.dt + 0.5 * self.acc * self.game.dt**2
+        #    print('after',self.pos)
+        #    self.hitbox.x = self.pos.x
+        #    collide_with_gameobject(self, self.game.walls, 'x')
+        #    self.hitbox.y = self.pos.y
+        #    collide_with_gameobject(self, self.game.walls, 'y')
+        #    self.rect.center = self.hitbox.center
         #bullet이랑 enemy가 충돌시 둘 다 kill
         #ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ주석if밑으로 여기까지 한칸씩 tap해주면 enemy와 player가 일정 거리이상 벌어지면 추격Xㅡㅡㅡㅡ
         if self.health <= 0:
@@ -490,6 +503,7 @@ class Enemy(pg.sprite.Sprite):
             self.right = True
         else:
             self.right = False
+
     def draw_health(self):
         col = YELLOW
         width = int(self.hitbox.width * self.health / ENEMY_HEALTH)
@@ -500,6 +514,7 @@ class Enemy(pg.sprite.Sprite):
             pg.draw.rect(self.image, WHITE, self.outer_edge, 1)
 
     def draw_body(self):
+        print('draw',self.pos)
         self.body = []
         for i in range(len(self.game.zombie1_img)):
             for j in range(5):
@@ -601,9 +616,10 @@ class Obstacle(pg.sprite.Sprite):
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.rect = pg.Rect(x, y, w, h)
-        self.pos = vec(x,y)
-        self.rect.x = self.pos.x
-        self.rect.y = self.pos.y   
+        self.x = x
+        self.y = y
+        self.rect.x = self.x
+        self.rect.y = self.y   
 
 class Ground(pg.sprite.Sprite):
     def __init__(self, game, x, y, image):

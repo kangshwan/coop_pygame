@@ -64,4 +64,27 @@ class Camera:
     
     def apply_rect(self, rect):
         return rect.move(self.camera.topleft)
-        
+
+class Button():
+    def __init__(self, color, position, width, height, surface, text = ''):
+        self.color = color
+        self.pos = position
+        self.width = width
+        self.height = height
+        self.text = text
+        self.surface = surface
+
+    def draw(self, outline=None):
+        if outline:
+            pg.draw.rect(self.surface, outline, (self.pos.x-2,self.pos.y-2,self.width+4,self.height+4), 0)
+        pg.draw.rect(self.surface, self.color, (self.pos.x, self.pos.y, self.width, self.height), 0)
+        if self.text != '':
+            font = pg.font.SysFont('comicsans', 60)
+            text = font.render(self.text, 1, (0,0,0))
+            self.surface.blit(text, (self.pos.x + (self.width/2 - text.get_width()/2), self.pos.y + (self.height/2 - text.get_height()/2)))
+    
+    def isOver(self, pos):
+        if self.pos.x < pos[0] and pos[0] <self.pos.x +self.width:
+            if self.pos.y < pos[1] <self.pos.y + self.height:
+                return True
+        return False

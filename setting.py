@@ -3,8 +3,8 @@ vec = pg.math.Vector2
 
 # this file is basic settings of game
 TITLE = "Zombie Survival"
-WIDTH = 960
-HEIGHT = 640
+WIDTH = 1280
+HEIGHT = 960
 FPS = 60
 WINDOW_SIZE = [WIDTH,HEIGHT]
 
@@ -95,7 +95,7 @@ ENEMY_DAMAGE = 10
 ENEMY_KNOCKBACK = 20
 ENEMY_SPEED = [100, 150, 75, 125, 100, 100, 125, 200]
 ENEMY_FRICTION = -1
-ENEMY_HIT_BOX = pg.Rect(0, 0, 30, 60)
+ENEMY_HIT_BOX = pg.Rect(0, 0, 30, 30)
 AVOID_RADIUS = 50
 
 # item properties
@@ -136,4 +136,4 @@ ZOMBIE1_IMG = ['zombie1_1.png', 'zombie1_2.png', 'zombie1_3.png', 'zombie1_4.png
 FEED_RANGE = 20
 FEED_SPEED = 0.6
 #enemy and player distance
-DETECT_RADIUS = 400
+DETECT_RADIUS = 100
