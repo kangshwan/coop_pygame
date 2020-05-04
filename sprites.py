@@ -697,7 +697,7 @@ class Boss(pg.sprite.Sprite):
         self.hitbox = ENEMY_HIT_BOX.copy()
         self.hitbox.center = self.rect.center
         self.image.fill(BLACK)
-        self.pos = vec(x, y) * TILESIZE
+        self.pos = vec(x, y)
         self.vel = vec(0, 0)
         self.acc = vec(0, 0)
         self.rect.center = self.pos

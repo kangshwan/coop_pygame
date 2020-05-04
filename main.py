@@ -156,7 +156,7 @@ class Game:
             if tile_object.name == 'wall':
                 Obstacle(self, tile_object.x, tile_object.y, tile_object.width, tile_object.height)
             if tile_object.name == 'boss':
-                self.boss_pos = (col,row)
+                self.boss_pos = (tile_object.x, tile_object.y)
 
         self.camera = Camera(self.map.width, self.map.height)
         self.draw_debug = True
@@ -208,10 +208,10 @@ class Game:
         #update에서 Boss 생성
         if self.player.kill_enemy > 0:
             if not self.boss_spawn:
-                for b_position in self.boss_pos:
-                    #3초마다 해당 장소에서 생성. 추후 enemy_pos를 list로 쓸경우 for문 안에넣고 index들로 접근해서 생성하면 될듯.
-                    Boss(self, b_position[0], b_position[1], BLACK)
-                    self.boss_spawn = not self.boss_spawn
+                
+                #3초마다 해당 장소에서 생성. 추후 enemy_pos를 list로 쓸경우 for문 안에넣고 index들로 접근해서 생성하면 될듯.
+                Boss(self, self.boss_pos[0], self.boss_pos[1], BLACK)
+                self.boss_spawn = not self.boss_spawn
                 
         
 
