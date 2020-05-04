@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.3.4" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="32" tileheight="32" infinite="0" nextlayerid="6" nextobjectid="4">
+<map version="1.2" tiledversion="1.3.4" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="32" tileheight="32" infinite="0" nextlayerid="6" nextobjectid="25">
  <tileset firstgid="1" source="rpgmaker_tileset.tsx"/>
  <layer id="1" name="Ground" width="50" height="50">
   <data encoding="csv">
@@ -218,7 +218,22 @@
 </data>
  </layer>
  <objectgroup id="5" name="Obstacles">
-  <object id="2" name="wall" x="384.021" y="319.896" width="159.938" height="32.0739"/>
+  <object id="2" name="wall" x="576.687" y="256.229" width="159.938" height="95.7405"/>
   <object id="3" name="player" type="wall" x="422.031" y="423.963" width="17.2713" height="16.7406"/>
+  <object id="8" name="wall" x="384.031" y="256.13" width="159.938" height="95.7405"/>
+  <object id="9" name="wall" x="512.364" y="353.13" width="30.2713" height="30.0738"/>
+  <object id="10" name="wall" x="576.531" y="353.296" width="30.2713" height="30.0738"/>
+  <object id="11" name="wall" x="482.864" y="190.63" width="23.938" height="25.7405"/>
+  <object id="12" name="wall" x="418.364" y="160.463" width="23.938" height="25.7405"/>
+  <object id="13" name="wall" x="639.698" y="130.796" width="31.938" height="27.7405"/>
+  <object id="14" name="wall" x="672.698" y="227.463" width="31.938" height="27.7405"/>
+  <object id="17" x="733.667" y="162.667" width="0.333333" height="0.333333"/>
+  <object id="18" x="759" y="160"/>
+  <object id="19" name="enemy_spawn" x="474.333" y="149.333"/>
+  <object id="20" name="enemy_spawn" x="577" y="156"/>
+  <object id="21" name="enemy_spawn" x="640.667" y="208.667"/>
+  <object id="22" name="enemy_spawn" x="452.333" y="218.667"/>
+  <object id="23" name="wall" x="384.005" y="32.4379" width="31.9797" height="223.559"/>
+  <object id="24" name="wall" x="703.828" y="32.0387" width="31.9797" height="223.559"/>
  </objectgroup>
 </map>

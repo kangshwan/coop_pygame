@@ -139,9 +139,11 @@ class Game:
                 self.player = Player(self, tile_object.x, tile_object.y)
             if tile_object.name == 'wall':
                 Obstacle(self, tile_object.x, tile_object.y, tile_object.width, tile_object.height)
-        
+            if tile_object.name == 'enemy_spawn':
+                self.enemy_pos.append((tile_object.x, tile_object.y))
+                Enemy(self, tile_object.x, tile_object.y)
         self.camera = Camera(self.map.width, self.map.height)
-        self.debug = False
+        self.draw_debug = False
         # make Camera class / 카메라 객체 생성
         
         #아이템or스킬상자가 랜덤한 위치에 드랍되게 / 상자를 먹으면 사라지고 일정 효과가 발동되도록 만들어주기
@@ -237,7 +239,7 @@ class Game:
 
         # bullet hit the mob
         if self.player.gun_select in [2,3]:
-            hits = pg.sprite.groupcollide(self.enemys, self.bullets, False, False)
+            hits = pg.sprite.groupcollide(self.enemys, self.bullets, False, False, collide_hit_box)
             for hit in hits:
                 hit.health -= self.player.weapon_damage
                 hit.vel = vec(0, 0)
@@ -248,7 +250,7 @@ class Game:
                 hit.vel = vec(0, 0)
 
         # explosion hit the player
-        hits = pg.sprite.pygame.sprite.spritecollide(self.player, self.explode, False, collide_hit_rect)
+        hits = pg.sprite.pygame.sprite.spritecollide(self.player, self.explode, False, collide_hit_box)
         for hit in hits:
             if self.player.amor > 0:
                 self.player.amor -= GRENADE_DAMAGE
@@ -287,7 +289,7 @@ class Game:
                 self.paused = not self.paused
                 self.player.standing = True
             if key_1[pg.K_PERIOD]:
-                self.debug = not self.debug
+                self.draw_debug = not self.draw_debug
             
     #def draw_grid(self):
     #    for x in range(0, WIDTH, TILESIZE):
@@ -304,12 +306,22 @@ class Game:
             if isinstance(sprite, Enemy):
                 sprite.draw_health()
                 sprite.draw_body()
+            if self.draw_debug:
+                pg.draw.rect(self.screen, RED, self.camera.apply_rect(sprite.rect),1)
+
+                pg.draw.rect(self.screen, CYAN, self.camera.apply_rect(sprite.hitbox),1)
+
             if isinstance(sprite, Player):
                 sprite.draw_body()
                 #self.screen.blit(sprite.image, self.camera.apply(sprite))
-                pass
+                if self.draw_debug:
+                    pg.draw.rect(self.screen, CYAN, self.camera.apply_rect(sprite.hitbox),1)
+                    pg.draw.rect(self.screen, CYAN, self.camera.apply_rect(sprite.rect),1)
             else:
                 self.screen.blit(sprite.image, self.camera.apply(sprite))
+            if self.draw_debug:
+                for wall in self.walls:
+                    pg.draw.rect(self.screen, CYAN, self.camera.apply_rect(wall.rect),1)
 
 
         #pg.draw.rect(self.screen, WHITE, self.player.hitbox,2)
@@ -343,7 +355,7 @@ class Game:
         self.grenade_img = pg.image.load(path.join(weapon_folder, GRENADE_THROW_IMG)).convert_alpha()
         self.pistol_img = pg.image.load(path.join(weapon_folder, WEAPON_IMGS[0][1])).convert_alpha()
         self.shotgun_img = pg.transform.scale(pg.image.load(path.join(weapon_folder, WEAPON_IMGS[1][1])).convert_alpha(), (62,16))
-        self.sniper_img = pg.transform.scale(pg.image.load(path.join(weapon_folder, WEAPON_IMGS[2][1])).convert_alpha(),(89,18))
+        self.sniper_img = pg.transform.scale(pg.image.load(path.join(weapon_folder, WEAPON_IMGS[2][1])).convert_alpha(),(85,30))
         self.flamethrower_img = pg.transform.scale(pg.image.load(path.join(weapon_folder, WEAPON_IMGS[3][1])).convert_alpha(),(70,18))
         self.move1_img = pg.image.load(path.join(player_folder, PLAYER_IMG1)).convert_alpha()
         self.move2_img = pg.image.load(path.join(player_folder, PLAYER_IMG2)).convert_alpha()
@@ -357,8 +369,6 @@ class Game:
             self.zombie1_img.append(pg.transform.scale(pg.image.load(path.join(enemy_folder, ZOMBIE1_IMG[i])).convert_alpha(), (35,56)))
         pass
         self.poke_font = path.join(font_folder, 'PokemonGb-RAeo.ttf')
-
-
 
 g = Game()
 while g.start:

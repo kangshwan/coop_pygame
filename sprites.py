@@ -314,6 +314,7 @@ class Bullet(pg.sprite.Sprite):
         if select != 3:
             self.image = pg.transform.rotate(self.origin_images, -angle)
         self.rect = self.image.get_rect()
+        self.hitbox =self.rect
         self.pos = vec(pos)
 
         self.start_pos = vec(self.pos)
@@ -357,7 +358,7 @@ class Grenade(pg.sprite.Sprite):
         self.speed = GRENADE_SPEED
         self.spawn_time = pg.time.get_ticks()
         self.rot = 0
-        
+        self.hitbox = self.rect
         self.power = magnitude
         if self.power > 300:
             pass
@@ -427,14 +428,15 @@ class Enemy(pg.sprite.Sprite):
         self.groups = game.all_sprites, game.enemys
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        self.image = pg.Surface((TILESIZE,TILESIZE*3), pg.SRCALPHA)
+        self.image = pg.Surface((TILESIZE,TILESIZE), pg.SRCALPHA)
         #self.image.fill(RED)
         self.origin_image = self.image
         self.rect = self.image.get_rect()
         self.hitbox = ENEMY_HIT_BOX.copy()
-        self.hitbox.center = self.rect.center
+        self.hitbox.x = self.rect.x
+        self.hitbox.y = self.rect.y
         #self.image.fill(RED)
-        self.pos = vec(x, y) * TILESIZE
+        self.pos = vec(x, y)
         self.vel = vec(0, 0)
         self.acc = vec(0, 0)
         self.rect.center = self.pos
@@ -474,9 +476,9 @@ class Enemy(pg.sprite.Sprite):
         self.acc += self.vel * ENEMY_FRICTION
         self.vel += self.acc * self.game.dt
         self.pos += self.vel * self.game.dt + 0.5 * self.acc * self.game.dt**2
-        self.hitbox.centerx = self.pos.x
+        self.hitbox.x = self.pos.x
         collide_with_gameobject(self, self.game.walls, 'x')
-        self.hitbox.centery = self.pos.y
+        self.hitbox.y = self.pos.y
         collide_with_gameobject(self, self.game.walls, 'y')
         self.rect.center = self.hitbox.center
         #bullet이랑 enemy가 충돌시 둘 다 kill
@@ -508,12 +510,11 @@ class Enemy(pg.sprite.Sprite):
         if self.walking + 1 >= FPS:
             self.walking = 0
         if self.standing:
-            self.game.screen.blit(self.body[self.walking//FPS], (self.game.camera.camera.x+self.hitbox.x, self.game.camera.camera.y+self.hitbox.y-21))
+            self.game.screen.blit(self.body[self.walking//FPS], (self.game.camera.camera.x+self.hitbox.x, self.game.camera.camera.y+self.hitbox.y+2))
         else:
-            self.game.screen.blit(self.body[self.walking%len(self.body)], (self.game.camera.camera.x+self.hitbox.x, self.game.camera.camera.y+self.hitbox.y-26))
+            self.game.screen.blit(self.body[self.walking%len(self.body)], (self.game.camera.camera.x+self.hitbox.x, self.game.camera.camera.y+self.hitbox.y+2))
             self.walking += 1
         
-
 #아이템 상자 생성
 class Feed(pg.sprite.Sprite):
     def __init__(self, game, x, y):
@@ -551,7 +552,7 @@ class Explode(pg.sprite.Sprite):
         self.pos = vec(pos)
         self.rect.center = pos
         self.spawn_time = pg.time.get_ticks()
-        
+        self.hitbox = self.rect
     def load_images(self):
         self.image_list = self.game.explode_img
         self.image = self.image_list[0]
