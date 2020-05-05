@@ -45,8 +45,10 @@ def draw_player_health(surf, x, y, health, amor, max_health):
 
     amor_col = SILVER
 
-    if health_pct > 0.6:
+    if health_pct > 0.8:
         col = GREEN
+    elif health_pct > 0.6:
+        col = ORANGE
     elif health_pct > 0.3:
         col = YELLOW
     else:
@@ -62,6 +64,24 @@ def draw_gun_list(surf, gunstatus, gun_now):
         if len(BUTTON_POSITION) < 4:
             BUTTON_POSITION.append([BAR_LENGTH + 40 + idx * 80, HEIGHT-60, 40, 40])
 
+def draw_boss_health(surf, x, y, health):
+    BOSS_BAR_LENGTH = WIDTH/2
+    BOSS_BAR_HEIGHT = 30
+    pct = health/BOSS_HEALTH
+    fill = pct*BOSS_BAR_LENGTH
+    outline_rect = pg.Rect(x,y,BOSS_BAR_LENGTH, BOSS_BAR_HEIGHT)
+    fill_rect = pg.Rect(x,y,fill, BOSS_BAR_HEIGHT)
+
+    if pct > 0.8:
+        col = GREEN
+    elif pct > 0.6:
+        col = ORANGE
+    elif pct > 0.3:
+        col = YELLOW
+    else:
+        col = RED
+    pg.draw.rect(surf, col, fill_rect)
+    pg.draw.rect(surf, WHITE, outline_rect,3)
 
 def draw_gun(surf, x, y, possible, gun_kind, gun_now):
     BAR_WIDTH = 50

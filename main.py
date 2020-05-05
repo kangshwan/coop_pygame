@@ -63,25 +63,28 @@ class Game:
         self.zombie_remain = 1000 
         self.enemy_spawned = 0
         self.item_spawned = 0
+        self.ending = False
+
         #sprite gruop
-        self.all_sprites = pg.sprite.Group()
-        self.zombies     = pg.sprite.Group()
-        self.bullets     = pg.sprite.Group()
-        self.grenades    = pg.sprite.Group()
-        self.obstacle    = pg.sprite.Group()
-        self.walls       = pg.sprite.Group()
-        self.enemys      = pg.sprite.Group()
-        self.feeds       = pg.sprite.Group()
-        self.explode     = pg.sprite.Group()
-        self.ground      = pg.sprite.Group()
+        self.all_sprites  = pg.sprite.Group()
+        self.zombies      = pg.sprite.Group()
+        self.bullets      = pg.sprite.Group()
+        self.grenades     = pg.sprite.Group()
+        self.obstacle     = pg.sprite.Group()
+        self.walls        = pg.sprite.Group()
+        self.enemys       = pg.sprite.Group()
+        self.feeds        = pg.sprite.Group()
+        self.explode      = pg.sprite.Group()
+        self.ground       = pg.sprite.Group()
+        self.boss_bullet = pg.sprite.Group()
         
         self.spwaned_enemy = 0
         self.feed_pos = []
         self.enemy_pos = []
         self.paused = False
-        self.boss = pg.sprite.Group()
+
         self.boss_pos = ()
-        self.boss_spawn = False
+        self.boss_spawn = True
         self.paused_text = False
         #for row, tiles in enumerate(self.map.data):
         #    #enumerate는 한 배열에 대하여 index와 그 값을 동시에 가져올수 있음. -> 자세한건 구글링
@@ -204,11 +207,29 @@ class Game:
         self.second = ((pg.time.get_ticks() - self.start_tick)/1000)
 
         #update에서 Boss 생성
-        if self.player.kill_enemy > 0: #MAX_ENEMY:
-            if not self.boss_spawn:
+        if self.player.kill_enemy > MAX_ENEMY:
+            if self.boss_spawn:
                 #3초마다 해당 장소에서 생성. 추후 enemy_pos를 list로 쓸경우 for문 안에넣고 index들로 접근해서 생성하면 될듯.
-                Boss(self, self.boss_pos[0], self.boss_pos[1], CYAN)
+                self.boss = Boss(self, self.boss_pos[0], self.boss_pos[1], CYAN)
                 self.boss_spawn = not self.boss_spawn
+       
+        hits = pg.sprite.pygame.sprite.spritecollide(self.player, self.boss_bullet, True, collide_hit_box)
+        for hit in hits:
+            if self.player.amor != 0:
+                self.player.amor -= BOSS_BULLET_DAMAGE
+                if self.player.amor < 0:
+                    self.player.health += self.player.amor
+            else:
+                self.player.health -= BOSS_BULLET_DAMAGE
+            hit.vel = vec(0, 0)
+            hit.acc = vec(0,0)
+            if self.player.health <= 0:
+                self.playing = False
+        if hits:
+            if self.boss.target_dist.y > 0:
+                self.player.pos += vec(0, BOSS_KNOCKBACK)
+            else:
+                self.player.pos += vec(0, -BOSS_KNOCKBACK)       
 
         #hits -> used sprite collide method, (x, y, default boolean) collision check
         hits = pg.sprite.pygame.sprite.spritecollide(self.player, self.enemys, False, collide_hit_box)
@@ -240,8 +261,11 @@ class Game:
                 #self.player.gun_status[2] = [True, 10]
             if hit.item_no == 1:
                 #bullet speed up
-                self.player.weapon_rate *= 0.001
-                self.player.last_weapon_speed = pg.time.get_ticks()
+                if self.player.grenade[0] == True:
+                    self.player.grenade[1] += 3
+                else:
+                    self.player.grenade[0] = True
+                    self.player.grenade[1] = 3
 
             if hit.item_no == 2:
                 #damage up
@@ -261,10 +285,7 @@ class Game:
                 self.player.max_health = self.player.health + self.player.amor
                 if self.player.max_health < PLAYER_HEALTH:
                     self.player.max_health = PLAYER_HEALTH
-            if hit.item_no == 5:
-                #key to win
-                self.player.key += 1
-
+            
                 
         # bullet hit the mob
         if self.player.gun_select in [2,3]:
@@ -277,20 +298,35 @@ class Game:
             for hit in hits:
                 hit.health -= self.player.weapon_damage * len(hits[hit])
                 hit.vel = vec(0, 0)
-        
-        # bullet hit the boss
-        if self.player.gun_select in [2,3]:
-            hits = pg.sprite.groupcollide(self.boss, self.bullets, False, False)
-            for hit in hits:
-                hit.health -= self.player.weapon_damage
-                hit.vel = vec(0, 0)
-        else:
-            hits = pg.sprite.groupcollide(self.boss, self.bullets, False, True)
-            for hit in hits:
-                hit.health -= self.player.weapon_damage * len(hits[hit])
-                hit.vel = vec(0, 0)
-        #explosion hiy the boss도 만들어야함
 
+        if not self.boss_spawn:
+            hits = pg.sprite.pygame.sprite.collide_rect(self.player, self.boss)
+            if hits:
+                if self.player.amor > 0:
+                    self.player.amor -= BOSS_HIT_DAMAGE
+                    if self.player.amor < 0:
+                        self.player.health += self.player.amor
+                else:
+                    self.player.health -= BOSS_HIT_DAMAGE
+                #self.boss.vel = vec(0, 0)
+
+                if self.player.health <= 0:
+                    self.playing = False
+                    self.running = False
+                    self.player.key = 0
+                rot = (self.player.pos - self.boss.pos).angle_to(vec(1,0))
+                self.player.pos += vec(EXPLOSION_KNOCKBACK, 0).rotate(-rot)
+
+            if self.player.gun_select in [2,3]:
+                hits = pg.sprite.pygame.sprite.spritecollide(self.boss, self.bullets, False, collide_hit_box)
+                for hit in hits:
+                    self.boss.health -= self.player.weapon_damage
+                    #self.boss.vel = vec(0, 0)
+            else:
+                hits = pg.sprite.pygame.sprite.spritecollide(self.boss, self.bullets, True, collide_hit_box)
+                for hit in hits:
+                    self.boss.health -= self.player.weapon_damage * len(hits)
+                    #self.boss.vel = vec(0, 0)
 
         # explosion hit the player
         hits = pg.sprite.pygame.sprite.spritecollide(self.player, self.explode, False, collide_hit_box)
@@ -303,8 +339,9 @@ class Game:
                 self.player.health -= GRENADE_DAMAGE
             hit.vel = vec(0, 0)
             if self.player.health <= 0:
-                self.playing = False    
+                self.playing = False
                 self.running = False
+                self.player.key = 0
             rot = (self.player.pos - hit.pos).angle_to(vec(1,0))
             self.player.pos += vec(EXPLOSION_KNOCKBACK, 0).rotate(-rot)
         
@@ -317,19 +354,17 @@ class Game:
         if self.playing == False:
             self.runnig = False
         
-        if self.player.key == 5:
+        if self.ending == True:
             self.clear_text()
             self.ending = True
             self.playing = False
-            self.player.key = 0
-            sleep (1)
-            
+                
     def clear_text(self):
         for i in range(8):
-            self.draw_text('CLEAR !! ', 60, GREEN, WIDTH/2, HEIGHT/2-100)
+            self.draw_text('CLEAR !! ', 30, GREEN, WIDTH/2, HEIGHT/2-100)
             pg.display.update()
             sleep(0.1)
-            self.draw_text('CLEAR !! ', 60, RED, WIDTH/2, HEIGHT/2-100)
+            self.draw_text('CLEAR !! ', 30, RED, WIDTH/2, HEIGHT/2-100)
             pg.display.update()
             sleep(0.1)
 
@@ -344,38 +379,69 @@ class Game:
                     self.running = False
                     self.start = False
                 self.start = False
+            if event.type == pg.KEYDOWN:
+                if event.key == pg.K_p:
+                    self.paused = not self.paused
+                    self.player.standing = True
+                    self.paused_text = not self.paused_text
+                if event.key == pg.K_PERIOD:
+                    self.draw_debug = not self.draw_debug
+                if event.key == pg.K_2 and pg.key.get_mods() & pg.KMOD_CTRL:
+                    if self.player.money >= WEAPON_PRICE[1]:
+                        self.player.money -= WEAPON_PRICE[1]
+                        if self.player.gun_status[1][0] != True:
+                            self.player.gun_status[1][0] = not self.player.gun_status[1][0]
+                            self.player.gun_status[1][1] = 120
+                        else:
+                            self.player.gun_status[1][1] += 120
+                if event.key == pg.K_3 and pg.key.get_mods() & pg.KMOD_CTRL:
+                    if self.player.money >= WEAPON_PRICE[2]:
+                        self.player.money -= WEAPON_PRICE[2]
+                        if self.player.gun_status[2][0] != True:
+                            self.player.gun_status[2][0] = not self.player.gun_status[2][0]
+                            self.player.gun_status[2][1] = 10
+                        else:
+                            self.player.gun_status[2][1] = 10
+                if event.key == pg.K_4 and pg.key.get_mods() & pg.KMOD_CTRL:
+                    if self.player.money >= WEAPON_PRICE[3]:  
+                        self.player.money -= WEAPON_PRICE[3]
+                        if self.player.gun_status[3][0] != True:
+                            self.player.gun_status[3][0] = not self.player.gun_status[3][0]
+                            self.player.gun_status[3][1] = 1000
+                        else:
+                            self.player.gun_status[3][1] = 1000   
             if event.type == pg.MOUSEBUTTONDOWN:
                 pos = pg.mouse.get_pos()
                 if gun_button[1].isOver(pos):
-                    if self.player.gun_status[1][0] != True:
-                        if self.player.money >= WEAPON_PRICE[1]:
-                            self.player.money -= WEAPON_PRICE[1]
+                    if self.player.money >= WEAPON_PRICE[1]:
+                        self.player.money -= WEAPON_PRICE[1]
+                        if self.player.gun_status[1][0] != True:
                             self.player.gun_status[1][0] = not self.player.gun_status[1][0]
-                            self.player.gun_status[1][1] = 12
+                            self.player.gun_status[1][1] = 120
+                        else:
+                            self.player.gun_status[1][1] += 120
+                        
                         #buy
                     #buy shotgun
                 if gun_button[2].isOver(pos):
-                    if self.player.gun_status[2][0] != True:
-                        if self.player.money >= WEAPON_PRICE[2]:
-                            self.player.money -= WEAPON_PRICE[2]
+                    if self.player.money >= WEAPON_PRICE[2]:
+                        self.player.money -= WEAPON_PRICE[2]
+                        if self.player.gun_status[2][0] != True:
                             self.player.gun_status[2][0] = not self.player.gun_status[2][0]
-                            self.player.gun_status[2][1] = 1
+                            self.player.gun_status[2][1] = 10
+                        else:
+                            self.player.gun_status[2][1] = 10
                     #buy sniper
                 if gun_button[3].isOver(pos):
-                    if self.player.gun_status[3][0] != True:
-                        if self.player.money >= WEAPON_PRICE[3]:
-                            self.player.money -= WEAPON_PRICE[3]
+                    if self.player.money >= WEAPON_PRICE[3]:  
+                        self.player.money -= WEAPON_PRICE[3]
+                        if self.player.gun_status[3][0] != True:
                             self.player.gun_status[3][0] = not self.player.gun_status[3][0]
-                            self.player.gun_status[3][1] = 10
+                            self.player.gun_status[3][1] = 1000
+                        else:
+                            self.player.gun_status[3][1] = 1000
                     #buy fire  
-                pass
-            if key_1[pg.K_p]:
-                self.paused = not self.paused
-                self.player.standing = True
-                self.paused_text = not self.paused_text
-                
-            if key_1[pg.K_PERIOD]:
-                self.draw_debug = not self.draw_debug
+                pass  
             
     def draw(self):
         # game loop - draw
@@ -384,7 +450,7 @@ class Game:
         self.screen.blit(self.map_img, self.camera.apply_rect(self.map_rect))
         for sprite in self.all_sprites:
             if isinstance(sprite, Boss):
-                sprite.draw_health()
+                sprite.draw_body()
             if isinstance(sprite, Enemy):
                 sprite.draw_health()
                 sprite.draw_body()
@@ -396,7 +462,7 @@ class Game:
                 #self.screen.blit(sprite.image, self.camera.apply(sprite))
                 if self.draw_debug:
                     pg.draw.rect(self.screen, CYAN, self.camera.apply_rect(sprite.hitbox),1)
-                    pg.draw.rect(self.screen, RED, self.camera.apply_rect(sprite.rect),1)
+                    pg.draw.rect(self.screen, RED, self.camera.apply_rect(sprite.rect),1)            
             else:
                #else 지울까 말까 지울까 말까
                 self.screen.blit(sprite.image, self.camera.apply(sprite))
@@ -415,6 +481,8 @@ class Game:
         draw_gun_list(self.screen, self.player.gun_status, self.player.gun_select)
         draw_grenade_list(self.screen, self.player.grenade[1])
         draw_money(self.screen, 10, 10, self.player.money,self.poke_font)
+        if not self.boss_spawn:
+            draw_boss_health(self.screen, WIDTH/2-(TILESIZE*2), 2, self.boss.health)
         pg.display.update()
         
     def load_data(self):
@@ -430,7 +498,8 @@ class Game:
         self.bullet_img = []
         self.explode_img = []
         self.zombie1_img = []
-        self.wood_pillar_img = []
+        self.boss_img = []
+        #self.wood_pillar_img = []
         self.map = TiledMap(path.join(map_folder,'map.tmx'))
         self.map_img = self.map.make_map()
         self.map_rect = self.map_img.get_rect()
@@ -443,6 +512,7 @@ class Game:
         self.flamethrower_img = pg.transform.scale(pg.image.load(path.join(weapon_folder, WEAPON_IMGS[3][1])).convert_alpha(),(70,18))
         self.move1_img = pg.image.load(path.join(player_folder, PLAYER_IMG1)).convert_alpha()
         self.move2_img = pg.image.load(path.join(player_folder, PLAYER_IMG2)).convert_alpha()
+        self.item_box = pg.transform.scale(pg.image.load(path.join(img_folder, ITEM_IMG)).convert_alpha(),(30,30))
         #for i in range(4):
         #    self.wood_pillar_img.append(pg.image.load(path.join(map_folder, WOOD_PILAR_IMG[i])).convert_alpha())
         for i in range(4):
@@ -451,9 +521,12 @@ class Game:
             self.explode_img.append(pg.image.load(path.join(vfx_folder, EXPLODE_IMG[i])).convert_alpha())
         for i in range(7):
             self.zombie1_img.append(pg.transform.scale(pg.image.load(path.join(enemy_folder, ZOMBIE1_IMG[i])).convert_alpha(), (35,56)))
+        for i in range(6):
+            self.boss_img.append(pg.transform.scale(pg.image.load(path.join(enemy_folder, BOSS_IMG[i])).convert_alpha(),(128, 128)))
         self.brankovic_font = os.path.join(font_folder, 'brankovic.ttf')
         self.poke_font = path.join(font_folder, 'PokemonGb-RAeo.ttf')
-        self.start_screen = pg.image.load(path.join(img_folder, START_SCREEN)).convert_alpha()
+        self.start_screen = pg.transform.scale(pg.image.load(path.join(img_folder, START_SCREEN)).convert_alpha(),(WIDTH,HEIGHT))
+        self.ending_screen = pg.transform.scale(pg.image.load(path.join(img_folder, END_SCREEN)).convert_alpha(),(WIDTH,HEIGHT))
         
         pass
     
@@ -529,10 +602,13 @@ class Game:
     
     def show_over_screen(self):
         # Game Over시에 나타낼 스크린
-        self.screen.blit(self.start_screen, (1,1))
-        self.draw_text("GAVE OVER", 48, BLACK, WIDTH/2, HEIGHT/4)
-        self.draw_text("Survival Time : "+ str(self.second), 22, BLACK, WIDTH/2, HEIGHT/2)
-        self.draw_text("Press a 'Z' key to play again, 'ESC' to 'QUIT'", 22, BLACK, WIDTH/2, HEIGHT*3/4)
+        self.screen.blit(self.ending_screen, (0,0))
+        self.draw_text("GAVE OVER", 50, WHITE, WIDTH/2, HEIGHT/4)
+        #self.draw_text("GAVE OVER", 48, BLACK, WIDTH/2, HEIGHT/4)
+        self.draw_text("Survival Time : "+ str(self.second), 23, WHITE, WIDTH/2, HEIGHT/2)
+        #self.draw_text("Survival Time : "+ str(self.second), 22, BLACK, WIDTH/2, HEIGHT/2)
+        self.draw_text("Press a 'Z' key to play again, 'ESC' to 'QUIT'", 23, WHITE, WIDTH/2, HEIGHT*3/4)
+        #self.draw_text("Press a 'Z' key to play again, 'ESC' to 'QUIT'", 22, BLACK, WIDTH/2, HEIGHT*3/4)
         
         pg.display.update()
         sleep(1.5)

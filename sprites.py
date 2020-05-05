@@ -70,7 +70,6 @@ class Player(pg.sprite.Sprite):
         self.last_grenade = 0
         #0 is pistol 1 is shotgun
         self.last_speed = 0
-        self.last_weapon_speed = 0
         self.last_weapon_damage = 0
         self.now =pg.time.get_ticks()
         self.max_speed = 3
@@ -87,7 +86,6 @@ class Player(pg.sprite.Sprite):
         self.standing = True
         self.walking = 0
         self.left = False
-        self.key = 0
 
     def load_images(self):
         self.image = self.weapon_img[self.gun_select]
@@ -219,9 +217,6 @@ class Player(pg.sprite.Sprite):
         if self.now - self.last_speed > SPEEDUP_RATE:
             self.max_speed = 3
 
-        if self.now - self.last_weapon_speed > SPEEDUP_RATE:
-            self.weapon_rate = WEAPONS[self.weapon]['rate']
-
         if self.now - self.last_weapon_damage > SPEEDUP_RATE:
             self.weapon_damage = WEAPONS[self.weapon]['damage']
         if self.amor <= 0:
@@ -320,7 +315,6 @@ class Bullet(pg.sprite.Sprite):
         #spread = random.uniform(-BULLET_SPREAD,BULLET_SPREAD)
         self.vel = dir * WEAPONS[game.player.weapon]['bullet_speed']
         self.spawn_time = pg.time.get_ticks()
-        self.trace_status = True
 
     def load_images(self):
         self.image = self.game.bullet_img[self.select]
@@ -556,12 +550,12 @@ class Feed(pg.sprite.Sprite):
         self.groups = game.all_sprites, game.feeds
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        self.image = pg.Surface((TILESIZE/2,TILESIZE/2))
-        self.image.fill(CYAN)
+        self.image = game.item_box
         self.rect = self.image.get_rect()
         self.pos = vec(x,y)
         self.rect.centerx = self.pos.x + (TILESIZE/2)
         self.rect.y = self.pos.y 
+        self.hitbox = self.rect
         # 추후 random을 통해 바꿔야함.
         self.item_no = random.choice(ITEM_KIND)
         self.tween = tween.easeInOutSine
@@ -652,29 +646,62 @@ class Ground(pg.sprite.Sprite):
         self.rect.x = self.pos.x*TILESIZE
         self.rect.y = self.pos.y*TILESIZE
 
+class Boss_bullet(Bullet):
+    def __init__(self, game, pos, dir):
+        self.groups = game.all_sprites, game.boss_bullet
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.load_images()
+        self.rect = self.image.get_rect()
+        self.hitbox = self.rect
+        self.pos = vec(pos)
+        self.start_pos = vec(self.pos)
+        self.rect.center = pos
+        self.vel = dir*BOSS_ATTACK_SPEED
+        self.spawn_time = pg.time.get_ticks()
+        
+    def load_images(self):
+        self.image = pg.Surface((10,10))
+        self.image.fill(ORANGE)
 
-
+    def update(self):
+        self.pos += self.game.boss.amount
+        self.pos += self.vel*self.game.dt
+        self.rect.center = self.pos
+        if self.game.boss.pos.x < WIDTH and self.game.boss.pos.y < HEIGHT:
+            pass
+        else:
+            self.start_pos -= vec(self.game.boss.pos.x, -self.game.boss.pos.y)
+        if pg.time.get_ticks() - self.spawn_time > BOSS_ATTACK_RATE:
+            self.kill()
+            self.game.boss_spawn =False
+        
 class Boss(pg.sprite.Sprite):
     def __init__(self, game, x, y, color):        
-        self.groups = game.all_sprites, game.boss #boss : 객체
+        self.groups = game.all_sprites #boss : 객체
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.image = pg.Surface((TILESIZE*3,TILESIZE*3), pg.SRCALPHA)
-        self.image.fill(CYAN)
         self.origin_image = self.image
         self.rect = self.image.get_rect()
-        self.hitbox = ENEMY_HIT_BOX.copy()
+        self.hitbox = BOSS_HITBOX.copy()
         self.hitbox.center = self.rect.center
         self.pos = vec(x, y)
         self.vel = vec(0, 0)
         self.acc = vec(0, 0)
         self.rect.center = self.pos
-
-        self.speed = 0
+        self.last_attack = -5000
+        self.attack_rate = BOSS_ATTACK_RATE
+        self.speed = BOSS_SPEED
+        self.amount = vec(0,0)
         self.rot = 0
         self.health = BOSS_HEALTH #setting 98번째줄 보스체력, main82번째줄 보스 그룹에 추가, main106번째줄 보스 B로추가, 맵에B타일하나추가
         self.target = game.player #sprite700번째줄정도에 보스 : 보스내용 / Player클래스에 collide with boss(265번째줄~), main 179번째줄bullet hit boss
     #main 241번째줄 보스 체력, sprite 714번째줄 보스체력
+        self.right = False #추후 left변경 가능
+        self.walking = 0
+        self.standing = False
+        self.target_dist = 0
 
     def draw_health(self):
         col = RED
@@ -686,19 +713,21 @@ class Boss(pg.sprite.Sprite):
             pg.draw.rect(self.image, WHITE, self.outer_edge, 1)
 
     def update(self):
-        #target_dist = self.target.pos - self.pos 
+        self.target_dist = self.target.pos - self.pos 
         #if target_dist.length_squared() < DETECT_RADIUS**2:
         #self.rect.x -= self.speedy 
-        #self.rot = target_dist.angle_to(vec(1, 0)) #target_dist == (self.game.player.pos - self.pos)
-        self.image = pg.transform.rotate(self.origin_image, self.rot)
-        #self.rect = self.image.get_rect()
-        #self.rect.center = self.pos
-        # self.acc = vec(1, 0).rotate(-self.rot)
-        # self.avoid_enemys()
-        # self.acc.scale_to_length(self.speed)
-        # self.acc += self.vel * ENEMY_FRICTION
-        # self.vel += self.acc * self.game.dt
-        # self.pos += self.vel * self.game.dt + 0.5 * self.acc * self.game.dt**2
+        self.rot = self.target_dist.angle_to(vec(1, 0)) #self.target_dist == (self.game.player.pos - self.pos)
+        self.image = pg.transform.rotate(self.origin_image, 0)
+        self.rect = self.image.get_rect()
+        self.rect.center = self.pos
+        self.acc = vec(1, 0).rotate(-self.rot)
+        #self.avoid_enemys()
+        self.acc.scale_to_length(self.speed)
+
+        self.acc += self.vel * ENEMY_FRICTION
+        self.vel += self.acc * self.game.dt
+        self.amount = self.vel * self.game.dt + 0.5 * self.acc * self.game.dt**2
+        self.pos += self.amount
         self.hitbox.centerx = self.pos.x
         collide_with_gameobject(self, self.game.walls, 'x')
         self.hitbox.centery = self.pos.y
@@ -706,37 +735,35 @@ class Boss(pg.sprite.Sprite):
         self.rect.center = self.hitbox.center
         #bullet이랑 enemy가 충돌시 둘 다 kill
         #ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ주석if밑으로 여기까지 한칸씩 tap해주면 enemy와 player가 일정 거리이상 벌어지면 추격Xㅡㅡㅡㅡ
+
+        now = pg.time.get_ticks()
+        if now - self.last_attack > self.attack_rate:
+            self.last_attack = now
+            if self.target_dist.x>0:
+                dir = vec(1,0)
+            else:
+                dir = vec(-1,0)
+            pos = self.pos
+            Boss_bullet(self.game, pos, dir)
+        if self.target_dist.x > 0:
+            self.right = True
+        else:
+            self.right = False
         if self.health <= 0:
             self.kill()
-
-
-
-   
-
-class Trace(pg.sprite.Sprite):
-    def __init__(self, game, pos, angle, vel, weapon_name):
-        self.groups = game.all_sprites, game.trace
-        pg.sprite.Sprite.__init__(self, self.groups)
-        self.game = game
-        self.size = (1,1)
-        self.load_images()
-        self.rect = self.image.get_rect()
-        self.pos = vec(pos)
-        self.rect.center = pos
-        self.spawn_time = pg.time.get_ticks()
-        self.vel = vel
-        self.weapon_name = weapon_name
-
-    def load_images(self):
-        self.image = pg.Surface(self.size, pg.SRCALPHA)
-        self.image.fill(RED)
-        pass
-
-    def update(self):
-        self.pos += self.vel*self.game.dt
-        self.rect.center = self.pos
-        if pg.sprite.spritecollideany(self, self.game.walls):
-            self.kill()
-        if pg.time.get_ticks() - self.spawn_time > WEAPONS[self.weapon_name]['bullet_lifetime']:
-            self.kill()
-
+            self.game.ending = True
+    def draw_body(self):
+        self.body = []
+        for i in range(len(self.game.boss_img)):
+            for j in range(5):
+                self.body.append(self.game.boss_img[i])
+        if self.right:
+            for i in range(len(self.body)):
+                self.body[i] = pg.transform.flip(self.body[i], True, False)
+        if self.walking + 1 >= FPS:
+            self.walking = 0
+        if self.standing:
+            self.game.screen.blit(self.body[self.walking//FPS], (self.game.camera.camera.x + self.hitbox.x, self.game.camera.camera.y + self.hitbox.y -32))
+        else:
+            self.game.screen.blit(self.body[self.walking%len(self.body)], (self.game.camera.camera.x + self.hitbox.x, self.game.camera.camera.y + self.hitbox.y -32))
+            self.walking += 1
