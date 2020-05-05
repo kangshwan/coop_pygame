@@ -113,7 +113,7 @@ BOSS_KNOCKBACK = 30
 
 # item properties
 SPEEDUP_RATE = 7000
-ITEM_KIND = [1,2,3,4]#, 1, 1,  2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 5]  
+ITEM_KIND = [3,4]#, 1, 1,  2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 5]  
 AMOR_HEALTH = 25
 FEED_RANGE = 10
 FEED_SPEED = 0.2
@@ -158,4 +158,4 @@ ITEM_IMG = 'item_box.png'
 DETECT_RADIUS = 400
 
 
-MAX_ENEMY = 20
+MAX_ENEMY = 10

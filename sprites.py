@@ -763,7 +763,7 @@ class Boss(pg.sprite.Sprite):
         if self.walking + 1 >= FPS:
             self.walking = 0
         if self.standing:
-            self.game.screen.blit(self.body[self.walking//FPS], (self.game.camera.camera.x + self.hitbox.x, self.game.camera.camera.y + self.hitbox.y -32))
+            self.game.screen.blit(self.body[self.walking//FPS], (self.game.camera.camera.x + self.hitbox.x-32, self.game.camera.camera.y + self.hitbox.y -64))
         else:
-            self.game.screen.blit(self.body[self.walking%len(self.body)], (self.game.camera.camera.x + self.hitbox.x, self.game.camera.camera.y + self.hitbox.y -32))
+            self.game.screen.blit(self.body[self.walking%len(self.body)], (self.game.camera.camera.x + self.hitbox.x-32, self.game.camera.camera.y + self.hitbox.y -64))
             self.walking += 1

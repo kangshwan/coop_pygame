@@ -199,11 +199,12 @@ class Game:
             self.item_spawned = self.now
         #update에서 Enemy 생성
         if self.now - self.enemy_spawned > ENEMY_SPAWN_TIME:
-            for e_position in self.enemy_pos:
-                #3초마다 해당 장소에서 생성. 추후 enemy_pos를 list로 쓸경우 for문 안에넣고 index들로 접근해서 생성하면 될듯.
+            if self.boss_spawn:
+                for e_position in self.enemy_pos:
+                    #3초마다 해당 장소에서 생성. 추후 enemy_pos를 list로 쓸경우 for문 안에넣고 index들로 접근해서 생성하면 될듯.
 
-                Enemy(self, e_position[0], e_position[1])
-                self.enemy_spawned = self.now
+                    Enemy(self, e_position[0], e_position[1])
+                    self.enemy_spawned = self.now
         self.second = ((pg.time.get_ticks() - self.start_tick)/1000)
 
         #update에서 Boss 생성
@@ -274,9 +275,12 @@ class Game:
 
             if hit.item_no == 3:
                 #heal
-                self.player.health += 50
-                if self.player.health > PLAYER_HEALTH :
-                    self.player.health = PLAYER_HEALTH
+                
+                if self.player.health + 50 > PLAYER_HEALTH :
+                    if self.player.health + self.player.amor > 125:
+                        self.player.health = 125 - self.player.amor
+                    else:
+                        self.player.health = PLAYER_HEALTH
             
             if hit.item_no == 4:
                 #get amor
@@ -327,7 +331,12 @@ class Game:
                 for hit in hits:
                     self.boss.health -= self.player.weapon_damage * len(hits)
                     #self.boss.vel = vec(0, 0)
-
+            #boss collide with explode
+            hits = pg.sprite.pygame.sprite.spritecollide(self.boss, self.explode, False, collide_hit_box)
+            for hit in hits:
+                self.boss.health -= GRENADE_DAMAGE
+                hit.vel = vec(0, 0)
+                rot = (self.player.pos - hit.pos).angle_to(vec(1,0))
         # explosion hit the player
         hits = pg.sprite.pygame.sprite.spritecollide(self.player, self.explode, False, collide_hit_box)
         for hit in hits:
