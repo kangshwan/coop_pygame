@@ -23,8 +23,6 @@ class Game:
         pg.mixer.music.load('Sound/sound1.mp3')
         pg.mixer.music.play()
         self.screen = pg.display.set_mode(WINDOW_SIZE)
-       
-
         # make a screen for the game / 게임을 하기위한 screen 생성(창 크기 설정)
         pg.display.set_caption(TITLE)
         # this is the tiltle of the game you'll see in the window / 창의 제목 결정
@@ -32,6 +30,7 @@ class Game:
         self.running = False
         self.screen_running = False
         self.start = True
+        self.ending = False
         #self.selecting = True
         self.load_data()
 
@@ -83,6 +82,7 @@ class Game:
         self.boss = pg.sprite.Group()
         self.boss_pos = ()
         self.boss_spawn = False
+        self.paused_text = False
         #for row, tiles in enumerate(self.map.data):
         #    #enumerate는 한 배열에 대하여 index와 그 값을 동시에 가져올수 있음. -> 자세한건 구글링
         #    block = ''
@@ -316,6 +316,22 @@ class Game:
             hit.pos += vec(EXPLOSION_KNOCKBACK, 0).rotate(-hit.rot)
         if self.playing == False:
             self.runnig = False
+        
+        if self.player.key == 5:
+            self.clear_text()
+            self.ending = True
+            self.playing = False
+            self.player.key = 0
+            sleep (1)
+            
+    def clear_text(self):
+        for i in range(8):
+            self.draw_text('CLEAR !! ', 60, GREEN, WIDTH/2, HEIGHT/2-100)
+            pg.display.update()
+            sleep(0.1)
+            self.draw_text('CLEAR !! ', 60, RED, WIDTH/2, HEIGHT/2-100)
+            pg.display.update()
+            sleep(0.1)
 
     def events(self):
         # game loop events
@@ -356,6 +372,8 @@ class Game:
             if key_1[pg.K_p]:
                 self.paused = not self.paused
                 self.player.standing = True
+                self.paused_text = not self.paused_text
+                
             if key_1[pg.K_PERIOD]:
                 self.draw_debug = not self.draw_debug
             
@@ -379,12 +397,16 @@ class Game:
                 if self.draw_debug:
                     pg.draw.rect(self.screen, CYAN, self.camera.apply_rect(sprite.hitbox),1)
                     pg.draw.rect(self.screen, RED, self.camera.apply_rect(sprite.rect),1)
-            
-            self.screen.blit(sprite.image, self.camera.apply(sprite))
+            else:
+               #else 지울까 말까 지울까 말까
+                self.screen.blit(sprite.image, self.camera.apply(sprite))
+         
             if self.draw_debug:
                 for wall in self.walls:
                     pg.draw.rect(self.screen, CYAN, self.camera.apply_rect(wall.rect),1)
-
+            if self.paused_text:
+                        self.draw_text("PAUSE", 70, RED, WIDTH - 470, HEIGHT - 360)
+                       
 
         #pg.draw.rect(self.screen, WHITE, self.player.hitbox,2)
         
@@ -432,8 +454,7 @@ class Game:
         self.brankovic_font = os.path.join(font_folder, 'brankovic.ttf')
         self.poke_font = path.join(font_folder, 'PokemonGb-RAeo.ttf')
         self.start_screen = pg.image.load(path.join(img_folder, START_SCREEN)).convert_alpha()
-        #self.menu_select = pg.image.load(os.path.join(player_folder, PLAYER_IMG1))
-    
+        
         pass
     
     def show_start_screen(self):
@@ -510,9 +531,9 @@ class Game:
         # Game Over시에 나타낼 스크린
         self.screen.blit(self.start_screen, (1,1))
         self.draw_text("GAVE OVER", 48, BLACK, WIDTH/2, HEIGHT/4)
-        self.draw_text("Score : "+ str(self.score), 22, BLACK, WIDTH/2, HEIGHT/2)
+        self.draw_text("Survival Time : "+ str(self.second), 22, BLACK, WIDTH/2, HEIGHT/2)
         self.draw_text("Press a 'Z' key to play again, 'ESC' to 'QUIT'", 22, BLACK, WIDTH/2, HEIGHT*3/4)
-        self.draw_text("Time : " +str(self.second), 22, BLACK, WIDTH/2, HEIGHT*3/4+50)
+        
         pg.display.update()
         sleep(1.5)
         self.wait_for_key()

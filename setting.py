@@ -106,7 +106,7 @@ BOSS_HEALTH = 10000
 
 # item properties
 SPEEDUP_RATE = 5000
-ITEM_KIND = [0, 0]#, 1, 1,  2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 5]  
+ITEM_KIND = [5]#, 1, 1,  2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 5]  
 AMOR_HEALTH = 25
 FEED_RANGE = 20
 FEED_SPEED = 0.6
