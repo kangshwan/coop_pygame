@@ -43,20 +43,16 @@ def enemy_collide_with_gameobject(sprite, group, dir):
         # x 방향으로 충돌 확인
         hits = pg.sprite.spritecollide(sprite, group, False, collide_hit_rect)
         if hits:
-            print('before:', sprite.pos.x)
             if hits[0].rect.centerx > sprite.hitbox.centerx:
                 sprite.pos.x = hits[0].rect.left - sprite.hitbox.width/2
                 # 왼쪽에서 박을경우
             if hits[0].rect.centerx < sprite.hitbox.centerx:
                 sprite.pos.x = hits[0].rect.right + sprite.hitbox.width/2
                 # 오른쪽에서 받아올경우
-                print('from right',hits[0].rect.right, sprite.hitbox.width/2)
             sprite.vel.x = 0
             #sprite.acc.x = 0
             # 부딫혔으니 x방향 속도를 0으로 해줌.
-            print('after:', sprite.pos.x)
             sprite.hitbox.centerx = sprite.pos.x
-            print('last change',sprite.hitbox.centerx, sprite.pos.x)
             return True
 
     if dir == 'y':
@@ -511,7 +507,6 @@ class Enemy(pg.sprite.Sprite):
         self.right = False
         self.walking = 0
         self.standing = False
-        print('init',self.pos)
 
     def avoid_enemys(self):
         for enemy in self.game.enemys:
@@ -554,7 +549,6 @@ class Enemy(pg.sprite.Sprite):
             self.right = True
         else:
             self.right = False
-        print('last',self.rect.x, self.rect.centerx)
 
     def draw_health(self):
         col = YELLOW
@@ -663,10 +657,11 @@ class Wall(pg.sprite.Sprite):
 
 class Obstacle(pg.sprite.Sprite):
     def __init__(self, game, x, y, w, h):
-        self.groups = game.walls
+        self.groups =  game.walls
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.rect = pg.Rect(x, y, w, h)
+        
         self.x = x
         self.y = y
         self.rect.x = self.x

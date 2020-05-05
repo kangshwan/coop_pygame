@@ -159,7 +159,7 @@ class Game:
                 self.boss_pos = (tile_object.x, tile_object.y)
 
         self.camera = Camera(self.map.width, self.map.height)
-        self.draw_debug = True
+        self.draw_debug = False
         # make Camera class / 카메라 객체 생성
         
         #아이템or스킬상자가 랜덤한 위치에 드랍되게 / 상자를 먹으면 사라지고 일정 효과가 발동되도록 만들어주기
@@ -346,7 +346,6 @@ class Game:
             if isinstance(sprite, Enemy):
                 sprite.draw_health()
                 sprite.draw_body()
-                print('after drawbody')
             if self.draw_debug:
                 pg.draw.rect(self.screen, CYAN, self.camera.apply_rect(sprite.hitbox),1)
 
@@ -357,9 +356,7 @@ class Game:
                     pg.draw.rect(self.screen, CYAN, self.camera.apply_rect(sprite.hitbox),1)
                     pg.draw.rect(self.screen, RED, self.camera.apply_rect(sprite.rect),1)
             else:
-                print('this is that sprite')
                 self.screen.blit(sprite.image, self.camera.apply(sprite))
-                print(sprite.rect)
             if self.draw_debug:
                 for wall in self.walls:
                     pg.draw.rect(self.screen, CYAN, self.camera.apply_rect(wall.rect),1)
@@ -388,7 +385,7 @@ class Game:
         self.explode_img = []
         self.zombie1_img = []
         self.wood_pillar_img = []
-        self.map = TiledMap(path.join(map_folder,'map.tmx'))
+        self.map = TiledMap(path.join(map_folder,'large_map.tmx'))
         self.map_img = self.map.make_map()
         self.map_rect = self.map_img.get_rect()
         #self.ground_img = pg.image.load(path.join(map_folder, GROUND_IMG[0])).convert_alpha()
@@ -489,10 +486,7 @@ startbutton = button(155, 440, 100, 40)
 exitbutton = button(155, 485, 100, 40)
 g = Game()
 while g.start:
-
     g.show_start_screen() 
-    
-    
     # Game start when g.start is True
     g.running = True
     while g.running:
