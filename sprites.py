@@ -166,33 +166,30 @@ class Player(pg.sprite.Sprite):
 
         # add acceleration when press w,a,s,d / w,a,s,d를 눌렀을때 가속을 더해줌.
         key = pg.mouse.get_pressed()
+        
+               
         if key[0]:
             if self.gun_status[self.gun_select][0]:
                 self.shoot(self.gun_select)
+                self.sounds = os.path.join('Sound')
                 if self.gun_select == 0:
-                    pg.mixer.init() # for use of music
-                    pg.mixer.music.load('Sound/권총.mp3')
-                    pg.mixer.music.play()
+                    self.gun = pg.mixer.Sound(os.path.join(self.sounds, '권총1.wav'))
+                    pg.mixer.Sound.play(self.gun)
                 if self.gun_select == 1:
-                    pg.mixer.init() # for use of music
-                    pg.mixer.music.load('Sound/샷건.mp3')
-                    pg.mixer.music.play()
+                    self.shotgun = pg.mixer.Sound(os.path.join(self.sounds, '권총1.wav'))
+                    pg.mixer.Sound.play(self.shotgun)
                 if self.gun_select == 2:
-                    pg.mixer.init() # for use of music
-                    pg.mixer.music.load('Sound/스나이퍼.mp3')
-                    pg.mixer.music.play()
+                    self.sniper = pg.mixer.Sound(os.path.join(self.sounds, '권총1.wav'))
+                    pg.mixer.Sound.play(self.sniper)
                 if self.gun_select == 3:
-                    pg.mixer.init() # for use of music
-                    pg.mixer.music.load('Sound/화방.mp3')
-                    pg.mixer.music.play()
-
+                    self.fire = pg.mixer.Sound(os.path.join(self.sounds, '권총1.wav'))
+                    pg.mixer.Sound.play(self.fire)
 
         if key[2]:
             #마우스 우클릭시
             if self.grenade[0]:
-                pg.mixer.init() # for use of music
-                pg.mixer.music.load('Sound/수류탄.mp3')
-                pg.mixer.music.play()
+                self.explosion = pg.mixer.Sound(os.path.join(self.sounds, '권총1.wav'))
+                pg.mixer.Sound.play(self.explosion)
                 now = pg.time.get_ticks()
                 if now - self.last_grenade > GRENADE_RATE:
                     self.last_grenade = now
