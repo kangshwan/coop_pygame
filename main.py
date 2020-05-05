@@ -29,9 +29,10 @@ class Game:
         pg.display.set_caption(TITLE)
         # this is the tiltle of the game you'll see in the window / 창의 제목 결정
         self.clock = pg.time.Clock()
-        self.running = True
+        self.running = False
+        self.screen_running = False
         self.start = True
-        self.selecting = True
+        #self.selecting = True
         self.load_data()
 
         self.font_dir = os.path.dirname(__file__)
@@ -355,8 +356,8 @@ class Game:
                 if self.draw_debug:
                     pg.draw.rect(self.screen, CYAN, self.camera.apply_rect(sprite.hitbox),1)
                     pg.draw.rect(self.screen, RED, self.camera.apply_rect(sprite.rect),1)
-            else:
-                self.screen.blit(sprite.image, self.camera.apply(sprite))
+            
+            self.screen.blit(sprite.image, self.camera.apply(sprite))
             if self.draw_debug:
                 for wall in self.walls:
                     pg.draw.rect(self.screen, CYAN, self.camera.apply_rect(wall.rect),1)
@@ -416,7 +417,7 @@ class Game:
         #GAME START시에 나타낼 스크린
         #pg.mixer.music.load(os.path.join(self.snd_dir, 'Mysterious.ogg'))
         #pg.mixer.music.play(loops=-1)
-        self.running = True
+        self.screen_running = True
         self.start_new()
         
         #pg.mixer.music.fadeoRut(500)
@@ -449,10 +450,13 @@ class Game:
             if event.type == pg.MOUSEBUTTONDOWN:
                 pos = pg.mouse.get_pos()
                 if startbutton.isOver(pos):
-                    while g.running:
+                    while g.screen_running:
     #     # this g.running will take control of game over or not
-                        g.new()
-                    pg.quit()
+                        g.running=True
+                        self.start_playing = False
+                        self.screen_running = False
+                        #pg.quit()
+                        print('quit')
                 elif exitbutton.isOver(pos):
                     pg.quit()
                     quit()

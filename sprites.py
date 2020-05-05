@@ -516,27 +516,32 @@ class Enemy(pg.sprite.Sprite):
                     self.acc += dist.normalize()
 
     def update(self):
+        print(self.pos)
         target_dist = self.target.pos - self.pos 
-        if target_dist.length_squared() < DETECT_RADIUS**2:
         #self.rect.x -= self.speedy 
-            self.rot = target_dist.angle_to(vec(1, 0)) #target_dist == (self.game.player.pos - self.pos)
-            self.image = pg.transform.rotate(self.origin_image, self.rot) # check later! 꼮 반드시
-            self.rect = self.image.get_rect()
-            self.rect.center = self.pos
-            self.acc = vec(1, 0).rotate(-self.rot)
-            self.avoid_enemys()
-            try:
-                self.acc.scale_to_length(self.speed)
-            except ValueError:
-                pass
-            self.acc += self.vel * ENEMY_FRICTION
-            self.vel += self.acc * self.game.dt
-            self.pos += self.vel * self.game.dt + 0.5 * self.acc * self.game.dt**2
-            self.hitbox.centerx = self.pos.x
-            collide_with_gameobject(self, self.game.walls, 'x')
-            self.hitbox.centery = self.pos.y
-            collide_with_gameobject(self, self.game.walls, 'y')
-            self.rect.center = self.hitbox.center
+        self.rot = target_dist.angle_to(vec(1, 0)) #target_dist == (self.game.player.pos - self.pos)
+        self.image = pg.transform.rotate(self.origin_image, 0) # check later! 꼮 반드시
+        self.image.fill(RED)
+        self.rect = self.image.get_rect()
+        
+        self.rect.center = self.pos
+        self.acc = vec(1, 0).rotate(-self.rot)
+        self.avoid_enemys()
+        try:
+            self.acc.scale_to_length(self.speed)
+        except ValueError:
+            pass
+        self.acc += self.vel * ENEMY_FRICTION
+        self.vel += self.acc * self.game.dt
+        #if target_dist.length() > DETECT_RADIUS**2:
+        #    self.acc = vec(0,0)
+        #    self.vel = vec(0,0)
+        self.pos += self.vel * self.game.dt + 0.5 * self.acc * self.game.dt**2
+        self.hitbox.centerx = self.pos.x
+        collide_with_gameobject(self, self.game.walls, 'x')
+        self.hitbox.centery = self.pos.y
+        collide_with_gameobject(self, self.game.walls, 'y')
+        self.rect.center = self.hitbox.center
 
         #bullet이랑 enemy가 충돌시 둘 다 kill
         #ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ주석if밑으로 여기까지 한칸씩 tap해주면 enemy와 player가 일정 거리이상 벌어지면 추격Xㅡㅡㅡㅡ
@@ -700,7 +705,7 @@ class Boss(pg.sprite.Sprite):
         self.rot = 0
         self.health = BOSS_HEALTH #setting 98번째줄 보스체력, main82번째줄 보스 그룹에 추가, main106번째줄 보스 B로추가, 맵에B타일하나추가
         self.target = game.player #sprite700번째줄정도에 보스 : 보스내용 / Player클래스에 collide with boss(265번째줄~), main 179번째줄bullet hit boss
-#main 241번째줄 보스 체력, sprite 714번째줄 보스체력
+    #main 241번째줄 보스 체력, sprite 714번째줄 보스체력
 
     def draw_health(self):
         col = RED
