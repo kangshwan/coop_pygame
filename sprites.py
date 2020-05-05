@@ -15,15 +15,11 @@ def collide_with_gameobject(sprite, group, dir):
         # x 방향으로 충돌 확인
         hits = pg.sprite.spritecollide(sprite, group, False, collide_hit_rect)
         if hits:
-            print('hit')
-            print(hits, sprite)
             if hits[0].rect.centerx > sprite.hitbox.centerx:
                 sprite.pos.x = hits[0].rect.left - sprite.hitbox.width/2
-                print('left')
                 # 왼쪽에서 박을경우
             if hits[0].rect.centerx < sprite.hitbox.centerx:
                 sprite.pos.x = hits[0].rect.right + sprite.hitbox.width/2
-                print('right')
                 # 오른쪽에서 받아올경우
             sprite.vel.x = 0
             #sprite.acc.x = 0
@@ -463,8 +459,6 @@ class Enemy(pg.sprite.Sprite):
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.image = pg.Surface((TILESIZE,TILESIZE), pg.SRCALPHA)
-        self.image.fill(RED)
-
         self.origin_image = self.image
         self.rect = self.image.get_rect()
         self.hitbox = ENEMY_HIT_BOX.copy()
@@ -513,7 +507,7 @@ class Enemy(pg.sprite.Sprite):
         #if target_dist.length() > DETECT_RADIUS**2:
         #    self.acc = vec(0,0)
         #    self.vel = vec(0,0)
-        #self.pos += self.vel * self.game.dt + 0.5 * self.acc * self.game.dt**2
+        self.pos += self.vel * self.game.dt + 0.5 * self.acc * self.game.dt**2
         self.hitbox.centerx = self.pos.x
         collide_with_gameobject(self, self.game.walls, 'x')
         self.hitbox.centery = self.pos.y
@@ -526,7 +520,10 @@ class Enemy(pg.sprite.Sprite):
         if self.health <= 0:
             self.game.player.money += 100
             self.game.player.kill_enemy += 1
+            self.game.spwaned_enemy -= self.game.player.kill_enemy
+
             self.kill()
+            
         if target_dist.x > 0:
             self.right = True
         else:
@@ -541,34 +538,35 @@ class Enemy(pg.sprite.Sprite):
             pg.draw.rect(self.image, col, self.health_bar)
             pg.draw.rect(self.image, WHITE, self.outer_edge, 1)
 
-    #def draw_body(self):
-    #    self.body = []
-    #    for i in range(len(self.game.zombie1_img)):
-    #        for j in range(5):
-    #            self.body.append(self.game.zombie1_img[i])
-    #    if self.right:
-    #        for i in range(len(self.body)):
-    #            self.body[i] = pg.transform.flip(self.body[i], True, False)
-    #    if self.walking + 1 >= FPS:
-    #        self.walking = 0
-    #    if self.standing:
-    #        self.game.screen.blit(self.body[self.walking//FPS], (self.game.camera.camera.x+self.hitbox.x, self.game.camera.camera.y+self.hitbox.y+2))
-    #    else:
-    #        self.game.screen.blit(self.body[self.walking%len(self.body)], (self.game.camera.camera.x+self.hitbox.x, self.game.camera.camera.y+self.hitbox.y+2))
-    #        self.walking += 1
+    def draw_body(self):
+        self.body = []
+        for i in range(len(self.game.zombie1_img)):
+            for j in range(5):
+                self.body.append(self.game.zombie1_img[i])
+        if self.right:
+            for i in range(len(self.body)):
+                self.body[i] = pg.transform.flip(self.body[i], True, False)
+        if self.walking + 1 >= FPS:
+            self.walking = 0
+        if self.standing:
+            self.game.screen.blit(self.body[self.walking//FPS], (self.game.camera.camera.x+self.hitbox.x, self.game.camera.camera.y+self.hitbox.y+2))
+        else:
+            self.game.screen.blit(self.body[self.walking%len(self.body)], (self.game.camera.camera.x+self.hitbox.x, self.game.camera.camera.y+self.hitbox.y+2))
+            self.walking += 1
         
 #아이템 상자 생성
 class Feed(pg.sprite.Sprite):
     def __init__(self, game, x, y):
+        
         self.groups = game.all_sprites, game.feeds
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.image = pg.Surface((TILESIZE/2,TILESIZE/2))
-        self.image.fill(WHITE)
+        self.image.fill(CYAN)
         self.rect = self.image.get_rect()
         self.pos = vec(x,y)
-        self.rect.centerx = self.pos.x*TILESIZE + (TILESIZE/2)
-        self.rect.y = self.pos.y*TILESIZE 
+        self.rect.centerx = self.pos.x + (TILESIZE/2)
+        self.rect.y = self.pos.y 
         # 추후 random을 통해 바꿔야함.
         self.item_no = random.choice(ITEM_KIND)
         self.tween = tween.easeInOutSine
@@ -577,7 +575,7 @@ class Feed(pg.sprite.Sprite):
 
     def update(self): #아이템 흔들거리게 해놨는데 좌표값이 이상함 수정 요망
         offset = FEED_RANGE * (self.tween(self.step / FEED_RANGE) - 0.5)
-        self.rect.y = (self.pos.y*TILESIZE) + offset * self.dir
+        self.rect.y = (self.pos.y) + offset * self.dir
         self.step += FEED_SPEED
         if self.step > FEED_RANGE:
             self.step = 0
