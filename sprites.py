@@ -497,7 +497,7 @@ class Enemy(pg.sprite.Sprite):
         target_dist = self.target.pos - self.pos 
         #self.rect.x -= self.speedy 
         self.rot = target_dist.angle_to(vec(1, 0)) #target_dist == (self.game.player.pos - self.pos)
-        self.image = pg.transform.rotate(self.origin_image, 0) # check later! 꼮 반드시
+        self.image = pg.transform.rotate(self.origin_image, -self.rot) # check later! 꼮 반드시
         self.rect = self.image.get_rect()
         
         self.rect.center = self.pos
@@ -645,8 +645,8 @@ class Obstacle(pg.sprite.Sprite):
         self.rect = pg.Rect(x, y, w, h)
         self.x = x
         self.y = y
-        self.rect.x = self.x
-        self.rect.y = self.y   
+        self.rect.x = x
+        self.rect.y = y  
 
 class Ground(pg.sprite.Sprite):
     def __init__(self, game, x, y, image):

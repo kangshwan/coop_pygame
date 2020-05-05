@@ -938,7 +938,7 @@
   <object id="8" x="2400" y="4768" height="32"/>
   <object id="9" x="2400" y="4800"/>
   <object id="10" x="2400" y="4800"/>
-  <object id="11" name="player" x="2400" y="2464" width="32" height="32"/>
+  <object id="11" name="player" x="3904" y="1056" width="32" height="32"/>
   <object id="12" name="wall" x="0" y="0" width="32" height="4800"/>
   <object id="13" name="wall" x="4768" y="0" width="32" height="4800"/>
   <object id="14" name="wall" x="32" y="4768" width="4736" height="32"/>
@@ -1005,7 +1005,7 @@
   <object id="76" name="wall" x="4064" y="1376" width="584" height="32"/>
   <object id="77" name="wall" x="4580" y="808" width="24" height="24"/>
   <object id="78" name="wall" x="4164" y="808" width="24" height="24"/>
-  <object id="94" name="enemy_spawn" x="2624" y="2464" width="24" height="24"/>
+  <object id="94" name="enemy_spawn" x="4160" y="1056" width="24" height="24"/>
   <object id="95" name="enemy_spawn" x="2208" y="2464" width="24" height="24"/>
  </objectgroup>
 </map>
