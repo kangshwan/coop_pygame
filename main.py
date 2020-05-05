@@ -333,9 +333,7 @@ class Game:
                 self.paused = not self.paused
                 self.player.standing = True
                 self.paused_text = not self.paused_text
-                if not self.paused_text:
-                    self.draw_text("PAUSE", 30, BLACK, WIDTH - 752, HEIGHT - 200)
-                    pg.display.update()
+                
             if key_1[pg.K_PERIOD]:
                 self.draw_debug = not self.draw_debug
             
@@ -351,6 +349,7 @@ class Game:
             if isinstance(sprite, Enemy):
                 sprite.draw_health()
                 sprite.draw_body()
+            
               
             if self.draw_debug:
                 pg.draw.rect(self.screen, CYAN, self.camera.apply_rect(sprite.hitbox),1)
@@ -368,7 +367,9 @@ class Game:
             if self.draw_debug:
                 for wall in self.walls:
                     pg.draw.rect(self.screen, CYAN, self.camera.apply_rect(wall.rect),1)
-
+            if self.paused_text:
+                        self.draw_text("PAUSE", 70, RED, WIDTH - 470, HEIGHT - 360)
+                       
 
         #pg.draw.rect(self.screen, WHITE, self.player.hitbox,2)
         
