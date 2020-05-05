@@ -117,7 +117,7 @@ ITEM_KIND = [0,1,2,3,4]#, 1, 1,  2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4,
 AMOR_HEALTH = 25
 FEED_RANGE = 10
 FEED_SPEED = 0.2
-ITEM_SPAWN_TIME = 1000
+ITEM_SPAWN_TIME = 20000
 
 #image
 TEST = "test.png"
