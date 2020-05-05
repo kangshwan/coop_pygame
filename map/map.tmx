@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.3.4" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="32" tileheight="32" infinite="0" nextlayerid="8" nextobjectid="163">
+<map version="1.2" tiledversion="1.3.4" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="32" tileheight="32" infinite="0" nextlayerid="8" nextobjectid="164">
  <tileset firstgid="1" source="rpgmaker_tileset.tsx"/>
  <tileset firstgid="2017" source="bus_tile_set.tsx"/>
  <tileset firstgid="2273" name="soda_machine_by_nicnubill_dcbilj5" tilewidth="32" tileheight="32" tilecount="36" columns="6">
@@ -432,5 +432,6 @@
   <object id="160" name="wall" x="832" y="1568" width="736" height="32"/>
   <object id="161" name="wall" x="1568" y="0" width="32" height="768"/>
   <object id="162" name="wall" x="0" y="0" width="32" height="768"/>
+  <object id="163" name="wall" x="1152" y="320" width="32" height="96"/>
  </objectgroup>
 </map>

@@ -661,7 +661,7 @@ class Boss_bullet(Bullet):
         self.spawn_time = pg.time.get_ticks()
         
     def load_images(self):
-        self.image = pg.Surface((10,10))
+        self.image = pg.Surface((15,15))
         self.image.fill(ORANGE)
 
     def update(self):

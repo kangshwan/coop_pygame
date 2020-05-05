@@ -113,11 +113,11 @@ BOSS_KNOCKBACK = 30
 
 # item properties
 SPEEDUP_RATE = 7000
-ITEM_KIND = [3,4]#, 1, 1,  2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 5]  
+ITEM_KIND = [0,1,2,3,4]#, 1, 1,  2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 5]  
 AMOR_HEALTH = 25
 FEED_RANGE = 10
 FEED_SPEED = 0.2
-ITEM_SPAWN_TIME = 20000
+ITEM_SPAWN_TIME = 1000
 
 #image
 TEST = "test.png"
@@ -157,5 +157,6 @@ ITEM_IMG = 'item_box.png'
 #enemy and player distance
 DETECT_RADIUS = 400
 
-
+ITEM_POPUP = 10000
+ITEM_EFFECT = {0: 'SPEED UP!', 1:'PLUS GRENADE!', 2:'DMG UP!', 3:'HEAL UP!', 4:'AMOR READY.',5:''}
 MAX_ENEMY = 10

@@ -86,6 +86,9 @@ class Game:
         self.boss_pos = ()
         self.boss_spawn = True
         self.paused_text = False
+
+        self.item_time = 0
+        self.item_no = 5
         #for row, tiles in enumerate(self.map.data):
         #    #enumerate는 한 배열에 대하여 index와 그 값을 동시에 가져올수 있음. -> 자세한건 구글링
         #    block = ''
@@ -235,6 +238,7 @@ class Game:
         #hits -> used sprite collide method, (x, y, default boolean) collision check
         hits = pg.sprite.pygame.sprite.spritecollide(self.player, self.enemys, False, collide_hit_box)
         for hit in hits:
+
             if self.player.amor != 0:
                 self.player.amor -= ENEMY_DAMAGE
                 if self.player.amor < 0:
@@ -247,10 +251,13 @@ class Game:
                 self.playing = False
         if hits:
             self.player.pos += vec(ENEMY_KNOCKBACK, 0).rotate(-hits[0].rot)
+            self.player.vel = vec(0,0)
 
         # player collide with the feed
         hits = pg.sprite.pygame.sprite.spritecollide(self.player, self.feeds, True, collide_hit_rect)
+        
         for hit in hits:
+            self.item_no = hit.item_no
             print(hit.item_no)
             for position in self.feed_pos:
                 if (hit.pos.x,hit.pos.y) == position[0]:
@@ -277,10 +284,11 @@ class Game:
                 #heal
                 
                 if self.player.health + 50 > PLAYER_HEALTH :
-                    if self.player.health + self.player.amor > 125:
-                        self.player.health = 125 - self.player.amor
-                    else:
-                        self.player.health = PLAYER_HEALTH
+                    
+                    self.player.health = PLAYER_HEALTH
+                    self.player.max_health = self.player.health + self.player.amor
+                else:
+                    self.player.health += 50
             
             if hit.item_no == 4:
                 #get amor
@@ -289,7 +297,7 @@ class Game:
                 self.player.max_health = self.player.health + self.player.amor
                 if self.player.max_health < PLAYER_HEALTH:
                     self.player.max_health = PLAYER_HEALTH
-            
+            self.item_time = self.now
                 
         # bullet hit the mob
         if self.player.gun_select in [2,3]:
@@ -363,6 +371,7 @@ class Game:
         if self.playing == False:
             self.runnig = False
         
+            
         if self.ending == True:
             self.clear_text()
             self.ending = True
@@ -484,7 +493,8 @@ class Game:
                        
 
         #pg.draw.rect(self.screen, WHITE, self.player.hitbox,2)
-        
+        if self.now - self.item_time < ITEM_POPUP:
+            self.draw_text(ITEM_EFFECT[self.item_no],30, WHITE, WIDTH/2, HEIGHT/2-HEIGHT/4)
         # HUD functions
         draw_player_health(self.screen, 10, HEIGHT - 40, self.player.health, self.player.amor ,self.player.max_health)
         draw_gun_list(self.screen, self.player.gun_status, self.player.gun_select)
