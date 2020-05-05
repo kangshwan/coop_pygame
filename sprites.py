@@ -64,7 +64,7 @@ class Player(pg.sprite.Sprite):
         self.vel = vec(0,0)
         self.acc = vec(0,0)
         self.rot = 0
-        #self.last_shot = -3000
+        self.last_shot = -3000
         self.gun_status = [[True,1], [False, 0],[False, 0],[False, 0]]
         # 0 is pistol, 1 is shotgun, 2 is sniper 3 is flamethrower
         self.last_grenade = 0
@@ -694,12 +694,11 @@ class Boss(pg.sprite.Sprite):
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.image = pg.Surface((TILESIZE*3,TILESIZE*3), pg.SRCALPHA)
-        self.image.fill(color)
+        self.image.fill(CYAN)
         self.origin_image = self.image
         self.rect = self.image.get_rect()
         self.hitbox = ENEMY_HIT_BOX.copy()
         self.hitbox.center = self.rect.center
-        self.image.fill(BLACK)
         self.pos = vec(x, y)
         self.vel = vec(0, 0)
         self.acc = vec(0, 0)

@@ -210,11 +210,10 @@ class Game:
         self.second = ((pg.time.get_ticks() - self.start_tick)/1000)
 
         #update에서 Boss 생성
-        if self.player.kill_enemy > MAX_ENEMY:
+        if self.player.kill_enemy > 0: #MAX_ENEMY:
             if not self.boss_spawn:
-                
                 #3초마다 해당 장소에서 생성. 추후 enemy_pos를 list로 쓸경우 for문 안에넣고 index들로 접근해서 생성하면 될듯.
-                Boss(self, self.boss_pos[0], self.boss_pos[1], BLACK)
+                Boss(self, self.boss_pos[0], self.boss_pos[1], CYAN)
                 self.boss_spawn = not self.boss_spawn
                 
         
@@ -246,7 +245,7 @@ class Game:
                 #move speed up
                 self.player.max_speed = 10
                 self.player.last_speed = pg.time.get_ticks()
-
+                
             if hit.item_no == 1:
                 #bullet speed up
                 self.player.weapon_rate *= 0.001
