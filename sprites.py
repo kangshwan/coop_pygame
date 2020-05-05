@@ -169,10 +169,30 @@ class Player(pg.sprite.Sprite):
         if key[0]:
             if self.gun_status[self.gun_select][0]:
                 self.shoot(self.gun_select)
+                if self.gun_select == 0:
+                    pg.mixer.init() # for use of music
+                    pg.mixer.music.load('Sound/권총.mp3')
+                    pg.mixer.music.play()
+                if self.gun_select == 1:
+                    pg.mixer.init() # for use of music
+                    pg.mixer.music.load('Sound/샷건.mp3')
+                    pg.mixer.music.play()
+                if self.gun_select == 2:
+                    pg.mixer.init() # for use of music
+                    pg.mixer.music.load('Sound/스나이퍼.mp3')
+                    pg.mixer.music.play()
+                if self.gun_select == 3:
+                    pg.mixer.init() # for use of music
+                    pg.mixer.music.load('Sound/화방.mp3')
+                    pg.mixer.music.play()
+
 
         if key[2]:
             #마우스 우클릭시
             if self.grenade[0]:
+                pg.mixer.init() # for use of music
+                pg.mixer.music.load('Sound/수류탄.mp3')
+                pg.mixer.music.play()
                 now = pg.time.get_ticks()
                 if now - self.last_grenade > GRENADE_RATE:
                     self.last_grenade = now

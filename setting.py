@@ -142,3 +142,8 @@ FEED_RANGE = 20
 FEED_SPEED = 0.6
 #enemy and player distance
 DETECT_RADIUS = 400
+#gun sound
+GUN1 = '권총.mp3' 
+GUN2 = '샷건.mp3'
+GUN3 = '스나이퍼.mp3'
+GUN4 = '화방.mp3'

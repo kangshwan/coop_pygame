@@ -21,7 +21,8 @@ class Game:
         pg.init()
         pg.mixer.init() # for use of music
         pg.mixer.music.load('Sound/sound1.mp3')
-        pg.mixer.music.play()
+        pg.mixer.music.play(-1)
+    
         self.screen = pg.display.set_mode(WINDOW_SIZE)
        
 
@@ -333,7 +334,6 @@ class Game:
                 self.paused = not self.paused
                 self.player.standing = True
                 self.paused_text = not self.paused_text
-                
             if key_1[pg.K_PERIOD]:
                 self.draw_debug = not self.draw_debug
             
@@ -368,7 +368,9 @@ class Game:
                 for wall in self.walls:
                     pg.draw.rect(self.screen, CYAN, self.camera.apply_rect(wall.rect),1)
             if self.paused_text:
-                        self.draw_text("PAUSE", 70, RED, WIDTH - 470, HEIGHT - 360)
+                self.draw_text("PAUSE", 70, BLACK, WIDTH - 466, HEIGHT - 356)
+                self.draw_text("PAUSE", 70, RED, WIDTH - 470, HEIGHT - 360)
+                       
                        
 
         #pg.draw.rect(self.screen, WHITE, self.player.hitbox,2)
