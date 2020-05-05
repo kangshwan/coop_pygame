@@ -138,7 +138,7 @@ class Game:
         #        if tile == 'P':
         #            self.player = Player(self, col, row)
         #        if tile == 'I':
-        #            self.feed_pos.append([(col,row),False])
+        #            
         #
         #for row, tiles in enumerate(self.map.data):
         #    #enumerate는 한 배열에 대하여 index와 그 값을 동시에 가져올수 있음. -> 자세한건 구글링
@@ -159,7 +159,8 @@ class Game:
             if tile_object.name == 'boss':
                 self.boss_pos = (tile_object.x, tile_object.y)
             if tile_object.name == 'item':
-                Feed(self, tile_object.x, tile_object.y)
+                self.feed_pos.append([(tile_object.x,tile_object.y),False])
+                #Feed(self, tile_object.x, tile_object.y)
 
         self.camera = Camera(self.map.width, self.map.height)
         self.draw_debug = False
@@ -186,7 +187,7 @@ class Game:
         # game loop update
         self.all_sprites.update()
         self.camera.update(self.player)
-        if self.now - self.item_spawned > 3000:    
+        if self.now - self.item_spawned > ITEM_SPAWN_TIME:    
             #test = random.randint(0,len(self.feed_pos)-1)
             #if self.feed_pos[test][1] == True:
             #    Feed(self, self.feed_pos[test][0][0],self.feed_pos[test][0][1])
@@ -237,36 +238,43 @@ class Game:
         # player collide with the feed
         hits = pg.sprite.pygame.sprite.spritecollide(self.player, self.feeds, True, collide_hit_rect)
         for hit in hits:
+            print(hit.item_no)
+            for position in self.feed_pos:
+                if (hit.pos.x,hit.pos.y) == position[0]:
+                    position[1] = False
             if hit.item_no == 0:
+                #move speed up
                 self.player.max_speed = 10
                 self.player.last_speed = pg.time.get_ticks()
-                self.player.gun_status[1] = [True, 240]
-                self.player.gun_status[2] = [True, 10]
-                self.player.gun_status[3] = [True, 500]
 
             if hit.item_no == 1:
+                #bullet speed up
                 self.player.weapon_rate *= 0.001
                 self.player.last_weapon_speed = pg.time.get_ticks()
 
             if hit.item_no == 2:
+                #damage up
                 self.player.weapon_damage *= 2.0
                 self.player.last_weapon_damage = pg.time.get_ticks()
 
             if hit.item_no == 3:
+                #heal
                 self.player.health += 50
                 if self.player.health > PLAYER_HEALTH :
                     self.player.health = PLAYER_HEALTH
             
             if hit.item_no == 4:
-                self.player.gun_status[1] = [True, 12]
-                self.player.gun_status[2] = [True, 1]
-                self.player.gun_status[3] = [True, 1000]
+                #get amor
                 self.player.amor = AMOR_HEALTH # 체력이 아니라 armor (일정 시간이 지나면 사라짐) / 초록색이 아니라 체력과 따로 흰색으로 표시되도록
                 self.player.max_health = PLAYER_HEALTH + AMOR_HEALTH
                 self.player.max_health = self.player.health + self.player.amor
                 if self.player.max_health < PLAYER_HEALTH:
                     self.player.max_health = PLAYER_HEALTH
+            if hit.item_no == 5:
+                #key to win
+                self.player.key += 1
 
+                
         # bullet hit the mob
         if self.player.gun_select in [2,3]:
             hits = pg.sprite.groupcollide(self.enemys, self.bullets, False, False, collide_hit_box)
@@ -444,12 +452,14 @@ class Game:
             
     def start_events(self):
         for event in pg.event.get():
+            
             if event.type == pg.QUIT:
                 if self.start_playing:
                     self.start_playing = False
                 self.start = False
            
             if event.type == pg.MOUSEBUTTONDOWN:
+                
                 pos = pg.mouse.get_pos()
                 if startbutton.isOver(pos):
                     while g.screen_running:

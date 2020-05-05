@@ -64,8 +64,8 @@ class Player(pg.sprite.Sprite):
         self.vel = vec(0,0)
         self.acc = vec(0,0)
         self.rot = 0
-        self.last_shot = -3000
-        self.gun_status = [[True,1], [True, 100000],[True, 10000],[True, 10000000]]
+        #self.last_shot = -3000
+        self.gun_status = [[True,1], [False, 0],[False, 0],[False, 0]]
         # 0 is pistol, 1 is shotgun, 2 is sniper 3 is flamethrower
         self.last_grenade = 0
         #0 is pistol 1 is shotgun
@@ -87,6 +87,7 @@ class Player(pg.sprite.Sprite):
         self.standing = True
         self.walking = 0
         self.left = False
+        self.key = 0
 
     def load_images(self):
         self.image = self.weapon_img[self.gun_select]
@@ -133,6 +134,7 @@ class Player(pg.sprite.Sprite):
             self.acc.y = PLAYER_ACC
 
         # add acceleration when press w,a,s,d / w,a,s,d를 눌렀을때 가속을 더해줌.
+        
         key = pg.mouse.get_pressed()
         if key[0]:
             if self.gun_status[self.gun_select][0]:
@@ -509,9 +511,9 @@ class Enemy(pg.sprite.Sprite):
         #    self.vel = vec(0,0)
         self.pos += self.vel * self.game.dt + 0.5 * self.acc * self.game.dt**2
         self.hitbox.centerx = self.pos.x
-        collide_with_gameobject(self, self.game.walls, 'x')
+        self.collide_with_walls('x')
         self.hitbox.centery = self.pos.y
-        collide_with_gameobject(self, self.game.walls, 'y')
+        self.collide_with_walls('y')
         self.rect.center = self.hitbox.center
 
         #bullet이랑 enemy가 충돌시 둘 다 kill
@@ -553,7 +555,34 @@ class Enemy(pg.sprite.Sprite):
         else:
             self.game.screen.blit(self.body[self.walking%len(self.body)], (self.game.camera.camera.x+self.hitbox.x, self.game.camera.camera.y+self.hitbox.y+2))
             self.walking += 1
-        
+
+    def collide_with_walls(self,dir):
+        if dir == 'x':
+            # see collide with x axis
+            # x 방향으로 충돌 확인
+            hits = pg.sprite.spritecollide(self, self.game.walls, False, collide_hit_rect)
+            if hits:
+                if self.vel.x > 0:
+                    self.pos.x = hits[0].rect.left - self.hitbox.width/2
+                    # x 방향 속도가 양수일 경우 -> 오른쪽으로 진행하고있음 따라서 position을 다시 세팅해줌
+                if self.vel.x < 0:
+                    self.pos.x = hits[0].rect.right + self.hitbox.width/2
+                    # x 방향 속도가 음수일 경우 -> 왼쪽으로 진행하고있음 따라서 position을 다시 세팅해줌
+                self.vel.x = 0
+                # 부딫혔으니 x방향 속도를 0으로 해줌.
+                self.hitbox.centerx = self.pos.x
+        if dir == 'y':
+            hits = pg.sprite.spritecollide(self, self.game.walls, False,collide_hit_rect)
+            if hits:
+                if self.vel.y > 0:
+                    self.pos.y = hits[0].rect.top - self.hitbox.height/2
+                    # y 방향 속도가 양수일 경우 -> 아래으로 진행하고있음 따라서 position을 다시 세팅해줌
+                if self.vel.y < 0:
+                    self.pos.y = hits[0].rect.bottom + self.hitbox.height/2
+                    # y 방향 속도가 양수일 경우 -> 위쪽으로 진행하고있음 따라서 position을 다시 세팅해줌
+                self.vel.y = 0
+                # 부딫혔으니 y방향 속도를 0으로 해줌
+                self.hitbox.centery = self.pos.y    
 #아이템 상자 생성
 class Feed(pg.sprite.Sprite):
     def __init__(self, game, x, y):
@@ -716,17 +745,7 @@ class Boss(pg.sprite.Sprite):
             self.kill()
 
 
-class button():
-    def __init__(self, x, y, width, height):
-        self.x = x
-        self.y = y
-        self.width = width
-        self.height = height
- 
-    def isOver(self, pos):
-        if pos[0] > self.x and pos[0] < self.x + self.width:
-            if pos[1] > self.y and pos[1] < self.y + self.height:
-                return True
+
    
 
 class Trace(pg.sprite.Sprite):

@@ -4,6 +4,17 @@ from os import path
 from setting import *
 BAR_LENGTH = 100
 BAR_HEIGHT = 30
+class button():
+    def __init__(self, x, y, width, height):
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+ 
+    def isOver(self, pos):
+        if pos[0] > self.x and pos[0] < self.x + self.width:
+            if pos[1] > self.y and pos[1] < self.y + self.height:
+                return True
 
 def draw_player_health(surf, x, y, health, amor, max_health):
     # 현재 체력과 방어력, 그리고 최대체력의 한계치를 받아옴.
@@ -55,6 +66,7 @@ def draw_gun(surf, x, y, possible, gun_kind, gun_now):
     rotated = 0
     game_folder = path.dirname(__file__)
     img_folder = path.join(game_folder, 'Image','weapon')
+    
     if gun_kind == 0:
         image = pg.image.load(path.join(img_folder, WEAPON_IMGS[gun_kind][0])).convert_alpha()
         rotated = pg.transform.scale(pg.transform.rotate(image, 40),(48, 48))

@@ -105,8 +105,11 @@ BOSS_HEALTH = 10000
 
 # item properties
 SPEEDUP_RATE = 5000
-ITEM_KIND = [0, 1, 2, 3, 4]  
+ITEM_KIND = [0, 0, 1, 1,  2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 5]  
 AMOR_HEALTH = 25
+FEED_RANGE = 20
+FEED_SPEED = 0.6
+ITEM_SPAWN_TIME = 1000
 
 #image
 TEST = "test.png"
@@ -139,8 +142,8 @@ START_SCREEN = 'main.jpg'
 ZOMBIE1_IMG = ['zombie1_1.png', 'zombie1_2.png', 'zombie1_3.png', 'zombie1_4.png', 'zombie1_5.png', 'zombie1_6.png', 'zombie1_7.png']
 
 #FEED shake up and down 
-FEED_RANGE = 20
-FEED_SPEED = 0.6
+
+
 #enemy and player distance
 DETECT_RADIUS = 400
 
