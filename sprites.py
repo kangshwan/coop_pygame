@@ -19,9 +19,11 @@ def collide_with_gameobject(sprite, group, dir):
             print(hits, sprite)
             if hits[0].rect.centerx > sprite.hitbox.centerx:
                 sprite.pos.x = hits[0].rect.left - sprite.hitbox.width/2
+                print('left')
                 # 왼쪽에서 박을경우
             if hits[0].rect.centerx < sprite.hitbox.centerx:
                 sprite.pos.x = hits[0].rect.right + sprite.hitbox.width/2
+                print('right')
                 # 오른쪽에서 받아올경우
             sprite.vel.x = 0
             #sprite.acc.x = 0
@@ -511,7 +513,7 @@ class Enemy(pg.sprite.Sprite):
         #if target_dist.length() > DETECT_RADIUS**2:
         #    self.acc = vec(0,0)
         #    self.vel = vec(0,0)
-        self.pos += self.vel * self.game.dt + 0.5 * self.acc * self.game.dt**2
+        #self.pos += self.vel * self.game.dt + 0.5 * self.acc * self.game.dt**2
         self.hitbox.centerx = self.pos.x
         collide_with_gameobject(self, self.game.walls, 'x')
         self.hitbox.centery = self.pos.y
@@ -539,21 +541,21 @@ class Enemy(pg.sprite.Sprite):
             pg.draw.rect(self.image, col, self.health_bar)
             pg.draw.rect(self.image, WHITE, self.outer_edge, 1)
 
-    def draw_body(self):
-        self.body = []
-        for i in range(len(self.game.zombie1_img)):
-            for j in range(5):
-                self.body.append(self.game.zombie1_img[i])
-        if self.right:
-            for i in range(len(self.body)):
-                self.body[i] = pg.transform.flip(self.body[i], True, False)
-        if self.walking + 1 >= FPS:
-            self.walking = 0
-        if self.standing:
-            self.game.screen.blit(self.body[self.walking//FPS], (self.game.camera.camera.x+self.hitbox.x, self.game.camera.camera.y+self.hitbox.y+2))
-        else:
-            self.game.screen.blit(self.body[self.walking%len(self.body)], (self.game.camera.camera.x+self.hitbox.x, self.game.camera.camera.y+self.hitbox.y+2))
-            self.walking += 1
+    #def draw_body(self):
+    #    self.body = []
+    #    for i in range(len(self.game.zombie1_img)):
+    #        for j in range(5):
+    #            self.body.append(self.game.zombie1_img[i])
+    #    if self.right:
+    #        for i in range(len(self.body)):
+    #            self.body[i] = pg.transform.flip(self.body[i], True, False)
+    #    if self.walking + 1 >= FPS:
+    #        self.walking = 0
+    #    if self.standing:
+    #        self.game.screen.blit(self.body[self.walking//FPS], (self.game.camera.camera.x+self.hitbox.x, self.game.camera.camera.y+self.hitbox.y+2))
+    #    else:
+    #        self.game.screen.blit(self.body[self.walking%len(self.body)], (self.game.camera.camera.x+self.hitbox.x, self.game.camera.camera.y+self.hitbox.y+2))
+    #        self.walking += 1
         
 #아이템 상자 생성
 class Feed(pg.sprite.Sprite):
