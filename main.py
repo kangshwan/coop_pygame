@@ -35,20 +35,16 @@ class Game:
         #self.selecting = True
         self.load_data()
 
-        self.font_dir = os.path.dirname(__file__)
-        fnt_dir = os.path.join(self.font_dir, 'font')
-        self.brankovic_font = os.path.join(fnt_dir, 'brankovic.ttf')
-
                 #메뉴판 만들고
                 #button -> game start 누르면 self.game_running()
 
 
     def run(self):
         #pg.mixer.music.play(loops = -1)   #bg play. loops == false -> play gain , Ture -> once
-
-        self.playing = True
+        
         #if self.playing is True, that means now playing game. / self.playing이 True면 게임을 진행하고있다는뜻 
         # -> 이후 사망시 continue?를 물을때 False로 바꿔주고 Yes일 경우 다시 True로, No일경우 self.running을 False로 바꾸어 주면 좋아보임.
+        self.playing = True
         while self.playing:
             self.dt = self.clock.tick(FPS)/1000
             #set the frame per second / FPS를 구하기 위함. 이후 dt는 총알구현에 있어서 중요하게 사용됨.
@@ -57,9 +53,8 @@ class Game:
             #if self.paused == 0:
                 self.update()
             #events for keyboard and mouse input / 이벤트를 처리하기 위함. 항상 pygame은 event 이벤트발생(사용자의 입력) -> update(입력에 따른 변화를 업데이트해줌) -> draw 이후 그림을 그림
-            
             self.draw()
-           
+    
 
     def new(self):
         #when start a new game
@@ -149,8 +144,7 @@ class Game:
         #enemy_pos에 col,row 저장. 추후 feed처럼 append하여 생성하면 좋아보임.
         for tile_object in self.map.tmxdata.objects:
             if tile_object.name == 'player':
-                self.player = Player(self, tile_object.x, tile_object.y)
-                
+                self.player = Player(self, tile_object.x, tile_object.y) 
             if tile_object.name == 'enemy_spawn':
                 self.enemy_pos.append((tile_object.x, tile_object.y))
                 Enemy(self, tile_object.x, tile_object.y)
@@ -215,8 +209,6 @@ class Game:
                 #3초마다 해당 장소에서 생성. 추후 enemy_pos를 list로 쓸경우 for문 안에넣고 index들로 접근해서 생성하면 될듯.
                 Boss(self, self.boss_pos[0], self.boss_pos[1], CYAN)
                 self.boss_spawn = not self.boss_spawn
-                
-        
 
         #hits -> used sprite collide method, (x, y, default boolean) collision check
         hits = pg.sprite.pygame.sprite.spritecollide(self.player, self.enemys, False, collide_hit_box)
@@ -245,7 +237,7 @@ class Game:
                 #move speed up
                 self.player.max_speed = 10
                 self.player.last_speed = pg.time.get_ticks()
-                
+                #self.player.gun_status[2] = [True, 10]
             if hit.item_no == 1:
                 #bullet speed up
                 self.player.weapon_rate *= 0.001
@@ -312,6 +304,7 @@ class Game:
             hit.vel = vec(0, 0)
             if self.player.health <= 0:
                 self.playing = False    
+                self.running = False
             rot = (self.player.pos - hit.pos).angle_to(vec(1,0))
             self.player.pos += vec(EXPLOSION_KNOCKBACK, 0).rotate(-rot)
         
@@ -336,7 +329,29 @@ class Game:
                     self.start = False
                 self.start = False
             if event.type == pg.MOUSEBUTTONDOWN:
-                #screen button 기믹
+                pos = pg.mouse.get_pos()
+                if gun_button[1].isOver(pos):
+                    if self.player.gun_status[1][0] != True:
+                        if self.player.money >= WEAPON_PRICE[1]:
+                            self.player.money -= WEAPON_PRICE[1]
+                            self.player.gun_status[1][0] = not self.player.gun_status[1][0]
+                            self.player.gun_status[1][1] = 12
+                        #buy
+                    #buy shotgun
+                if gun_button[2].isOver(pos):
+                    if self.player.gun_status[2][0] != True:
+                        if self.player.money >= WEAPON_PRICE[2]:
+                            self.player.money -= WEAPON_PRICE[2]
+                            self.player.gun_status[2][0] = not self.player.gun_status[2][0]
+                            self.player.gun_status[2][1] = 1
+                    #buy sniper
+                if gun_button[3].isOver(pos):
+                    if self.player.gun_status[3][0] != True:
+                        if self.player.money >= WEAPON_PRICE[3]:
+                            self.player.money -= WEAPON_PRICE[3]
+                            self.player.gun_status[3][0] = not self.player.gun_status[3][0]
+                            self.player.gun_status[3][1] = 10
+                    #buy fire  
                 pass
             if key_1[pg.K_p]:
                 self.paused = not self.paused
@@ -344,7 +359,6 @@ class Game:
             if key_1[pg.K_PERIOD]:
                 self.draw_debug = not self.draw_debug
             
-
     def draw(self):
         # game loop - draw
         #self.screen.fill(DARKGREY)
@@ -415,10 +429,10 @@ class Game:
             self.explode_img.append(pg.image.load(path.join(vfx_folder, EXPLODE_IMG[i])).convert_alpha())
         for i in range(7):
             self.zombie1_img.append(pg.transform.scale(pg.image.load(path.join(enemy_folder, ZOMBIE1_IMG[i])).convert_alpha(), (35,56)))
-        pass
+        self.brankovic_font = os.path.join(font_folder, 'brankovic.ttf')
         self.poke_font = path.join(font_folder, 'PokemonGb-RAeo.ttf')
         self.start_screen = pg.image.load(path.join(img_folder, START_SCREEN)).convert_alpha()
-        self.menu_select = pg.image.load(os.path.join(player_folder, PLAYER_IMG1))
+        #self.menu_select = pg.image.load(os.path.join(player_folder, PLAYER_IMG1))
     
         pass
     
@@ -436,7 +450,6 @@ class Game:
         
         self.start_run()
 
-
     def start_run(self):
         #start loop
         
@@ -451,7 +464,6 @@ class Game:
             
     def start_events(self):
         for event in pg.event.get():
-            
             if event.type == pg.QUIT:
                 if self.start_playing:
                     self.start_playing = False
@@ -462,7 +474,7 @@ class Game:
                 pos = pg.mouse.get_pos()
                 if startbutton.isOver(pos):
                     while g.screen_running:
-    #     # this g.running will take control of game over or not
+                 # this g.running will take control of game over or not
                         g.running=True
                         self.start_playing = False
                         self.screen_running = False
@@ -471,8 +483,7 @@ class Game:
                 elif exitbutton.isOver(pos):
                     pg.quit()
                     quit()
-                    
-            
+                       
     def start_update(self):
         self.start_group.update()
 
@@ -495,19 +506,44 @@ class Game:
         text_rect.midtop = (x, y)
         self.screen.blit(text_surface, text_rect)
     
+    def show_over_screen(self):
+        # Game Over시에 나타낼 스크린
+        self.screen.blit(self.start_screen, (1,1))
+        self.draw_text("GAVE OVER", 48, BLACK, WIDTH/2, HEIGHT/4)
+        self.draw_text("Score : "+ str(self.score), 22, BLACK, WIDTH/2, HEIGHT/2)
+        self.draw_text("Press a 'Z' key to play again, 'ESC' to 'QUIT'", 22, BLACK, WIDTH/2, HEIGHT*3/4)
+        self.draw_text("Time : " +str(self.second), 22, BLACK, WIDTH/2, HEIGHT*3/4+50)
+        pg.display.update()
+        sleep(1.5)
+        self.wait_for_key()
 
+    def wait_for_key(self):
+        waiting = True
+        while waiting:
+            self.clock.tick(FPS)
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    waiting = False
+                    self.running = False
+                    self.start = False
+                elif event.type == pg.KEYDOWN:
+                    if event.key == pg.K_ESCAPE:
+                        self.running = False
+                        waiting = False
+                    if event.key == pg.K_z:
+                        self.start = True
+                        waiting = False
 
-startbutton = button(155, 440, 100, 40)
-exitbutton = button(155, 485, 100, 40)
+startbutton = Button(155, 440, 100, 40)
+exitbutton = Button(155, 485, 100, 40)
 g = Game()
 while g.start:
     g.show_start_screen() 
     # Game start when g.start is True
-    g.running = True
     while g.running:
         # this g.running will take control of game over or not
         g.new()
-    if g.running == False:
-        pg.quit()
-    pg.quit()
+        g.show_over_screen()
+    print('out!')
+pg.quit()
 

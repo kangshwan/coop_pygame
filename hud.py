@@ -4,8 +4,9 @@ from os import path
 from setting import *
 BAR_LENGTH = 100
 BAR_HEIGHT = 30
-class button():
-    def __init__(self, x, y, width, height):
+BUTTON_POSITION=[]
+class Button():
+    def __init__(self, x, y, width, height, type = 0):
         self.x = x
         self.y = y
         self.width = width
@@ -58,6 +59,9 @@ def draw_player_health(surf, x, y, health, amor, max_health):
 def draw_gun_list(surf, gunstatus, gun_now):
     for idx, val in enumerate(gunstatus):
         draw_gun(surf, BAR_LENGTH + 40 + idx * 80, HEIGHT-60, val, idx, gun_now)
+        if len(BUTTON_POSITION) < 4:
+            BUTTON_POSITION.append([BAR_LENGTH + 40 + idx * 80, HEIGHT-60, 40, 40])
+
 
 def draw_gun(surf, x, y, possible, gun_kind, gun_now):
     BAR_WIDTH = 50
@@ -116,3 +120,6 @@ def draw_money(surf, x, y, money_amount, in_font):
     text = font.render(f"Money: {money_amount}",True, GOLD)
     surf.blit(text, (x,y))  
     pass
+gun_button=[]
+for i in range(4):
+    gun_button.append(Button(BAR_LENGTH + 40 + i * 80, HEIGHT-60,40,40,i))

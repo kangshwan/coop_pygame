@@ -187,7 +187,6 @@ class Player(pg.sprite.Sprite):
         self.rotate() 
         #print(self.money)
         #print(self.kill_enemy)
-        
 
         self.acc += self.vel*PLAYER_FRICTION
         #apply friction / 가속력에 마찰력을 더해줌. 현재속력*마찰력(현재는 -0.05로 설정)
@@ -233,7 +232,8 @@ class Player(pg.sprite.Sprite):
             self.walking = 0
         else:
             self.standing = False
-
+        if self.health < 0:
+            self.game.running = not self.game.running
     def draw_body(self):
         self.body = [self.game.move1_img, self.game.move1_img, self.game.move1_img, self.game.move1_img, self.game.move1_img, self.game.move2_img, self.game.move2_img, self.game.move2_img, self.game.move2_img, self.game.move2_img]
         if self.left :
@@ -270,41 +270,7 @@ class Player(pg.sprite.Sprite):
                 self.vel.y = 0
                 self.rect.centery = self.pos.y
 
-    def collide_with_feed(self):
-        hits = pg.sprite.spritecollide(self, self.game.feeds, True)
-        for hit in hits:
-            hit.item_no == 5
-            print(hit.item_no)
-            if hit.item_no == 0:
-                self.max_speed = 10
-                self.last_speed = pg.time.get_ticks()
-                self.gun_status[1] = [True, 240]
-                self.gun_status[2] = [True, 10]
-                self.gun_status[3] = [True, 500]
-
-            if hit.item_no == 1:
-                self.weapon_rate *= 0.01
-                self.last_weapon_speed = pg.time.get_ticks()
-
-            if hit.item_no == 2:
-                self.weapon_damage *= 2.0
-                self.last_weapon_damage = pg.time.get_ticks()
-
-            if hit.item_no == 3:
-                self.health += 50
-                if self.health > PLAYER_HEALTH :
-                    self.health = PLAYER_HEALTH
-            
-            if hit.item_no == 4:
-                self.gun_status[1] = [True, 12]
-                self.gun_status[2] = [True, 1]
-                self.gun_status[3] = [True, 1000]
-                self.amor = AMOR_HEALTH # 체력이 아니라 armor (일정 시간이 지나면 사라짐) / 초록색이 아니라 체력과 따로 흰색으로 표시되도록
-                self.max_health = PLAYER_HEALTH + AMOR_HEALTH
-                self.max_health = self.health + self.amor
-                if self.max_health < PLAYER_HEALTH:
-                    self.max_health = PLAYER_HEALTH
-                    
+    
     def rotate(self):
         # The vector to the target (the mouse position).
         mouse_pos = pg.mouse.get_pos()

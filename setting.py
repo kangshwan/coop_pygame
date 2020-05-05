@@ -63,7 +63,7 @@ WEAPONS['shotgun']      = {'bullet_speed': 300,
 
 WEAPONS['sniper']       = {'bullet_speed': 800,
                            'bullet_lifetime': 700,
-                           'rate': 0,
+                           'rate': 1500,
                            'damage': 13,
                            'spread': 0,
                            'size': (5,3),
@@ -72,7 +72,7 @@ WEAPONS['sniper']       = {'bullet_speed': 800,
                            'barrel_offset_fliped': vec(45, 10)}
 
 WEAPONS['flamethrower'] = {'bullet_speed': 100,
-                           'bullet_lifetime': 900,
+                           'bullet_lifetime': 1200,
                            'rate': 0,
                            'damage': 2.3,
                            'spread': 10,
@@ -81,11 +81,12 @@ WEAPONS['flamethrower'] = {'bullet_speed': 100,
                            'barrel_offset': vec(40, -4),
                            'barrel_offset_fliped': vec(40, 4)}
 
+WEAPON_PRICE = [0, 10, 20, 30]
 # grenade properties
-GRENADE_SPEED = 600
-GRENADE_LIFETIME = 3000
-GRENADE_RATE = 1000
-GRENADE_DAMAGE = 60
+GRENADE_SPEED = 800
+GRENADE_LIFETIME = 1500
+GRENADE_RATE = 2000
+GRENADE_DAMAGE = 50
 
 # explosion properties
 EXPLOSION_LIFETIME = 500
@@ -105,7 +106,7 @@ BOSS_HEALTH = 10000
 
 # item properties
 SPEEDUP_RATE = 5000
-ITEM_KIND = [0, 0, 1, 1,  2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 5]  
+ITEM_KIND = [0, 0]#, 1, 1,  2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 5]  
 AMOR_HEALTH = 25
 FEED_RANGE = 20
 FEED_SPEED = 0.6
