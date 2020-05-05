@@ -346,7 +346,7 @@ class Game:
                 sprite.draw_health()
             if isinstance(sprite, Enemy):
                 sprite.draw_health()
-                sprite.draw_body()
+                #sprite.draw_body()
             if self.draw_debug:
                 pg.draw.rect(self.screen, CYAN, self.camera.apply_rect(sprite.hitbox),1)
 
