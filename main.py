@@ -385,7 +385,7 @@ class Game:
         self.explode_img = []
         self.zombie1_img = []
         self.wood_pillar_img = []
-        self.map = TiledMap(path.join(map_folder,'large_map.tmx'))
+        self.map = TiledMap(path.join(map_folder,'map.tmx'))
         self.map_img = self.map.make_map()
         self.map_rect = self.map_img.get_rect()
         #self.ground_img = pg.image.load(path.join(map_folder, GROUND_IMG[0])).convert_alpha()
