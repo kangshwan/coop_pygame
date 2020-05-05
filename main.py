@@ -87,6 +87,7 @@ class Game:
         self.boss = pg.sprite.Group()
         self.boss_pos = ()
         self.boss_spawn = False
+        self.paused_text = False
         #for row, tiles in enumerate(self.map.data):
         #    #enumerate는 한 배열에 대하여 index와 그 값을 동시에 가져올수 있음. -> 자세한건 구글링
         #    block = ''
@@ -331,6 +332,10 @@ class Game:
             if key_1[pg.K_p]:
                 self.paused = not self.paused
                 self.player.standing = True
+                self.paused_text = not self.paused_text
+                if not self.paused_text:
+                    self.draw_text("PAUSE", 30, BLACK, WIDTH - 752, HEIGHT - 200)
+                    pg.display.update()
             if key_1[pg.K_PERIOD]:
                 self.draw_debug = not self.draw_debug
             
@@ -346,7 +351,7 @@ class Game:
             if isinstance(sprite, Enemy):
                 sprite.draw_health()
                 sprite.draw_body()
-                print('after drawbody')
+              
             if self.draw_debug:
                 pg.draw.rect(self.screen, CYAN, self.camera.apply_rect(sprite.hitbox),1)
 
@@ -357,9 +362,9 @@ class Game:
                     pg.draw.rect(self.screen, CYAN, self.camera.apply_rect(sprite.hitbox),1)
                     pg.draw.rect(self.screen, RED, self.camera.apply_rect(sprite.rect),1)
             else:
-                print('this is that sprite')
+               
                 self.screen.blit(sprite.image, self.camera.apply(sprite))
-                print(sprite.rect)
+         
             if self.draw_debug:
                 for wall in self.walls:
                     pg.draw.rect(self.screen, CYAN, self.camera.apply_rect(wall.rect),1)
@@ -411,8 +416,7 @@ class Game:
         pass
         self.poke_font = path.join(font_folder, 'PokemonGb-RAeo.ttf')
         self.start_screen = pg.image.load(path.join(img_folder, START_SCREEN)).convert_alpha()
-        self.menu_select = pg.image.load(os.path.join(img_folder, PLAYER_IMG1))
-    
+        
         pass
     
     def show_start_screen(self):

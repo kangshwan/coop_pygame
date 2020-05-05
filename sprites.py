@@ -43,20 +43,20 @@ def enemy_collide_with_gameobject(sprite, group, dir):
         # x 방향으로 충돌 확인
         hits = pg.sprite.spritecollide(sprite, group, False, collide_hit_rect)
         if hits:
-            print('before:', sprite.pos.x)
+        
             if hits[0].rect.centerx > sprite.hitbox.centerx:
                 sprite.pos.x = hits[0].rect.left - sprite.hitbox.width/2
                 # 왼쪽에서 박을경우
             if hits[0].rect.centerx < sprite.hitbox.centerx:
                 sprite.pos.x = hits[0].rect.right + sprite.hitbox.width/2
                 # 오른쪽에서 받아올경우
-                print('from right',hits[0].rect.right, sprite.hitbox.width/2)
+             
             sprite.vel.x = 0
             #sprite.acc.x = 0
             # 부딫혔으니 x방향 속도를 0으로 해줌.
-            print('after:', sprite.pos.x)
+         
             sprite.hitbox.centerx = sprite.pos.x
-            print('last change',sprite.hitbox.centerx, sprite.pos.x)
+   
             return True
 
     if dir == 'y':
@@ -304,7 +304,7 @@ class Player(pg.sprite.Sprite):
         hits = pg.sprite.spritecollide(self, self.game.feeds, True)
         for hit in hits:
             hit.item_no == 5
-            print(hit.item_no)
+    
             if hit.item_no == 0:
                 self.max_speed = 10
                 self.last_speed = pg.time.get_ticks()
@@ -511,7 +511,7 @@ class Enemy(pg.sprite.Sprite):
         self.right = False
         self.walking = 0
         self.standing = False
-        print('init',self.pos)
+
 
     def avoid_enemys(self):
         for enemy in self.game.enemys:
@@ -554,7 +554,7 @@ class Enemy(pg.sprite.Sprite):
             self.right = True
         else:
             self.right = False
-        print('last',self.rect.x, self.rect.centerx)
+   
 
     def draw_health(self):
         col = YELLOW
