@@ -487,6 +487,8 @@ class Enemy(pg.sprite.Sprite):
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.image = pg.Surface((TILESIZE,TILESIZE), pg.SRCALPHA)
+        self.image.fill(RED)
+
         self.origin_image = self.image
         self.rect = self.image.get_rect()
         self.hitbox = ENEMY_HIT_BOX.copy()
@@ -516,16 +518,15 @@ class Enemy(pg.sprite.Sprite):
                     self.acc += dist.normalize()
 
     def update(self):
-        print(self.pos)
         target_dist = self.target.pos - self.pos 
         #self.rect.x -= self.speedy 
         self.rot = target_dist.angle_to(vec(1, 0)) #target_dist == (self.game.player.pos - self.pos)
         self.image = pg.transform.rotate(self.origin_image, 0) # check later! 꼮 반드시
-        self.image.fill(RED)
         self.rect = self.image.get_rect()
         
         self.rect.center = self.pos
         self.acc = vec(1, 0).rotate(-self.rot)
+        self.rot = 0
         self.avoid_enemys()
         try:
             self.acc.scale_to_length(self.speed)
