@@ -101,7 +101,7 @@ ENEMY_SPEED = [30, 30, 30, 30,30, 50, 50, 50, 70,70]
 ENEMY_FRICTION = -1
 ENEMY_HIT_BOX = pg.Rect(0, 0, 32, 60)
 AVOID_RADIUS = 50
-ENEMY_SPAWN_TIME = 20000
+ENEMY_SPAWN_TIME = 5000
 
 BOSS_HITBOX = pg.Rect(0, 0, TILESIZE*2,TILESIZE*2)
 BOSS_HEALTH = 10000
@@ -148,6 +148,7 @@ PLAYER_IMG1 = 'move1.png'
 PLAYER_IMG2 = 'move2.png'
 START_SCREEN = 'main.png'
 END_SCREEN = 'ending.png'
+OPTION_SCREEN = 'option1.png'
 
 ZOMBIE1_IMG = ['zombie1_1.png', 'zombie1_2.png', 'zombie1_3.png', 'zombie1_4.png', 'zombie1_5.png', 'zombie1_6.png', 'zombie1_7.png']
 BOSS_IMG = ['boss_1.png','boss_2.png','boss_3.png','boss_4.png','boss_5.png','boss_6.png']

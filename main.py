@@ -558,7 +558,7 @@ class Game:
         self.poke_font = path.join(font_folder, 'PokemonGb-RAeo.ttf')
         self.start_screen = pg.transform.scale(pg.image.load(path.join(img_folder, START_SCREEN)).convert_alpha(),(WIDTH,HEIGHT))
         self.ending_screen = pg.transform.scale(pg.image.load(path.join(img_folder, END_SCREEN)).convert_alpha(),(WIDTH,HEIGHT))
-        
+        self.option = pg.image.load(path.join(img_folder, OPTION_SCREEN)).convert_alpha()
         pass
     
     def show_start_screen(self):
@@ -604,7 +604,11 @@ class Game:
                         self.start_playing = False
                         self.screen_running = False
                         #pg.quit()
-
+                elif optionbutton.isOver(pos):
+                    game_folder = path.dirname(__file__)
+                    img_folder = path.join(game_folder, 'Image')
+                    pg.image.load(path.join(img_folder,'option1.png')).convert_alpha()
+        
                 elif exitbutton.isOver(pos):
                     pg.quit()
                     quit()
@@ -619,8 +623,10 @@ class Game:
         # pg.draw.rect(self.screen, WHITE,[155, 485, 100, 40])
         self.draw_text("START", 30, BLACK, WIDTH - 752, HEIGHT - 200)
         self.draw_text("START", 30, DARKGREY, WIDTH - 754, HEIGHT - 203)
-        self.draw_text("EXIT", 30, BLACK, WIDTH - 748, HEIGHT - 150)
-        self.draw_text("EXIT", 30, DARKGREY, WIDTH - 750, HEIGHT - 153)
+        self.draw_text("OPTION", 30, BLACK, WIDTH - 752, HEIGHT - 150)
+        self.draw_text("OPTION", 30, DARKGREY, WIDTH - 754, HEIGHT - 153)
+        self.draw_text("EXIT", 30, BLACK, WIDTH - 748, HEIGHT - 100)
+        self.draw_text("EXIT", 30, DARKGREY, WIDTH - 750, HEIGHT - 103)
        
         pg.display.update()
 
@@ -663,7 +669,8 @@ class Game:
                         waiting = False
 
 startbutton = Button(155, 440, 100, 40)
-exitbutton = Button(155, 485, 100, 40)
+optionbutton = Button(155, 480, 100, 40)
+exitbutton = Button(155, 520, 100, 40)
 g = Game()
 while g.start:
     g.show_start_screen() 
