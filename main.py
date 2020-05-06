@@ -152,7 +152,8 @@ class Game:
                 self.player = Player(self, tile_object.x, tile_object.y) 
             if tile_object.name == 'enemy_spawn':
                 self.enemy_pos.append((tile_object.x, tile_object.y))
-                #Enemy(self, tile_object.x, tile_object.y)
+                if EXPLAIN_GUN:
+                    Enemy(self, tile_object.x, tile_object.y)
             if tile_object.name == 'wall':
                 Obstacle(self, tile_object.x, tile_object.y, tile_object.width, tile_object.height)
             if tile_object.name == 'boss':
@@ -201,21 +202,22 @@ class Game:
             self.item_spawned = self.now
             
         #update에서 Enemy 생성
-        if self.now - self.enemy_spawned > ENEMY_SPAWN_TIME:
-            if self.boss_spawn:
-                for e_position in self.enemy_pos:
-                    #3초마다 해당 장소에서 생성. 추후 enemy_pos를 list로 쓸경우 for문 안에넣고 index들로 접근해서 생성하면 될듯.
-                    if self.spawned_enemy < MAX_ENEMY:
-                        Enemy(self, e_position[0], e_position[1])
-                        self.enemy_spawned = self.now
-                        self.spawned_enemy += 1
+        if not EXPLAIN_GUN:
+            if self.now - self.enemy_spawned > ENEMY_SPAWN_TIME:
+                if self.boss_spawn:
+                    for e_position in self.enemy_pos:
+                        #3초마다 해당 장소에서 생성. 추후 enemy_pos를 list로 쓸경우 for문 안에넣고 index들로 접근해서 생성하면 될듯.
+                        if self.spawned_enemy < MAX_ENEMY:
+                            Enemy(self, e_position[0], e_position[1])
+                            self.enemy_spawned = self.now
+                            self.spawned_enemy += 1
         self.second = ((pg.time.get_ticks() - self.start_tick)/1000)
 
         #update에서 Boss 생성
         if self.player.kill_enemy > MAX_ENEMY:
             if self.boss_spawn:
                 #3초마다 해당 장소에서 생성. 추후 enemy_pos를 list로 쓸경우 for문 안에넣고 index들로 접근해서 생성하면 될듯.
-                self.boss = Boss(self, self.boss_pos[0], self.boss_pos[1], CYAN)
+                self.boss = Boss(self, self.boss_pos[0], self.boss_pos[1])
                 self.boss_spawn = not self.boss_spawn
        
         hits = pg.sprite.pygame.sprite.spritecollide(self.player, self.boss_bullet, True, collide_hit_box)
@@ -432,37 +434,7 @@ class Game:
             if event.type == pg.MOUSEBUTTONDOWN:
                 #screen button 기믹
                 pass
-                #pos = pg.mouse.get_pos()
-                #if gun_button[1].isOver(pos):
-                    #if self.player.money >= WEAPON_PRICE[1]:
-                        #self.player.money -= WEAPON_PRICE[1]
-                        #if self.player.gun_status[1][0] != True:
-                            #self.player.gun_status[1][0] = not self.player.gun_status[1][0]
-                            #self.player.gun_status[1][1] = 120
-                        #else:
-                            #self.player.gun_status[1][1] += 120
-                        
-                        #buy
-                    #buy shotgun
-                #if gun_button[2].isOver(pos):
-                    #if self.player.money >= WEAPON_PRICE[2]:
-                        #self.player.money -= WEAPON_PRICE[2]
-                        #if self.player.gun_status[2][0] != True:
-                            #self.player.gun_status[2][0] = not self.player.gun_status[2][0]
-                            #self.player.gun_status[2][1] = 10
-                        #else:
-                            #self.player.gun_status[2][1] = 10
-                    #buy sniper
-                #if gun_button[3].isOver(pos):
-                    #if self.player.money >= WEAPON_PRICE[3]:  
-                        #self.player.money -= WEAPON_PRICE[3]
-                        #if self.player.gun_status[3][0] != True:
-                            #self.player.gun_status[3][0] = not self.player.gun_status[3][0]
-                            #self.player.gun_status[3][1] = 1000
-                        #else:
-                            #self.player.gun_status[3][1] = 1000
-                    #buy fire  
-                #pass  
+                
 
             
     def draw(self):
@@ -530,6 +502,11 @@ class Game:
         self.boss_bullet_img = []
         #self.wood_pillar_img = []
         self.map = TiledMap(path.join(map_folder,'map.tmx'))
+        if EXPLAIN_GUN:
+            self.map = TiledMap(path.join(map_folder,'explain_gun.tmx'))
+        if EXPLAIN_ITEM:
+            self.map = TiledMap(path.join(map_folder,'explain_item.tmx'))
+
         self.map_img = self.map.make_map()
         self.map_rect = self.map_img.get_rect()
         #self.ground_img = pg.image.load(path.join(map_folder, GROUND_IMG[0])).convert_alpha()
