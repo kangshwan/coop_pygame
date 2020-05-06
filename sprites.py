@@ -39,9 +39,7 @@ def collide_with_gameobject(sprite, group, dir):
             # 부딫혔으니 y방향 속도를 0으로 해줌
             sprite.hitbox.centery = sprite.pos.y
 
-
 class Player(pg.sprite.Sprite):
-    
     def __init__(self, game, x, y):
         self.groups = game.all_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
@@ -64,8 +62,10 @@ class Player(pg.sprite.Sprite):
         self.vel = vec(0,0)
         self.acc = vec(0,0)
         self.rot = 0
-        self.last_shot = -3000
+        self.last_shot = 0
         self.gun_status = [[True,0], [False, 0],[False, 0],[False, 0]]
+        if EXPLAIN_GUN:
+            self.gun_status = [[True, 0], [True, 120], [True, 10], [True, 1000]]
         # 0 is pistol, 1 is shotgun, 2 is sniper 3 is flamethrower
         self.last_grenade = 0
         #0 is pistol 1 is shotgun
@@ -87,6 +87,13 @@ class Player(pg.sprite.Sprite):
         self.standing = True
         self.walking = 0
         self.left = False
+        self.sounds = os.path.join('Sound')
+        self.sound_dict = {'pistol':pg.mixer.Sound(os.path.join(self.sounds, '권총.wav')),
+                           'shotgun': pg.mixer.Sound(os.path.join(self.sounds, '샷건.wav')),
+                           'sniper':pg.mixer.Sound(os.path.join(self.sounds, '스나이퍼.wav')),
+                           'flamethrower':pg.mixer.Sound(os.path.join(self.sounds, '화방.wav')),
+                           'grenade':pg.mixer.Sound(os.path.join(self.sounds, '수류탄.wav'))}
+        self.item_no = 0
 
     def load_images(self):
         self.image = self.weapon_img[self.gun_select]
@@ -139,31 +146,12 @@ class Player(pg.sprite.Sprite):
                
         if key[0]:
             if self.gun_status[self.gun_select][0]:
+                self.now = pg.time.get_ticks()
                 self.shoot(self.gun_select)
-                self.sounds = os.path.join('Sound')
-                if self.gun_select == 0:
-                    self.gun = pg.mixer.Sound(os.path.join(self.sounds, '권총.wav'))
-                    self.gun.set_volume(0.2)
-                    pg.mixer.Sound.play(self.gun)
-                if self.gun_select == 1:
-                    self.shotgun = pg.mixer.Sound(os.path.join(self.sounds, '샷건.wav'))
-                    self.shotgun.set_volume(0.2)
-                    pg.mixer.Sound.play(self.shotgun)
-                if self.gun_select == 2:
-                    self.sniper = pg.mixer.Sound(os.path.join(self.sounds, '스나이퍼.wav'))
-                    self.sniper.set_volume(0.2)
-                    pg.mixer.Sound.play(self.sniper)
-                if self.gun_select == 3:
-                    self.fire = pg.mixer.Sound(os.path.join(self.sounds, '화방.wav'))
-                    self.fire.set_volume(1)
-                    pg.mixer.Sound.play(self.fire)
 
         if key[2]:
             #마우스 우클릭시
             if self.grenade[0]:
-                self.explosion = pg.mixer.Sound(os.path.join(self.sounds, '수류탄.wav'))
-                self.gun.set_volume(0.5)
-                pg.mixer.Sound.play(self.explosion)
                 now = pg.time.get_ticks()
                 if now - self.last_grenade > GRENADE_RATE:
                     self.last_grenade = now
@@ -194,6 +182,10 @@ class Player(pg.sprite.Sprite):
             for i in range(WEAPONS[self.weapon]['bullet_count']):
                 spread = random.uniform(-WEAPONS[self.weapon]['spread'], WEAPONS[self.weapon]['spread'])
                 Bullet(self.game, pos, dir.rotate(spread), gun_select)
+
+            self.sound = self.sound_dict[self.weapon]
+            self.sound.set_volume(0.5)
+            pg.mixer.Sound.play(self.sound)
 
             self.gun_status[self.gun_select][1] -= WEAPONS[self.weapon]['bullet_count'] 
             if self.gun_select == 0:
@@ -254,6 +246,7 @@ class Player(pg.sprite.Sprite):
             self.standing = False
         if self.health < 0:
             self.game.running = not self.game.running
+    
     def draw_body(self):
         self.body = [self.game.move1_img, self.game.move1_img, self.game.move1_img, self.game.move1_img, self.game.move1_img, self.game.move2_img, self.game.move2_img, self.game.move2_img, self.game.move2_img, self.game.move2_img]
         if self.left :
@@ -269,27 +262,6 @@ class Player(pg.sprite.Sprite):
             self.walking += 1
             #self.game.screen.blit(self.body[self.walking%len(self.body)], (self.game.camera.camera.x+self.hitbox.x, self.game.camera.camera.y+self.hitbox.y-18))
         self.game.screen.blit(self.image, self.game.camera.apply(self.game.player))
-
-    def collide_with_boss(self,dir):
-        if dir == 'x':
-            hits = pg.sprite.spritecollide(self, self.game.boss, False)
-            if hits:
-                if self.vel.x > 0:
-                    self.pos.x = hits[0].rect.left - self.rect.width/2
-                if self.vel.x < 0:
-                    self.pos.x = hits[0].rect.right + self.rect.width/2
-                self.vel.x = 0
-                self.rect.centerx = self.pos.x
-        if dir == 'y':
-            hits = pg.sprite.spritecollide(self, self.game.boss, False)
-            if hits:
-                if self.vel.y > 0:
-                    self.pos.y = hits[0].rect.top - self.rect.height/2
-                if self.vel.y < 0:
-                    self.pos.y = hits[0].rect.bottom + self.rect.height/2
-                self.vel.y = 0
-                self.rect.centery = self.pos.y
-
     
     def rotate(self):
         # The vector to the target (the mouse position).
@@ -404,7 +376,11 @@ class Grenade(pg.sprite.Sprite):
 
         if pg.time.get_ticks() - self.spawn_time > GRENADE_LIFETIME:
             self.kill()
+            self.explosion = self.game.player.sound_dict['grenade']
+            self.explosion.set_volume(0.5)
+            pg.mixer.Sound.play(self.explosion)
             Explode(self.game, self.pos)
+
 
     def reflect_with_walls(self,dir):
         if dir == 'x':
@@ -495,7 +471,10 @@ class Enemy(pg.sprite.Sprite):
         #if target_dist.length() > DETECT_RADIUS**2:
         #    self.acc = vec(0,0)
         #    self.vel = vec(0,0)
-        self.pos += self.vel * self.game.dt + 0.5 * self.acc * self.game.dt**2
+        if EXPLAIN_GUN or EXPLAIN_ITEM:
+            pass
+        else:
+            self.pos += self.vel * self.game.dt + 0.5 * self.acc * self.game.dt**2
         self.hitbox.centerx = self.pos.x
         self.collide_with_walls('x')
         self.hitbox.centery = self.pos.y
@@ -571,7 +550,6 @@ class Enemy(pg.sprite.Sprite):
 #아이템 상자 생성
 class Feed(pg.sprite.Sprite):
     def __init__(self, game, x, y):
-        
         self.groups = game.all_sprites, game.feeds
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
@@ -582,7 +560,11 @@ class Feed(pg.sprite.Sprite):
         self.rect.y = self.pos.y 
         self.hitbox = self.rect
         # 추후 random을 통해 바꿔야함.
-        self.item_no = random.choice(ITEM_KIND)
+        if EXPLAIN_ITEM:
+            self.item_no = game.player.item_no
+            game.player.item_no+=1
+        else:
+            self.item_no = random.choice(ITEM_KIND)
         self.tween = tween.easeInOutSine
         self.step = 0
         self.dir = 1
@@ -607,6 +589,7 @@ class Explode(pg.sprite.Sprite):
         self.rect.center = pos
         self.spawn_time = pg.time.get_ticks()
         self.hitbox = self.rect
+
     def load_images(self):
         self.image_list = self.game.explode_img
         self.image = self.image_list[0]
@@ -716,7 +699,7 @@ class Boss_bullet(Bullet):
             self.game.boss_spawn =False
         
 class Boss(pg.sprite.Sprite):
-    def __init__(self, game, x, y, color):        
+    def __init__(self, game, x, y):        
         self.groups = game.all_sprites #boss : 객체
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
