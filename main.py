@@ -53,6 +53,7 @@ class Game:
                 self.update()
             #events for keyboard and mouse input / 이벤트를 처리하기 위함. 항상 pygame은 event 이벤트발생(사용자의 입력) -> update(입력에 따른 변화를 업데이트해줌) -> draw 이후 그림을 그림
             self.draw()
+            
     
     def new(self):
         #when start a new game
@@ -484,6 +485,7 @@ class Game:
         draw_money(self.screen, 10, 10, self.player.money,self.poke_font)
         if not self.boss_spawn:
             draw_boss_health(self.screen, WIDTH/2-(TILESIZE*2), 2, self.boss.health)
+        self.screen.blit( self.mouse, (pg.mouse.get_pos()[0]-24,pg.mouse.get_pos()[1]-24) ) 
         pg.display.update()
         
     def load_data(self):
@@ -537,6 +539,9 @@ class Game:
         self.start_screen = pg.transform.scale(pg.image.load(path.join(img_folder, START_SCREEN)).convert_alpha(),(WIDTH,HEIGHT))
         self.ending_screen = pg.transform.scale(pg.image.load(path.join(img_folder, END_SCREEN)).convert_alpha(),(WIDTH,HEIGHT))
         
+        self.mouse = pg.image.load(path.join(img_folder, CURSOR)).convert_alpha()
+        
+        self.option_screen = pg.transform.scale(pg.image.load(path.join(img_folder, OPTION_SCREEN)).convert_alpha(),(WIDTH,HEIGHT))
         pass
     
     def show_start_screen(self):
@@ -555,8 +560,6 @@ class Game:
 
     def start_run(self):
         #start loop
-        
-            
         self.start_playing = True
         while self.start_playing:
             self.clock.tick(FPS)
@@ -564,6 +567,7 @@ class Game:
             self.start_update()
             #self.check_range()
             self.start_draw()
+            
             
     def start_events(self):
         for event in pg.event.get():
@@ -582,11 +586,12 @@ class Game:
                         self.start_playing = False
                         self.screen_running = False
                         #pg.quit()
-
+                elif optionbutton.isOver(pos):
+                    self.option_new()
                 elif exitbutton.isOver(pos):
                     pg.quit()
                     quit()
-                       
+
     def start_update(self):
         self.start_group.update()
 
@@ -597,9 +602,44 @@ class Game:
         # pg.draw.rect(self.screen, WHITE,[155, 485, 100, 40])
         self.draw_text("START", 30, BLACK, WIDTH - 752, HEIGHT - 200)
         self.draw_text("START", 30, DARKGREY, WIDTH - 754, HEIGHT - 203)
-        self.draw_text("EXIT", 30, BLACK, WIDTH - 748, HEIGHT - 150)
-        self.draw_text("EXIT", 30, DARKGREY, WIDTH - 750, HEIGHT - 153)
-       
+        self.draw_text("OPTION", 30, BLACK, WIDTH - 752, HEIGHT - 150)
+        self.draw_text("OPTION", 30, DARKGREY, WIDTH - 754, HEIGHT - 153)
+        self.draw_text("EXIT", 30, BLACK, WIDTH - 748, HEIGHT - 100)
+        self.draw_text("EXIT", 30, DARKGREY, WIDTH - 750, HEIGHT - 103)
+        self.screen.blit( self.mouse, (pg.mouse.get_pos()[0]-12,pg.mouse.get_pos()[1]-12) ) 
+        pg.display.update()
+
+    def option_new(self):
+        self.option_group = pg.sprite.Group()
+        self.option_run()     
+
+    def option_run(self):
+        self.option_running = True
+        while self.option_running:
+            self.clock.tick(FPS)
+            self.option_events()
+            self.option_update()
+            self.option_draw() 
+
+    def option_events(self):
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                self.option_running = False
+            if event.type == pg.MOUSEBUTTONDOWN:
+                pos = pg.mouse.get_pos()
+                if backbutton.isOver(pos):
+                    self.option_running=False
+
+    def option_update(self):
+        self.option_group.update()
+
+    def option_draw(self):
+        self.screen.blit(self.option_screen, (0,0))
+        self.option_group.draw(self.screen)
+        self.draw_text("BACK", 40, BLACK, WIDTH - 80, HEIGHT - 610)
+        self.draw_text("BACK", 40, DARKGREY, WIDTH - 82, HEIGHT - 613)
+        
+        self.screen.blit( self.mouse, (pg.mouse.get_pos()[0]-12,pg.mouse.get_pos()[1]-12) ) 
         pg.display.update()
 
     def draw_text(self, text, size, color, x, y):
@@ -641,8 +681,11 @@ class Game:
                         waiting = False
 
 startbutton = Button(155, 440, 100, 40)
-exitbutton = Button(155, 485, 100, 40)
+optionbutton = Button(155, 480, 100, 40)
+exitbutton = Button(155, 520, 100, 40)
+backbutton = Button(800, 20, 100, 60)
 g = Game()
+pg.mouse.set_visible(False)
 while g.start:
     g.show_start_screen() 
     # Game start when g.start is True
@@ -650,4 +693,5 @@ while g.start:
         # this g.running will take control of game over or not
         g.new()
         g.show_over_screen()
+
 pg.quit()
