@@ -10,6 +10,7 @@ vec = pg.math.Vector2
 
 def collide_with_gameobject(sprite, group, dir):
     if dir == 'x':
+
         # see collide with x axis
         # x 방향으로 충돌 확인
         hits = pg.sprite.spritecollide(sprite, group, False, collide_hit_rect)
@@ -37,43 +38,8 @@ def collide_with_gameobject(sprite, group, dir):
             sprite.vel.y = 0
             # 부딫혔으니 y방향 속도를 0으로 해줌
             sprite.hitbox.centery = sprite.pos.y
-def enemy_collide_with_gameobject(sprite, group, dir):
-    if dir == 'x':
-        # see collide with x axis
-        # x 방향으로 충돌 확인
-        hits = pg.sprite.spritecollide(sprite, group, False, collide_hit_rect)
-        if hits:
-            print('before:', sprite.pos.x)
-            if hits[0].rect.centerx > sprite.hitbox.centerx:
-                sprite.pos.x = hits[0].rect.left - sprite.hitbox.width/2
-                # 왼쪽에서 박을경우
-            if hits[0].rect.centerx < sprite.hitbox.centerx:
-                sprite.pos.x = hits[0].rect.right + sprite.hitbox.width/2
-                # 오른쪽에서 받아올경우
-                print('from right',hits[0].rect.right, sprite.hitbox.width/2)
-            sprite.vel.x = 0
-            #sprite.acc.x = 0
-            # 부딫혔으니 x방향 속도를 0으로 해줌.
-            print('after:', sprite.pos.x)
-            sprite.hitbox.centerx = sprite.pos.x
-            print('last change',sprite.hitbox.centerx, sprite.pos.x)
-            return True
-
-    if dir == 'y':
-        hits = pg.sprite.spritecollide(sprite, group, False,collide_hit_rect)
-        if hits:
-            if hits[0].rect.centery > sprite.hitbox.centery:
-                sprite.pos.y = hits[0].rect.top - sprite.hitbox.height/2
-                # y 방향 속도가 양수일 경우 -> 아래으로 진행하고있음 따라서 position을 다시 세팅해줌
-            if hits[0].rect.centery < sprite.hitbox.centery:
-                sprite.pos.y = hits[0].rect.bottom + sprite.hitbox.height/2
-                # y 방향 속도가 양수일 경우 -> 위쪽으로 진행하고있음 따라서 position을 다시 세팅해줌
-            sprite.vel.y = 0
-            # 부딫혔으니 y방향 속도를 0으로 해줌
-            sprite.hitbox.centery = sprite.pos.y
 
 class Player(pg.sprite.Sprite):
-    
     def __init__(self, game, x, y):
         self.groups = game.all_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
@@ -96,13 +62,14 @@ class Player(pg.sprite.Sprite):
         self.vel = vec(0,0)
         self.acc = vec(0,0)
         self.rot = 0
-        self.last_shot = -3000
-        self.gun_status = [[True,1], [True, 100000],[True, 10000],[True, 10000000]]
+        self.last_shot = 0
+        self.gun_status = [[True,0], [False, 0],[False, 0],[False, 0]]
+        if EXPLAIN_GUN:
+            self.gun_status = [[True, 0], [True, 120], [True, 10], [True, 1000]]
         # 0 is pistol, 1 is shotgun, 2 is sniper 3 is flamethrower
         self.last_grenade = 0
         #0 is pistol 1 is shotgun
         self.last_speed = 0
-        self.last_weapon_speed = 0
         self.last_weapon_damage = 0
         self.now =pg.time.get_ticks()
         self.max_speed = 3
@@ -112,6 +79,7 @@ class Player(pg.sprite.Sprite):
         self.weapon = 'pistol'
         self.weapon_rate = WEAPONS[self.weapon]['rate']
         self.weapon_damage = WEAPONS[self.weapon]['damage']
+        self.grenade_damage = GRENADE_DAMAGE
         self.grenade = [True, 3]
         self.money = 0
         self.kill_enemy = 0
@@ -119,6 +87,13 @@ class Player(pg.sprite.Sprite):
         self.standing = True
         self.walking = 0
         self.left = False
+        self.sounds = os.path.join('Sound')
+        self.sound_dict = {'pistol':pg.mixer.Sound(os.path.join(self.sounds, '권총.wav')),
+                           'shotgun': pg.mixer.Sound(os.path.join(self.sounds, '샷건.wav')),
+                           'sniper':pg.mixer.Sound(os.path.join(self.sounds, '스나이퍼.wav')),
+                           'flamethrower':pg.mixer.Sound(os.path.join(self.sounds, '화방.wav')),
+                           'grenade':pg.mixer.Sound(os.path.join(self.sounds, '수류탄.wav'))}
+        self.item_no = 0
 
     def load_images(self):
         self.image = self.weapon_img[self.gun_select]
@@ -165,9 +140,13 @@ class Player(pg.sprite.Sprite):
             self.acc.y = PLAYER_ACC
 
         # add acceleration when press w,a,s,d / w,a,s,d를 눌렀을때 가속을 더해줌.
+        
         key = pg.mouse.get_pressed()
+        
+               
         if key[0]:
             if self.gun_status[self.gun_select][0]:
+                self.now = pg.time.get_ticks()
                 self.shoot(self.gun_select)
 
         if key[2]:
@@ -204,8 +183,13 @@ class Player(pg.sprite.Sprite):
                 spread = random.uniform(-WEAPONS[self.weapon]['spread'], WEAPONS[self.weapon]['spread'])
                 Bullet(self.game, pos, dir.rotate(spread), gun_select)
 
+            self.sound = self.sound_dict[self.weapon]
+            self.sound.set_volume(0.5)
+            pg.mixer.Sound.play(self.sound)
+
             self.gun_status[self.gun_select][1] -= WEAPONS[self.weapon]['bullet_count'] 
             if self.gun_select == 0:
+                self.gun_status[self.gun_select][1]=0
                 pass
             elif self.gun_status[self.gun_select][1] <= 0:
                 self.gun_status[self.gun_select][0] = False
@@ -217,7 +201,6 @@ class Player(pg.sprite.Sprite):
         self.rotate() 
         #print(self.money)
         #print(self.kill_enemy)
-        
 
         self.acc += self.vel*PLAYER_FRICTION
         #apply friction / 가속력에 마찰력을 더해줌. 현재속력*마찰력(현재는 -0.05로 설정)
@@ -250,11 +233,9 @@ class Player(pg.sprite.Sprite):
         if self.now - self.last_speed > SPEEDUP_RATE:
             self.max_speed = 3
 
-        if self.now - self.last_weapon_speed > SPEEDUP_RATE:
-            self.weapon_rate = WEAPONS[self.weapon]['rate']
-
         if self.now - self.last_weapon_damage > SPEEDUP_RATE:
             self.weapon_damage = WEAPONS[self.weapon]['damage']
+
         if self.amor <= 0:
             self.amor = 0
 
@@ -263,7 +244,9 @@ class Player(pg.sprite.Sprite):
             self.walking = 0
         else:
             self.standing = False
-
+        if self.health < 0:
+            self.game.running = not self.game.running
+    
     def draw_body(self):
         self.body = [self.game.move1_img, self.game.move1_img, self.game.move1_img, self.game.move1_img, self.game.move1_img, self.game.move2_img, self.game.move2_img, self.game.move2_img, self.game.move2_img, self.game.move2_img]
         if self.left :
@@ -279,62 +262,7 @@ class Player(pg.sprite.Sprite):
             self.walking += 1
             #self.game.screen.blit(self.body[self.walking%len(self.body)], (self.game.camera.camera.x+self.hitbox.x, self.game.camera.camera.y+self.hitbox.y-18))
         self.game.screen.blit(self.image, self.game.camera.apply(self.game.player))
-
-    def collide_with_boss(self,dir):
-        if dir == 'x':
-            hits = pg.sprite.spritecollide(self, self.game.boss, False)
-            if hits:
-                if self.vel.x > 0:
-                    self.pos.x = hits[0].rect.left - self.rect.width/2
-                if self.vel.x < 0:
-                    self.pos.x = hits[0].rect.right + self.rect.width/2
-                self.vel.x = 0
-                self.rect.centerx = self.pos.x
-        if dir == 'y':
-            hits = pg.sprite.spritecollide(self, self.game.boss, False)
-            if hits:
-                if self.vel.y > 0:
-                    self.pos.y = hits[0].rect.top - self.rect.height/2
-                if self.vel.y < 0:
-                    self.pos.y = hits[0].rect.bottom + self.rect.height/2
-                self.vel.y = 0
-                self.rect.centery = self.pos.y
-
-    def collide_with_feed(self):
-        hits = pg.sprite.spritecollide(self, self.game.feeds, True)
-        for hit in hits:
-            hit.item_no == 5
-            print(hit.item_no)
-            if hit.item_no == 0:
-                self.max_speed = 10
-                self.last_speed = pg.time.get_ticks()
-                self.gun_status[1] = [True, 240]
-                self.gun_status[2] = [True, 10]
-                self.gun_status[3] = [True, 500]
-
-            if hit.item_no == 1:
-                self.weapon_rate *= 0.01
-                self.last_weapon_speed = pg.time.get_ticks()
-
-            if hit.item_no == 2:
-                self.weapon_damage *= 2.0
-                self.last_weapon_damage = pg.time.get_ticks()
-
-            if hit.item_no == 3:
-                self.health += 50
-                if self.health > PLAYER_HEALTH :
-                    self.health = PLAYER_HEALTH
-            
-            if hit.item_no == 4:
-                self.gun_status[1] = [True, 12]
-                self.gun_status[2] = [True, 1]
-                self.gun_status[3] = [True, 1000]
-                self.amor = AMOR_HEALTH # 체력이 아니라 armor (일정 시간이 지나면 사라짐) / 초록색이 아니라 체력과 따로 흰색으로 표시되도록
-                self.max_health = PLAYER_HEALTH + AMOR_HEALTH
-                self.max_health = self.health + self.amor
-                if self.max_health < PLAYER_HEALTH:
-                    self.max_health = PLAYER_HEALTH
-                    
+    
     def rotate(self):
         # The vector to the target (the mouse position).
         mouse_pos = pg.mouse.get_pos()
@@ -384,7 +312,6 @@ class Bullet(pg.sprite.Sprite):
         #spread = random.uniform(-BULLET_SPREAD,BULLET_SPREAD)
         self.vel = dir * WEAPONS[game.player.weapon]['bullet_speed']
         self.spawn_time = pg.time.get_ticks()
-        self.trace_status = True
 
     def load_images(self):
         self.image = self.game.bullet_img[self.select]
@@ -434,10 +361,11 @@ class Grenade(pg.sprite.Sprite):
     def update(self):
         self.vel = self.dir * self.speed
         self.pos += self.vel * self.game.dt
-        if self.vel.length() > 0 :
+    
+        if self.vel.length() >0 :
             self.speed -= 10
         elif self.vel.length() < 0 :
-            self.vel = 0
+            self.speed = 0
         self.rect.centerx = self.pos.x
         self.reflect_with_walls('x')
         self.rect.centery = self.pos.y
@@ -448,7 +376,11 @@ class Grenade(pg.sprite.Sprite):
 
         if pg.time.get_ticks() - self.spawn_time > GRENADE_LIFETIME:
             self.kill()
+            self.explosion = self.game.player.sound_dict['grenade']
+            self.explosion.set_volume(0.5)
+            pg.mixer.Sound.play(self.explosion)
             Explode(self.game, self.pos)
+
 
     def reflect_with_walls(self,dir):
         if dir == 'x':
@@ -490,7 +422,7 @@ class Enemy(pg.sprite.Sprite):
         self.groups = game.all_sprites, game.enemys
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        self.image = pg.Surface((TILESIZE,TILESIZE), pg.SRCALPHA)
+        self.image = pg.Surface((TILESIZE,TILESIZE*2+10), pg.SRCALPHA)
         self.origin_image = self.image
         self.rect = self.image.get_rect()
         self.hitbox = ENEMY_HIT_BOX.copy()
@@ -511,7 +443,6 @@ class Enemy(pg.sprite.Sprite):
         self.right = False
         self.walking = 0
         self.standing = False
-        print('init',self.pos)
 
     def avoid_enemys(self):
         for enemy in self.game.enemys:
@@ -522,26 +453,33 @@ class Enemy(pg.sprite.Sprite):
 
     def update(self):
         target_dist = self.target.pos - self.pos 
-        if target_dist.length_squared() < DETECT_RADIUS**2:
         #self.rect.x -= self.speedy 
-            self.rot = target_dist.angle_to(vec(1, 0)) #target_dist == (self.game.player.pos - self.pos)
-            self.image = pg.transform.rotate(self.origin_image, self.rot) # check later! 꼮 반드시
-            self.rect = self.image.get_rect()
-            self.rect.center = self.pos
-            self.acc = vec(1, 0).rotate(-self.rot)
-            self.avoid_enemys()
-            try:
-                self.acc.scale_to_length(self.speed)
-            except ValueError:
-                pass
-            self.acc += self.vel * ENEMY_FRICTION
-            self.vel += self.acc * self.game.dt
+        self.rot = target_dist.angle_to(vec(1, 0)) #target_dist == (self.game.player.pos - self.pos)
+        self.image = pg.transform.rotate(self.origin_image, 0) # check later! 꼮 반드시
+        self.rect = self.image.get_rect()
+        
+        self.rect.center = self.pos
+        self.acc = vec(1, 0).rotate(-self.rot)
+        self.rot = 0
+        self.avoid_enemys()
+        try:
+            self.acc.scale_to_length(self.speed)
+        except ValueError:
+            pass
+        self.acc += self.vel * ENEMY_FRICTION
+        self.vel += self.acc * self.game.dt
+        #if target_dist.length() > DETECT_RADIUS**2:
+        #    self.acc = vec(0,0)
+        #    self.vel = vec(0,0)
+        if EXPLAIN_GUN or EXPLAIN_ITEM:
+            pass
+        else:
             self.pos += self.vel * self.game.dt + 0.5 * self.acc * self.game.dt**2
-            self.hitbox.centerx = self.pos.x
-            collide_with_gameobject(self, self.game.walls, 'x')
-            self.hitbox.centery = self.pos.y
-            collide_with_gameobject(self, self.game.walls, 'y')
-            self.rect.center = self.hitbox.center
+        self.hitbox.centerx = self.pos.x
+        self.collide_with_walls('x')
+        self.hitbox.centery = self.pos.y
+        self.collide_with_walls('y')
+        self.rect.center = self.hitbox.center
 
         #bullet이랑 enemy가 충돌시 둘 다 kill
         #ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ주석if밑으로 여기까지 한칸씩 tap해주면 enemy와 player가 일정 거리이상 벌어지면 추격Xㅡㅡㅡㅡ
@@ -549,12 +487,13 @@ class Enemy(pg.sprite.Sprite):
         if self.health <= 0:
             self.game.player.money += 100
             self.game.player.kill_enemy += 1
+            self.game.spawned_enemy -= 1
             self.kill()
+            
         if target_dist.x > 0:
             self.right = True
         else:
             self.right = False
-        print('last',self.rect.x, self.rect.centerx)
 
     def draw_health(self):
         col = YELLOW
@@ -580,28 +519,59 @@ class Enemy(pg.sprite.Sprite):
         else:
             self.game.screen.blit(self.body[self.walking%len(self.body)], (self.game.camera.camera.x+self.hitbox.x, self.game.camera.camera.y+self.hitbox.y+2))
             self.walking += 1
-        
+
+    def collide_with_walls(self,dir):
+        if dir == 'x':
+            # see collide with x axis
+            # x 방향으로 충돌 확인
+            hits = pg.sprite.spritecollide(self, self.game.walls, False, collide_hit_rect)
+            if hits:
+                if self.vel.x > 0:
+                    self.pos.x = hits[0].rect.left - self.hitbox.width/2
+                    # x 방향 속도가 양수일 경우 -> 오른쪽으로 진행하고있음 따라서 position을 다시 세팅해줌
+                if self.vel.x < 0:
+                    self.pos.x = hits[0].rect.right + self.hitbox.width/2
+                    # x 방향 속도가 음수일 경우 -> 왼쪽으로 진행하고있음 따라서 position을 다시 세팅해줌
+                self.vel.x = 0
+                # 부딫혔으니 x방향 속도를 0으로 해줌.
+                self.hitbox.centerx = self.pos.x
+        if dir == 'y':
+            hits = pg.sprite.spritecollide(self, self.game.walls, False,collide_hit_rect)
+            if hits:
+                if self.vel.y > 0:
+                    self.pos.y = hits[0].rect.top - self.hitbox.height/2
+                    # y 방향 속도가 양수일 경우 -> 아래으로 진행하고있음 따라서 position을 다시 세팅해줌
+                if self.vel.y < 0:
+                    self.pos.y = hits[0].rect.bottom + self.hitbox.height/2
+                    # y 방향 속도가 양수일 경우 -> 위쪽으로 진행하고있음 따라서 position을 다시 세팅해줌
+                self.vel.y = 0
+                # 부딫혔으니 y방향 속도를 0으로 해줌
+                self.hitbox.centery = self.pos.y    
 #아이템 상자 생성
 class Feed(pg.sprite.Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites, game.feeds
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        self.image = pg.Surface((TILESIZE/2,TILESIZE/2))
-        self.image.fill(WHITE)
+        self.image = game.item_box
         self.rect = self.image.get_rect()
         self.pos = vec(x,y)
-        self.rect.centerx = self.pos.x*TILESIZE + (TILESIZE/2)
-        self.rect.y = self.pos.y*TILESIZE 
+        self.rect.centerx = self.pos.x + (TILESIZE/2)
+        self.rect.y = self.pos.y 
+        self.hitbox = self.rect
         # 추후 random을 통해 바꿔야함.
-        self.item_no = random.choice(ITEM_KIND)
+        if EXPLAIN_ITEM:
+            self.item_no = game.player.item_no
+            game.player.item_no+=1
+        else:
+            self.item_no = random.choice(ITEM_KIND)
         self.tween = tween.easeInOutSine
         self.step = 0
         self.dir = 1
 
     def update(self): #아이템 흔들거리게 해놨는데 좌표값이 이상함 수정 요망
         offset = FEED_RANGE * (self.tween(self.step / FEED_RANGE) - 0.5)
-        self.rect.y = (self.pos.y*TILESIZE) + offset * self.dir
+        self.rect.y = (self.pos.y) + offset * self.dir
         self.step += FEED_SPEED
         if self.step > FEED_RANGE:
             self.step = 0
@@ -619,6 +589,7 @@ class Explode(pg.sprite.Sprite):
         self.rect.center = pos
         self.spawn_time = pg.time.get_ticks()
         self.hitbox = self.rect
+
     def load_images(self):
         self.image_list = self.game.explode_img
         self.image = self.image_list[0]
@@ -669,8 +640,8 @@ class Obstacle(pg.sprite.Sprite):
         self.rect = pg.Rect(x, y, w, h)
         self.x = x
         self.y = y
-        self.rect.x = self.x
-        self.rect.y = self.y   
+        self.rect.x = x
+        self.rect.y = y  
 
 class Ground(pg.sprite.Sprite):
     def __init__(self, game, x, y, image):
@@ -683,30 +654,79 @@ class Ground(pg.sprite.Sprite):
         self.rect.x = self.pos.x*TILESIZE
         self.rect.y = self.pos.y*TILESIZE
 
-
-
-class Boss(pg.sprite.Sprite):
-    def __init__(self, game, x, y, color):        
-        self.groups = game.all_sprites, game.boss #boss : 객체
+class Boss_bullet(Bullet):
+    def __init__(self, game, pos, dir):
+        self.groups = game.all_sprites, game.boss_bullet
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        self.image = pg.Surface((TILESIZE*3,TILESIZE*3), pg.SRCALPHA)
-        self.image.fill(color)
+        self.load_images()
+        self.rect = self.image.get_rect()
+        self.hitbox = self.rect
+        self.pos = vec(pos)
+        self.start_pos = vec(self.pos)
+        self.rect.center = pos
+        self.vel = dir*BOSS_ATTACK_SPEED
+        self.spawn_time = pg.time.get_ticks()
+        self.last_update = 0
+        self.current_frame = 0
+        self.moving_frame = self.game.boss_bullet_img
+
+    def load_images(self):
+        self.image = self.game.boss_bullet_img[0]
+
+    def animate(self):
+        now = pg.time.get_ticks()
+        if now - self.last_update > FPS:
+            self.current_frame = (self.current_frame + 1) % len(self.moving_frame)
+            if self.vel.x > 0: #바뀌는 current_frame 값이 이미지의 프레임을 순회.
+                    self.image = pg.transform.flip(self.moving_frame[self.current_frame],True,False)
+            else:
+                self.image = self.moving_frame[self.current_frame]
+            self.last_update = now
+
+    def update(self):
+        self.animate()
+        self.pos += self.game.boss.amount
+        self.pos += self.vel*self.game.dt
+        
+        self.rect.center = self.pos
+        if self.game.boss.pos.x < WIDTH and self.game.boss.pos.y < HEIGHT:
+            pass
+        else:
+            self.start_pos -= vec(self.game.boss.pos.x, -self.game.boss.pos.y)
+        if pg.time.get_ticks() - self.spawn_time > BOSS_ATTACK_RATE:
+            self.kill()
+            self.game.boss_spawn =False
+        
+class Boss(pg.sprite.Sprite):
+    def __init__(self, game, x, y):        
+        self.groups = game.all_sprites #boss : 객체
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.image = pg.Surface((1,1), pg.SRCALPHA)
         self.origin_image = self.image
         self.rect = self.image.get_rect()
-        self.hitbox = ENEMY_HIT_BOX.copy()
+        self.hitbox = BOSS_HITBOX.copy()
         self.hitbox.center = self.rect.center
-        self.image.fill(BLACK)
-        self.pos = vec(x, y) * TILESIZE
+        self.pos = vec(x, y)
         self.vel = vec(0, 0)
         self.acc = vec(0, 0)
         self.rect.center = self.pos
-
-        self.speed = 0
+        self.last_attack = -5000
+        self.attack_rate = BOSS_ATTACK_RATE
+        self.speed = BOSS_SPEED
+        self.amount = vec(0,0)
         self.rot = 0
         self.health = BOSS_HEALTH #setting 98번째줄 보스체력, main82번째줄 보스 그룹에 추가, main106번째줄 보스 B로추가, 맵에B타일하나추가
         self.target = game.player #sprite700번째줄정도에 보스 : 보스내용 / Player클래스에 collide with boss(265번째줄~), main 179번째줄bullet hit boss
-#main 241번째줄 보스 체력, sprite 714번째줄 보스체력
+    #main 241번째줄 보스 체력, sprite 714번째줄 보스체력
+        self.right = False #추후 left변경 가능
+        self.walking = 0
+        self.standing = False
+        self.target_dist = 0
+        self.moving_frame = game.boss_img
+        self.current_frame = 0
+        self.last_update = 0
 
     def draw_health(self):
         col = RED
@@ -717,20 +737,32 @@ class Boss(pg.sprite.Sprite):
             pg.draw.rect(self.image, col, self.health_bar)
             pg.draw.rect(self.image, WHITE, self.outer_edge, 1)
 
+    def animate(self):
+            now = pg.time.get_ticks()
+            if now - self.last_update > FPS:
+                self.current_frame = (self.current_frame + 1) % len(self.moving_frame)
+                if self.vel.x > 0: #바뀌는 current_frame 값이 이미지의 프레임을 순회.
+                        self.image = pg.transform.flip(self.moving_frame[self.current_frame],True,False)
+                else:
+                    self.image = self.moving_frame[self.current_frame]
+                self.last_update = now
+
     def update(self):
-        #target_dist = self.target.pos - self.pos 
+        self.target_dist = self.target.pos - self.pos 
         #if target_dist.length_squared() < DETECT_RADIUS**2:
         #self.rect.x -= self.speedy 
-        #self.rot = target_dist.angle_to(vec(1, 0)) #target_dist == (self.game.player.pos - self.pos)
-        self.image = pg.transform.rotate(self.origin_image, self.rot)
-        #self.rect = self.image.get_rect()
-        #self.rect.center = self.pos
-        # self.acc = vec(1, 0).rotate(-self.rot)
-        # self.avoid_enemys()
-        # self.acc.scale_to_length(self.speed)
-        # self.acc += self.vel * ENEMY_FRICTION
-        # self.vel += self.acc * self.game.dt
-        # self.pos += self.vel * self.game.dt + 0.5 * self.acc * self.game.dt**2
+        self.rot = self.target_dist.angle_to(vec(1, 0)) #self.target_dist == (self.game.player.pos - self.pos)
+        self.image = pg.transform.rotate(self.origin_image, 0)
+        self.rect = self.image.get_rect()
+        self.rect.center = self.pos
+        self.acc = vec(1, 0).rotate(-self.rot)
+        #self.avoid_enemys()
+        self.acc.scale_to_length(self.speed)
+
+        self.acc += self.vel * ENEMY_FRICTION
+        self.vel += self.acc * self.game.dt
+        self.amount = self.vel * self.game.dt + 0.5 * self.acc * self.game.dt**2
+        self.pos += self.amount
         self.hitbox.centerx = self.pos.x
         collide_with_gameobject(self, self.game.walls, 'x')
         self.hitbox.centery = self.pos.y
@@ -738,47 +770,37 @@ class Boss(pg.sprite.Sprite):
         self.rect.center = self.hitbox.center
         #bullet이랑 enemy가 충돌시 둘 다 kill
         #ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ주석if밑으로 여기까지 한칸씩 tap해주면 enemy와 player가 일정 거리이상 벌어지면 추격Xㅡㅡㅡㅡ
+
+        now = pg.time.get_ticks()
+        if now - self.last_attack > self.attack_rate:
+            self.last_attack = now
+            if self.target_dist.x>0:
+                dir = vec(1,0)
+            else:
+                dir = vec(-1,0)
+            pos = self.pos
+            Boss_bullet(self.game, pos, dir)
+        if self.target_dist.x > 0:
+            self.right = True
+        else:
+            self.right = False
         if self.health <= 0:
             self.kill()
+            self.game.ending = True
 
-
-class button():
-    def __init__(self, x, y, width, height):
-        self.x = x
-        self.y = y
-        self.width = width
-        self.height = height
- 
-    def isOver(self, pos):
-        if pos[0] > self.x and pos[0] < self.x + self.width:
-            if pos[1] > self.y and pos[1] < self.y + self.height:
-                return True
-   
-
-class Trace(pg.sprite.Sprite):
-    def __init__(self, game, pos, angle, vel, weapon_name):
-        self.groups = game.all_sprites, game.trace
-        pg.sprite.Sprite.__init__(self, self.groups)
-        self.game = game
-        self.size = (1,1)
-        self.load_images()
-        self.rect = self.image.get_rect()
-        self.pos = vec(pos)
-        self.rect.center = pos
-        self.spawn_time = pg.time.get_ticks()
-        self.vel = vel
-        self.weapon_name = weapon_name
-
-    def load_images(self):
-        self.image = pg.Surface(self.size, pg.SRCALPHA)
-        self.image.fill(RED)
-        pass
-
-    def update(self):
-        self.pos += self.vel*self.game.dt
-        self.rect.center = self.pos
-        if pg.sprite.spritecollideany(self, self.game.walls):
-            self.kill()
-        if pg.time.get_ticks() - self.spawn_time > WEAPONS[self.weapon_name]['bullet_lifetime']:
-            self.kill()
-
+    def draw_body(self):
+        
+        self.body = []
+        for i in range(len(self.game.boss_img)):
+            for j in range(5):
+                self.body.append(self.game.boss_img[i])
+        if self.right:
+            for i in range(len(self.body)):
+                self.body[i] = pg.transform.flip(self.body[i], True, False)
+        if self.walking + 1 >= FPS:
+            self.walking = 0
+        if self.standing:
+            self.game.screen.blit(self.body[self.walking//FPS], (self.game.camera.camera.x + self.hitbox.x-32, self.game.camera.camera.y + self.hitbox.y -64))
+        else:
+            self.game.screen.blit(self.body[self.walking%len(self.body)], (self.game.camera.camera.x + self.hitbox.x-32, self.game.camera.camera.y + self.hitbox.y -64))
+            self.walking += 1
