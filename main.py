@@ -37,7 +37,6 @@ class Game:
                 #메뉴판 만들고
                 #button -> game start 누르면 self.game_running()
 
-
     def run(self):
         #pg.mixer.music.play(loops = -1)   #bg play. loops == false -> play gain , Ture -> once
         
@@ -54,7 +53,6 @@ class Game:
             #events for keyboard and mouse input / 이벤트를 처리하기 위함. 항상 pygame은 event 이벤트발생(사용자의 입력) -> update(입력에 따른 변화를 업데이트해줌) -> draw 이후 그림을 그림
             self.draw()
     
-
     def new(self):
         #when start a new game
         self.score = 0
@@ -79,6 +77,7 @@ class Game:
         self.boss_bullet = pg.sprite.Group()
         
         self.spawned_enemy = 0
+        
         self.feed_pos = []
         self.enemy_pos = []
         self.paused = False
@@ -199,19 +198,16 @@ class Game:
                 chosen_item[1] = True
 
             self.item_spawned = self.now
+            
         #update에서 Enemy 생성
         if self.now - self.enemy_spawned > ENEMY_SPAWN_TIME:
             if self.boss_spawn:
-                i=0
                 for e_position in self.enemy_pos:
-
                     #3초마다 해당 장소에서 생성. 추후 enemy_pos를 list로 쓸경우 for문 안에넣고 index들로 접근해서 생성하면 될듯.
                     if self.spawned_enemy < MAX_ENEMY:
-                        print(i+1,'spawn!')
                         Enemy(self, e_position[0], e_position[1])
                         self.enemy_spawned = self.now
                         self.spawned_enemy += 1
-                        i+=1
         self.second = ((pg.time.get_ticks() - self.start_tick)/1000)
 
         #update에서 Boss 생성
@@ -476,8 +472,10 @@ class Game:
             if isinstance(sprite, Enemy):
                 sprite.draw_health()
                 sprite.draw_body()
-            if self.draw_debug:
-                pg.draw.rect(self.screen, CYAN, self.camera.apply_rect(sprite.hitbox),1)
+                if self.draw_debug:
+                    pg.draw.rect(self.screen, CYAN, self.camera.apply_rect(sprite.hitbox),1)
+                    pg.draw.rect(self.screen, RED, self.camera.apply_rect(sprite.rect),1)            
+
 
             if isinstance(sprite, Player):
                 sprite.draw_body()
@@ -523,6 +521,7 @@ class Game:
         self.explode_img = []
         self.zombie1_img = []
         self.boss_img = []
+        self.boss_bullet_img = []
         #self.wood_pillar_img = []
         self.map = TiledMap(path.join(map_folder,'map.tmx'))
         self.map_img = self.map.make_map()
@@ -547,6 +546,8 @@ class Game:
             self.zombie1_img.append(pg.transform.scale(pg.image.load(path.join(enemy_folder, ZOMBIE1_IMG[i])).convert_alpha(), (35,56)))
         for i in range(6):
             self.boss_img.append(pg.transform.scale(pg.image.load(path.join(enemy_folder, BOSS_IMG[i])).convert_alpha(),(128, 128)))
+        self.boss_bullet_img.append((pg.image.load(path.join(enemy_folder, BOSS_BULLET[0])).convert_alpha()))
+        self.boss_bullet_img.append((pg.image.load(path.join(enemy_folder, BOSS_BULLET[1])).convert_alpha()))
         self.brankovic_font = os.path.join(font_folder, 'brankovic.ttf')
         self.poke_font = path.join(font_folder, 'PokemonGb-RAeo.ttf')
         self.start_screen = pg.transform.scale(pg.image.load(path.join(img_folder, START_SCREEN)).convert_alpha(),(WIDTH,HEIGHT))
@@ -666,4 +667,3 @@ while g.start:
         g.new()
         g.show_over_screen()
 pg.quit()
-

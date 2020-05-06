@@ -367,10 +367,11 @@ class Grenade(pg.sprite.Sprite):
     def update(self):
         self.vel = self.dir * self.speed
         self.pos += self.vel * self.game.dt
-        if self.vel.length() > 0 :
+    
+        if self.vel.length() >0 :
             self.speed -= 10
         elif self.vel.length() < 0 :
-            self.vel = 0
+            self.speed = 0
         self.rect.centerx = self.pos.x
         self.reflect_with_walls('x')
         self.rect.centery = self.pos.y
@@ -423,7 +424,7 @@ class Enemy(pg.sprite.Sprite):
         self.groups = game.all_sprites, game.enemys
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        self.image = pg.Surface((TILESIZE,TILESIZE), pg.SRCALPHA)
+        self.image = pg.Surface((TILESIZE,TILESIZE*2+10), pg.SRCALPHA)
         self.origin_image = self.image
         self.rect = self.image.get_rect()
         self.hitbox = ENEMY_HIT_BOX.copy()
@@ -456,7 +457,7 @@ class Enemy(pg.sprite.Sprite):
         target_dist = self.target.pos - self.pos 
         #self.rect.x -= self.speedy 
         self.rot = target_dist.angle_to(vec(1, 0)) #target_dist == (self.game.player.pos - self.pos)
-        self.image = pg.transform.rotate(self.origin_image, -self.rot) # check later! 꼮 반드시
+        self.image = pg.transform.rotate(self.origin_image, 0) # check later! 꼮 반드시
         self.rect = self.image.get_rect()
         
         self.rect.center = self.pos
@@ -485,8 +486,7 @@ class Enemy(pg.sprite.Sprite):
         if self.health <= 0:
             self.game.player.money += 100
             self.game.player.kill_enemy += 1
-            self.game.spawned_enemy -= self.game.player.kill_enemy
-
+            self.game.spawned_enemy -= 1
             self.kill()
             
         if target_dist.x > 0:
@@ -662,14 +662,28 @@ class Boss_bullet(Bullet):
         self.rect.center = pos
         self.vel = dir*BOSS_ATTACK_SPEED
         self.spawn_time = pg.time.get_ticks()
-        
+        self.last_update = 0
+        self.current_frame = 0
+        self.moving_frame = self.game.boss_bullet_img
+
     def load_images(self):
-        self.image = pg.Surface((15,15))
-        self.image.fill(ORANGE)
+        self.image = self.game.boss_bullet_img[0]
+
+    def animate(self):
+        now = pg.time.get_ticks()
+        if now - self.last_update > FPS:
+            self.current_frame = (self.current_frame + 1) % len(self.moving_frame)
+            if self.vel.x > 0: #바뀌는 current_frame 값이 이미지의 프레임을 순회.
+                    self.image = pg.transform.flip(self.moving_frame[self.current_frame],True,False)
+            else:
+                self.image = self.moving_frame[self.current_frame]
+            self.last_update = now
 
     def update(self):
+        self.animate()
         self.pos += self.game.boss.amount
         self.pos += self.vel*self.game.dt
+        
         self.rect.center = self.pos
         if self.game.boss.pos.x < WIDTH and self.game.boss.pos.y < HEIGHT:
             pass
@@ -684,7 +698,7 @@ class Boss(pg.sprite.Sprite):
         self.groups = game.all_sprites #boss : 객체
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        self.image = pg.Surface((TILESIZE*3,TILESIZE*3), pg.SRCALPHA)
+        self.image = pg.Surface((1,1), pg.SRCALPHA)
         self.origin_image = self.image
         self.rect = self.image.get_rect()
         self.hitbox = BOSS_HITBOX.copy()
@@ -705,6 +719,9 @@ class Boss(pg.sprite.Sprite):
         self.walking = 0
         self.standing = False
         self.target_dist = 0
+        self.moving_frame = game.boss_img
+        self.current_frame = 0
+        self.last_update = 0
 
     def draw_health(self):
         col = RED
@@ -714,6 +731,16 @@ class Boss(pg.sprite.Sprite):
         if self.health < BOSS_HEALTH:
             pg.draw.rect(self.image, col, self.health_bar)
             pg.draw.rect(self.image, WHITE, self.outer_edge, 1)
+
+    def animate(self):
+            now = pg.time.get_ticks()
+            if now - self.last_update > FPS:
+                self.current_frame = (self.current_frame + 1) % len(self.moving_frame)
+                if self.vel.x > 0: #바뀌는 current_frame 값이 이미지의 프레임을 순회.
+                        self.image = pg.transform.flip(self.moving_frame[self.current_frame],True,False)
+                else:
+                    self.image = self.moving_frame[self.current_frame]
+                self.last_update = now
 
     def update(self):
         self.target_dist = self.target.pos - self.pos 
@@ -755,7 +782,9 @@ class Boss(pg.sprite.Sprite):
         if self.health <= 0:
             self.kill()
             self.game.ending = True
+
     def draw_body(self):
+        
         self.body = []
         for i in range(len(self.game.boss_img)):
             for j in range(5):

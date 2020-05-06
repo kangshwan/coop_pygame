@@ -148,16 +148,17 @@ def draw_bullet_ratio(surf, x, y, gunselect, bullet_left):
         pct = 1
     else:
         pct = bullet_left/MAX_BULLET[gunselect]
-    if pct >= 1:
-        bullet_img = pg.transform.scale(pg.image.load(path.join(img_folder, BULLET_GAUGE[0])),(30, int(HEIGHT/4)))
-    elif pct >= 0.8:
-        bullet_img = pg.transform.scale(pg.image.load(path.join(img_folder, BULLET_GAUGE[1])),(30, int((HEIGHT/4)*0.8)))
-    elif pct >= 0.6:
-        bullet_img = pg.transform.scale(pg.image.load(path.join(img_folder, BULLET_GAUGE[2])),(30, int((HEIGHT/4)*0.6)))
-    elif pct >= 0.4:
-        bullet_img = pg.transform.scale(pg.image.load(path.join(img_folder, BULLET_GAUGE[3])),(30, int((HEIGHT/4)*0.4)))
-    elif pct > 0:
-        bullet_img = pg.transform.scale(pg.image.load(path.join(img_folder, BULLET_GAUGE[4])),(30, int((HEIGHT/4)*0.2)))
+    if gunselect == 0:
+        pct = 2
+    
+    bullet_img = pg.transform.scale(pg.image.load(path.join(img_folder, BULLET_GAUGE[5])),(1, 1))
+
+    #if 0.6 <= pct <0.8:
+    #    bullet_img = pg.transform.scale(pg.image.load(path.join(img_folder, BULLET_GAUGE[2])),(30, int((HEIGHT/8)*0.6)))
+    if 0.5 > pct >= 0.3:
+        bullet_img = pg.transform.scale(pg.image.load(path.join(img_folder, BULLET_GAUGE[3])),(30, int((HEIGHT/8)*0.4)))
+    elif 0.3> pct > 0:
+        bullet_img = pg.transform.scale(pg.image.load(path.join(img_folder, BULLET_GAUGE[4])),(30, int((HEIGHT/8)*0.2)))
     else:
         bullet_img = pg.transform.scale(pg.image.load(path.join(img_folder, BULLET_GAUGE[5])),(1, 1))
     
