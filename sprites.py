@@ -152,7 +152,6 @@ class Player(pg.sprite.Sprite):
         if key[2]:
             #마우스 우클릭시
             if self.grenade[0]:
-                
                 now = pg.time.get_ticks()
                 if now - self.last_grenade > GRENADE_RATE:
                     self.last_grenade = now

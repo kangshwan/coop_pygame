@@ -116,7 +116,7 @@ BOSS_BULLET_DAMAGE = 30
 BOSS_KNOCKBACK = 30
 
 # item properties
-SPEEDUP_RATE = 7000
+SPEEDUP_RATE = 10000
 ITEM_KIND = [0,1,2,3,4]#, 1, 1,  2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 5]  
 AMOR_HEALTH = 25
 FEED_RANGE = 10
@@ -155,7 +155,8 @@ END_SCREEN = 'ending.png'
 ZOMBIE1_IMG = ['zombie1_1.png', 'zombie1_2.png', 'zombie1_3.png', 'zombie1_4.png', 'zombie1_5.png', 'zombie1_6.png', 'zombie1_7.png']
 BOSS_IMG = ['boss_1.png','boss_2.png','boss_3.png','boss_4.png','boss_5.png','boss_6.png']
 ITEM_IMG = 'item_box.png'
-BULLET_GAUGE = ['bullet_gauge_1.png','bullet_gauge_2.png','bullet_gauge_3.png','bullet_gauge_4.png','bullet_gauge_5.png', 'bullet_gauge_6.png']
+BULLET_GAUGE = ['bullet_gauge_1.png','bullet_gauge_2.png','bullet_gauge_3.png','bullet_gauge_4.png','bullet_gauge_5.png']
+FLAME_GAUGE = ['flame_gauge_1.png','flame_gauge_2.png','flame_gauge_3.png','flame_gauge_4.png','flame_gauge_5.png']
 BOSS_BULLET = ['BOSS_BULLET_1.png', 'BOSS_BULLET_2.png']
 #FEED shake up and down 
 

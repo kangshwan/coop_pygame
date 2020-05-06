@@ -18,6 +18,8 @@ class Button():
                 return True
 
 def draw_player_health(surf, x, y, health, amor, max_health):
+    BAR_LENGTH = 100
+
     # 현재 체력과 방어력, 그리고 최대체력의 한계치를 받아옴.
     pct = (health+amor)/max_health
     # 최대치에대한 체력과 방어력의 비율
@@ -26,7 +28,7 @@ def draw_player_health(surf, x, y, health, amor, max_health):
     try:
         amor_pct = amor/(health+amor)
         # 내 체력에서 방어력 비율
-        health_pct = health/PLAYER_HEALTH
+        health_pct = health/(health+amor)
         # 실제 체력에서 체력 비율
     except ZeroDivisionError:
         amor_pct = 0
@@ -37,12 +39,18 @@ def draw_player_health(surf, x, y, health, amor, max_health):
     else:
         health_fill = (pct-amor_pct) * BAR_LENGTH
     amor_fill = pct * BAR_LENGTH
+    if health+amor < PLAYER_HEALTH:
+        amor_pct = amor/PLAYER_HEALTH
+        health_pct = health/PLAYER_HEALTH
+        amor_fill = (amor_pct+health_pct)*BAR_LENGTH
+        health_fill = health_pct*BAR_LENGTH
+
+    
     # amor가 있다면 체력보다 BAR_LENGTH가 앞에있어서, 가장긺.
     outline_rect = pg.Rect(x, y, BAR_LENGTH, BAR_HEIGHT)
     #외곽 테두리
     health_fill_rect = pg.Rect(x, y, health_fill, BAR_HEIGHT)
     amor_fill_rect = pg.Rect(x, y, amor_fill, BAR_HEIGHT)
-
     amor_col = SILVER
 
     if health_pct > 0.8:
@@ -151,16 +159,30 @@ def draw_bullet_ratio(surf, x, y, gunselect, bullet_left):
     if gunselect == 0:
         pct = 2
     
-    bullet_img = pg.transform.scale(pg.image.load(path.join(img_folder, BULLET_GAUGE[5])),(1, 1))
+    bullet_img = pg.transform.scale(pg.image.load(path.join(img_folder, BULLET_GAUGE[4])),(1, 1))
 
-    #if 0.6 <= pct <0.8:
-    #    bullet_img = pg.transform.scale(pg.image.load(path.join(img_folder, BULLET_GAUGE[2])),(30, int((HEIGHT/8)*0.6)))
-    if 0.5 > pct >= 0.3:
-        bullet_img = pg.transform.scale(pg.image.load(path.join(img_folder, BULLET_GAUGE[3])),(30, int((HEIGHT/8)*0.4)))
-    elif 0.3> pct > 0:
-        bullet_img = pg.transform.scale(pg.image.load(path.join(img_folder, BULLET_GAUGE[4])),(30, int((HEIGHT/8)*0.2)))
+    if gunselect == 3:
+        if 0.5 > pct >= 0.4:
+            bullet_img = pg.transform.scale(pg.image.load(path.join(img_folder, FLAME_GAUGE[0])),(18, 30*4))
+        elif 0.4 > pct >= 0.3:
+            bullet_img = pg.transform.scale(pg.image.load(path.join(img_folder, FLAME_GAUGE[1])),(18, 30*3))
+        elif 0.3> pct >= 0.2:
+            bullet_img = pg.transform.scale(pg.image.load(path.join(img_folder, FLAME_GAUGE[2])),(18, 30*2))
+        elif 0.2> pct >= 0.1:
+            bullet_img = pg.transform.scale(pg.image.load(path.join(img_folder, FLAME_GAUGE[3])),(18, 30)*1)    
+        else:
+            bullet_img = pg.transform.scale(pg.image.load(path.join(img_folder, FLAME_GAUGE[4])),(1, 1))
     else:
-        bullet_img = pg.transform.scale(pg.image.load(path.join(img_folder, BULLET_GAUGE[5])),(1, 1))
+        if 0.5 > pct >= 0.4:
+            bullet_img = pg.transform.scale(pg.image.load(path.join(img_folder, BULLET_GAUGE[0])),(30, int((HEIGHT/8)*0.4)))
+        elif 0.4 > pct >= 0.3:
+            bullet_img = pg.transform.scale(pg.image.load(path.join(img_folder, BULLET_GAUGE[1])),(30, int((HEIGHT/8)*0.3)))
+        elif 0.3> pct >= 0.2:
+            bullet_img = pg.transform.scale(pg.image.load(path.join(img_folder, BULLET_GAUGE[2])),(30, int((HEIGHT/8)*0.2)))
+        elif 0.2> pct >= 0.1:
+            bullet_img = pg.transform.scale(pg.image.load(path.join(img_folder, BULLET_GAUGE[3])),(30, int((HEIGHT/8)*0.1)))    
+        else:
+            bullet_img = pg.transform.scale(pg.image.load(path.join(img_folder, BULLET_GAUGE[4])),(1, 1))
     
     surf.blit(bullet_img, (x,y))
     

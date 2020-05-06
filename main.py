@@ -200,9 +200,9 @@ class Game:
                 if chosen_item[1] == False:
                     Feed(self, chosen_item[0][0], chosen_item[0][1])
                     chosen_item[1] = True
-    
+
                 self.item_spawned = self.now
-                
+
         #update에서 Enemy 생성
         if not EXPLAIN_GUN:
             if self.now - self.enemy_spawned > ENEMY_SPAWN_TIME:
@@ -289,16 +289,15 @@ class Game:
                 #heal
                 
                 if self.player.health + 50 > PLAYER_HEALTH :
-                    
                     self.player.health = PLAYER_HEALTH
-                    self.player.max_health = self.player.health + self.player.amor
+                    if self.player.health + self.player.amor > PLAYER_HEALTH + AMOR_HEALTH:
+                        self.player.max_health = PLAYER_HEALTH + AMOR_HEALTH
                 else:
                     self.player.health += 50
             
             if hit.item_no == 4:
                 #get amor
                 self.player.amor = AMOR_HEALTH # 체력이 아니라 armor (일정 시간이 지나면 사라짐) / 초록색이 아니라 체력과 따로 흰색으로 표시되도록
-                self.player.max_health = PLAYER_HEALTH + AMOR_HEALTH
                 self.player.max_health = self.player.health + self.player.amor
                 if self.player.max_health < PLAYER_HEALTH:
                     self.player.max_health = PLAYER_HEALTH
