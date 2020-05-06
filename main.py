@@ -21,7 +21,8 @@ class Game:
         pg.init()
         pg.mixer.init() # for use of music
         pg.mixer.music.load('Sound/sound1.mp3')
-        pg.mixer.music.play()
+        pg.mixer.music.play(-1)
+    
         self.screen = pg.display.set_mode(WINDOW_SIZE)
         # make a screen for the game / 게임을 하기위한 screen 생성(창 크기 설정)
         pg.display.set_caption(TITLE)
@@ -429,37 +430,40 @@ class Game:
                         else:
                             self.player.gun_status[3][1] = 1000   
             if event.type == pg.MOUSEBUTTONDOWN:
-                pos = pg.mouse.get_pos()
-                if gun_button[1].isOver(pos):
-                    if self.player.money >= WEAPON_PRICE[1]:
-                        self.player.money -= WEAPON_PRICE[1]
-                        if self.player.gun_status[1][0] != True:
-                            self.player.gun_status[1][0] = not self.player.gun_status[1][0]
-                            self.player.gun_status[1][1] = 120
-                        else:
-                            self.player.gun_status[1][1] += 120
+                #screen button 기믹
+                pass
+                #pos = pg.mouse.get_pos()
+                #if gun_button[1].isOver(pos):
+                    #if self.player.money >= WEAPON_PRICE[1]:
+                        #self.player.money -= WEAPON_PRICE[1]
+                        #if self.player.gun_status[1][0] != True:
+                            #self.player.gun_status[1][0] = not self.player.gun_status[1][0]
+                            #self.player.gun_status[1][1] = 120
+                        #else:
+                            #self.player.gun_status[1][1] += 120
                         
                         #buy
                     #buy shotgun
-                if gun_button[2].isOver(pos):
-                    if self.player.money >= WEAPON_PRICE[2]:
-                        self.player.money -= WEAPON_PRICE[2]
-                        if self.player.gun_status[2][0] != True:
-                            self.player.gun_status[2][0] = not self.player.gun_status[2][0]
-                            self.player.gun_status[2][1] = 10
-                        else:
-                            self.player.gun_status[2][1] = 10
+                #if gun_button[2].isOver(pos):
+                    #if self.player.money >= WEAPON_PRICE[2]:
+                        #self.player.money -= WEAPON_PRICE[2]
+                        #if self.player.gun_status[2][0] != True:
+                            #self.player.gun_status[2][0] = not self.player.gun_status[2][0]
+                            #self.player.gun_status[2][1] = 10
+                        #else:
+                            #self.player.gun_status[2][1] = 10
                     #buy sniper
-                if gun_button[3].isOver(pos):
-                    if self.player.money >= WEAPON_PRICE[3]:  
-                        self.player.money -= WEAPON_PRICE[3]
-                        if self.player.gun_status[3][0] != True:
-                            self.player.gun_status[3][0] = not self.player.gun_status[3][0]
-                            self.player.gun_status[3][1] = 1000
-                        else:
-                            self.player.gun_status[3][1] = 1000
+                #if gun_button[3].isOver(pos):
+                    #if self.player.money >= WEAPON_PRICE[3]:  
+                        #self.player.money -= WEAPON_PRICE[3]
+                        #if self.player.gun_status[3][0] != True:
+                            #self.player.gun_status[3][0] = not self.player.gun_status[3][0]
+                            #self.player.gun_status[3][1] = 1000
+                        #else:
+                            #self.player.gun_status[3][1] = 1000
                     #buy fire  
-                pass  
+                #pass  
+
             
     def draw(self):
         # game loop - draw
@@ -491,7 +495,9 @@ class Game:
                 for wall in self.walls:
                     pg.draw.rect(self.screen, CYAN, self.camera.apply_rect(wall.rect),1)
             if self.paused_text:
-                        self.draw_text("PAUSE", 70, RED, WIDTH - 470, HEIGHT - 360)
+                self.draw_text("PAUSE", 70, BLACK, WIDTH - 466, HEIGHT - 356)
+                self.draw_text("PAUSE", 70, RED, WIDTH - 470, HEIGHT - 360)
+                       
                        
 
         #pg.draw.rect(self.screen, WHITE, self.player.hitbox,2)

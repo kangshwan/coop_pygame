@@ -160,6 +160,8 @@ BOSS_BULLET = ['BOSS_BULLET_1.png', 'BOSS_BULLET_2.png']
 #enemy and player distance
 DETECT_RADIUS = 400
 
+
 ITEM_POPUP = 10000
 ITEM_EFFECT = {0: 'SPEED UP!', 1:'PLUS GRENADE!', 2:'DMG UP!', 3:'HEAL UP!', 4:'AMOR READY.',5:''}
 MAX_ENEMY = 20
+

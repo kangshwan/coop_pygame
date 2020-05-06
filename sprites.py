@@ -135,13 +135,35 @@ class Player(pg.sprite.Sprite):
         # add acceleration when press w,a,s,d / w,a,s,d를 눌렀을때 가속을 더해줌.
         
         key = pg.mouse.get_pressed()
+        
+               
         if key[0]:
             if self.gun_status[self.gun_select][0]:
                 self.shoot(self.gun_select)
+                self.sounds = os.path.join('Sound')
+                if self.gun_select == 0:
+                    self.gun = pg.mixer.Sound(os.path.join(self.sounds, '권총.wav'))
+                    self.gun.set_volume(0.2)
+                    pg.mixer.Sound.play(self.gun)
+                if self.gun_select == 1:
+                    self.shotgun = pg.mixer.Sound(os.path.join(self.sounds, '샷건.wav'))
+                    self.shotgun.set_volume(0.2)
+                    pg.mixer.Sound.play(self.shotgun)
+                if self.gun_select == 2:
+                    self.sniper = pg.mixer.Sound(os.path.join(self.sounds, '스나이퍼.wav'))
+                    self.sniper.set_volume(0.2)
+                    pg.mixer.Sound.play(self.sniper)
+                if self.gun_select == 3:
+                    self.fire = pg.mixer.Sound(os.path.join(self.sounds, '화방.wav'))
+                    self.fire.set_volume(1)
+                    pg.mixer.Sound.play(self.fire)
 
         if key[2]:
             #마우스 우클릭시
             if self.grenade[0]:
+                self.explosion = pg.mixer.Sound(os.path.join(self.sounds, '수류탄.wav'))
+                self.gun.set_volume(0.5)
+                pg.mixer.Sound.play(self.explosion)
                 now = pg.time.get_ticks()
                 if now - self.last_grenade > GRENADE_RATE:
                     self.last_grenade = now
