@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.3.4" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="32" tileheight="32" infinite="0" nextlayerid="9" nextobjectid="198">
+<map version="1.2" tiledversion="1.3.4" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="32" tileheight="32" infinite="0" nextlayerid="9" nextobjectid="201">
  <tileset firstgid="1" source="rpgmaker_tileset.tsx"/>
  <tileset firstgid="2017" source="bus_tile_set.tsx"/>
  <tileset firstgid="2273" name="soda_machine_by_nicnubill_dcbilj5" tilewidth="32" tileheight="32" tilecount="36" columns="6">
@@ -371,5 +371,8 @@
   <object id="195" name="item" x="640" y="832" width="32" height="32"/>
   <object id="196" name="item" x="832" y="832" width="32" height="32"/>
   <object id="197" name="item" x="896" y="832" width="32" height="32"/>
+  <object id="198" name="enemy_spawn" x="960" y="640" width="32" height="32"/>
+  <object id="199" name="enemy_spawn" x="1024" y="640" width="32" height="32"/>
+  <object id="200" name="enemy_spawn" x="1080" y="640" width="32" height="32"/>
  </objectgroup>
 </map>

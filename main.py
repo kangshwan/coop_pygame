@@ -160,7 +160,8 @@ class Game:
                 self.boss_pos = (tile_object.x, tile_object.y)
             if tile_object.name == 'item':
                 self.feed_pos.append([(tile_object.x,tile_object.y),False])
-                #Feed(self, tile_object.x, tile_object.y)
+                if EXPLAIN_ITEM:
+                    Feed(self, tile_object.x, tile_object.y)
 
         self.camera = Camera(self.map.width, self.map.height)
         self.draw_debug = False
@@ -187,20 +188,21 @@ class Game:
         # game loop update
         self.all_sprites.update()
         self.camera.update(self.player)
-        if self.now - self.item_spawned > ITEM_SPAWN_TIME:    
-            #test = random.randint(0,len(self.feed_pos)-1)
-            #if self.feed_pos[test][1] == True:
-            #    Feed(self, self.feed_pos[test][0][0],self.feed_pos[test][0][1])
-            try:
-                chosen_item = random.choice(self.feed_pos)
-            except IndexError:
-                chosen_item = [[0,0],True]
-            if chosen_item[1] == False:
-                Feed(self, chosen_item[0][0], chosen_item[0][1])
-                chosen_item[1] = True
-
-            self.item_spawned = self.now
-            
+        if not EXPLAIN_ITEM:
+            if self.now - self.item_spawned > ITEM_SPAWN_TIME:    
+                #test = random.randint(0,len(self.feed_pos)-1)
+                #if self.feed_pos[test][1] == True:
+                #    Feed(self, self.feed_pos[test][0][0],self.feed_pos[test][0][1])
+                try:
+                    chosen_item = random.choice(self.feed_pos)
+                except IndexError:
+                    chosen_item = [[0,0],True]
+                if chosen_item[1] == False:
+                    Feed(self, chosen_item[0][0], chosen_item[0][1])
+                    chosen_item[1] = True
+    
+                self.item_spawned = self.now
+                
         #update에서 Enemy 생성
         if not EXPLAIN_GUN:
             if self.now - self.enemy_spawned > ENEMY_SPAWN_TIME:

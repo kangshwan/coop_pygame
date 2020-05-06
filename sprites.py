@@ -551,7 +551,6 @@ class Enemy(pg.sprite.Sprite):
 #아이템 상자 생성
 class Feed(pg.sprite.Sprite):
     def __init__(self, game, x, y):
-        
         self.groups = game.all_sprites, game.feeds
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
@@ -562,7 +561,11 @@ class Feed(pg.sprite.Sprite):
         self.rect.y = self.pos.y 
         self.hitbox = self.rect
         # 추후 random을 통해 바꿔야함.
-        self.item_no = random.choice(ITEM_KIND)
+        if EXPLAIN_ITEM:
+            self.item_no = game.player.item_no
+            game.player.item_no+=1
+        else:
+            self.item_no = random.choice(ITEM_KIND)
         self.tween = tween.easeInOutSine
         self.step = 0
         self.dir = 1
