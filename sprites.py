@@ -64,8 +64,8 @@ class Player(pg.sprite.Sprite):
         self.vel = vec(0,0)
         self.acc = vec(0,0)
         self.rot = 0
-        self.last_shot = -3000
-        self.gun_status = [[True,0], [False, 0],[False, 0],[False, 0]]
+        self.last_shot = 0
+        self.gun_status = [[True,0], [True, 110],[True, 100],[False, 0]]
         # 0 is pistol, 1 is shotgun, 2 is sniper 3 is flamethrower
         self.last_grenade = 0
         #0 is pistol 1 is shotgun
@@ -87,6 +87,11 @@ class Player(pg.sprite.Sprite):
         self.standing = True
         self.walking = 0
         self.left = False
+        self.sounds = os.path.join('Sound')
+        self.sound_dict = {'pistol':pg.mixer.Sound(os.path.join(self.sounds, '권총.wav')),
+                           'shotgun': pg.mixer.Sound(os.path.join(self.sounds, '샷건.wav')),
+                           'sniper':pg.mixer.Sound(os.path.join(self.sounds, '스나이퍼.wav')),
+                           'flamethrower':pg.mixer.Sound(os.path.join(self.sounds, '화방.wav'))}
 
     def load_images(self):
         self.image = self.weapon_img[self.gun_select]
@@ -139,31 +144,35 @@ class Player(pg.sprite.Sprite):
                
         if key[0]:
             if self.gun_status[self.gun_select][0]:
+                self.now = pg.time.get_ticks()
                 self.shoot(self.gun_select)
-                self.sounds = os.path.join('Sound')
-                if self.gun_select == 0:
-                    self.gun = pg.mixer.Sound(os.path.join(self.sounds, '권총.wav'))
-                    self.gun.set_volume(0.2)
-                    pg.mixer.Sound.play(self.gun)
-                if self.gun_select == 1:
-                    self.shotgun = pg.mixer.Sound(os.path.join(self.sounds, '샷건.wav'))
-                    self.shotgun.set_volume(0.2)
-                    pg.mixer.Sound.play(self.shotgun)
-                if self.gun_select == 2:
-                    self.sniper = pg.mixer.Sound(os.path.join(self.sounds, '스나이퍼.wav'))
-                    self.sniper.set_volume(0.2)
-                    pg.mixer.Sound.play(self.sniper)
-                if self.gun_select == 3:
-                    self.fire = pg.mixer.Sound(os.path.join(self.sounds, '화방.wav'))
-                    self.fire.set_volume(1)
-                    pg.mixer.Sound.play(self.fire)
-
+                #self.sounds = os.path.join('Sound')
+                #print(self.now, self.last_shot, WEAPONS[self.weapon]['rate'])
+                #if self.now - self.last_shot < WEAPONS[self.weapon]['rate']:
+                #    print('in')
+                #    if self.gun_select == 0:
+                #        self.gun = pg.mixer.Sound(os.path.join(self.sounds, '권총.wav'))
+                #        self.gun.set_volume(0.2)
+                #        pg.mixer.Sound.play(self.gun)
+                #    if self.gun_select == 1:
+                #        self.shotgun = pg.mixer.Sound(os.path.join(self.sounds, '샷건.wav'))
+                #        self.shotgun.set_volume(0.2)
+                #        pg.mixer.Sound.play(self.shotgun)
+                #    if self.gun_select == 2:
+                #        self.sniper = pg.mixer.Sound(os.path.join(self.sounds, '스나이퍼.wav'))
+                #        self.sniper.set_volume(0.2)
+                #        pg.mixer.Sound.play(self.sniper)
+                #    if self.gun_select == 3:
+                #        self.fire = pg.mixer.Sound(os.path.join(self.sounds, '화방.wav'))
+                #        self.fire.set_volume(1)
+                #        pg.mixer.Sound.play(self.fire)
+                #    self.last_shot = self.now
+                #    print('once plz')
+#
         if key[2]:
             #마우스 우클릭시
             if self.grenade[0]:
-                self.explosion = pg.mixer.Sound(os.path.join(self.sounds, '수류탄.wav'))
-                self.gun.set_volume(0.5)
-                pg.mixer.Sound.play(self.explosion)
+                
                 now = pg.time.get_ticks()
                 if now - self.last_grenade > GRENADE_RATE:
                     self.last_grenade = now
@@ -194,6 +203,10 @@ class Player(pg.sprite.Sprite):
             for i in range(WEAPONS[self.weapon]['bullet_count']):
                 spread = random.uniform(-WEAPONS[self.weapon]['spread'], WEAPONS[self.weapon]['spread'])
                 Bullet(self.game, pos, dir.rotate(spread), gun_select)
+
+            self.sound = self.sound_dict[self.weapon]
+            self.sound.set_volume(0.5)
+            pg.mixer.Sound.play(self.sound)
 
             self.gun_status[self.gun_select][1] -= WEAPONS[self.weapon]['bullet_count'] 
             if self.gun_select == 0:
@@ -404,7 +417,13 @@ class Grenade(pg.sprite.Sprite):
 
         if pg.time.get_ticks() - self.spawn_time > GRENADE_LIFETIME:
             self.kill()
+            self.sounds = os.path.join('Sound')
+
+            self.explosion = pg.mixer.Sound(os.path.join(self.sounds, '수류탄.wav'))
+            self.explosion.set_volume(0.5)
+            pg.mixer.Sound.play(self.explosion)
             Explode(self.game, self.pos)
+
 
     def reflect_with_walls(self,dir):
         if dir == 'x':
