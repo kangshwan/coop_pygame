@@ -78,11 +78,10 @@ class Game:
         self.ground       = pg.sprite.Group()
         self.boss_bullet = pg.sprite.Group()
         
-        self.spwaned_enemy = 0
+        self.spawned_enemy = 0
         self.feed_pos = []
         self.enemy_pos = []
         self.paused = False
-
         self.boss_pos = ()
         self.boss_spawn = True
         self.paused_text = False
@@ -153,7 +152,7 @@ class Game:
                 self.player = Player(self, tile_object.x, tile_object.y) 
             if tile_object.name == 'enemy_spawn':
                 self.enemy_pos.append((tile_object.x, tile_object.y))
-                Enemy(self, tile_object.x, tile_object.y)
+                #Enemy(self, tile_object.x, tile_object.y)
             if tile_object.name == 'wall':
                 Obstacle(self, tile_object.x, tile_object.y, tile_object.width, tile_object.height)
             if tile_object.name == 'boss':
@@ -203,11 +202,16 @@ class Game:
         #update에서 Enemy 생성
         if self.now - self.enemy_spawned > ENEMY_SPAWN_TIME:
             if self.boss_spawn:
+                i=0
                 for e_position in self.enemy_pos:
-                    #3초마다 해당 장소에서 생성. 추후 enemy_pos를 list로 쓸경우 for문 안에넣고 index들로 접근해서 생성하면 될듯.
 
-                    Enemy(self, e_position[0], e_position[1])
-                    self.enemy_spawned = self.now
+                    #3초마다 해당 장소에서 생성. 추후 enemy_pos를 list로 쓸경우 for문 안에넣고 index들로 접근해서 생성하면 될듯.
+                    if self.spawned_enemy < MAX_ENEMY:
+                        print(i+1,'spawn!')
+                        Enemy(self, e_position[0], e_position[1])
+                        self.enemy_spawned = self.now
+                        self.spawned_enemy += 1
+                        i+=1
         self.second = ((pg.time.get_ticks() - self.start_tick)/1000)
 
         #update에서 Boss 생성
@@ -258,7 +262,6 @@ class Game:
         
         for hit in hits:
             self.item_no = hit.item_no
-            print(hit.item_no)
             for position in self.feed_pos:
                 if (hit.pos.x,hit.pos.y) == position[0]:
                     position[1] = False
@@ -278,6 +281,7 @@ class Game:
             if hit.item_no == 2:
                 #damage up
                 self.player.weapon_damage *= 2.0
+                self.player.grenade_damage *= 2.0
                 self.player.last_weapon_damage = pg.time.get_ticks()
 
             if hit.item_no == 3:
@@ -499,6 +503,7 @@ class Game:
         draw_player_health(self.screen, 10, HEIGHT - 40, self.player.health, self.player.amor ,self.player.max_health)
         draw_gun_list(self.screen, self.player.gun_status, self.player.gun_select)
         draw_grenade_list(self.screen, self.player.grenade[1])
+        draw_bullet_ratio(self.screen, WIDTH-40, (HEIGHT/4)+(HEIGHT/7),self.player.gun_select,self.player.gun_status[self.player.gun_select][1])
         draw_money(self.screen, 10, 10, self.player.money,self.poke_font)
         if not self.boss_spawn:
             draw_boss_health(self.screen, WIDTH/2-(TILESIZE*2), 2, self.boss.health)
@@ -660,6 +665,5 @@ while g.start:
         # this g.running will take control of game over or not
         g.new()
         g.show_over_screen()
-    print('out!')
 pg.quit()
 

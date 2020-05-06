@@ -45,7 +45,7 @@ WEAPONS['pistol']       = {'bullet_speed': 350,
                            'bullet_lifetime': 700,
                            'rate': 500,
                            'damage': 10,
-                           'spread': 2,
+                           'spread': 0,
                            'size': (6,6),
                            'bullet_count': 1,
                            'barrel_offset': vec(38, -5),
@@ -64,7 +64,7 @@ WEAPONS['shotgun']      = {'bullet_speed': 300,
 WEAPONS['sniper']       = {'bullet_speed': 800,
                            'bullet_lifetime': 700,
                            'rate': 1500,
-                           'damage': 13,
+                           'damage': 20,
                            'spread': 0,
                            'size': (5,3),
                            'bullet_count': 1,
@@ -82,6 +82,8 @@ WEAPONS['flamethrower'] = {'bullet_speed': 100,
                            'barrel_offset_fliped': vec(40, 4)}
 
 WEAPON_PRICE = [0, 100, 200, 300]
+MAX_BULLET = [0, 120, 10, 1000]
+BULLET_GAUGE = ['bullet_gauge_1.png','bullet_gauge_2.png','bullet_gauge_3.png','bullet_gauge_4.png','bullet_gauge_5.png', 'bullet_gauge_6.png']
 # grenade properties
 GRENADE_SPEED = 800
 GRENADE_LIFETIME = 1500

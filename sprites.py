@@ -65,7 +65,7 @@ class Player(pg.sprite.Sprite):
         self.acc = vec(0,0)
         self.rot = 0
         self.last_shot = -3000
-        self.gun_status = [[True,1], [False, 0],[False, 0],[False, 0]]
+        self.gun_status = [[True,0], [False, 0],[False, 0],[False, 0]]
         # 0 is pistol, 1 is shotgun, 2 is sniper 3 is flamethrower
         self.last_grenade = 0
         #0 is pistol 1 is shotgun
@@ -79,6 +79,7 @@ class Player(pg.sprite.Sprite):
         self.weapon = 'pistol'
         self.weapon_rate = WEAPONS[self.weapon]['rate']
         self.weapon_damage = WEAPONS[self.weapon]['damage']
+        self.grenade_damage = GRENADE_DAMAGE
         self.grenade = [True, 3]
         self.money = 0
         self.kill_enemy = 0
@@ -174,6 +175,7 @@ class Player(pg.sprite.Sprite):
 
             self.gun_status[self.gun_select][1] -= WEAPONS[self.weapon]['bullet_count'] 
             if self.gun_select == 0:
+                self.gun_status[self.gun_select][1]=0
                 pass
             elif self.gun_status[self.gun_select][1] <= 0:
                 self.gun_status[self.gun_select][0] = False
@@ -219,6 +221,7 @@ class Player(pg.sprite.Sprite):
 
         if self.now - self.last_weapon_damage > SPEEDUP_RATE:
             self.weapon_damage = WEAPONS[self.weapon]['damage']
+
         if self.amor <= 0:
             self.amor = 0
 
@@ -482,7 +485,7 @@ class Enemy(pg.sprite.Sprite):
         if self.health <= 0:
             self.game.player.money += 100
             self.game.player.kill_enemy += 1
-            self.game.spwaned_enemy -= self.game.player.kill_enemy
+            self.game.spawned_enemy -= self.game.player.kill_enemy
 
             self.kill()
             

@@ -355,7 +355,7 @@
   <object id="30" name="wall" x="224" y="672" width="288" height="96"/>
   <object id="32" name="wall" x="224" y="352" width="512" height="96"/>
   <object id="43" name="boss" x="800" y="704" width="24" height="24"/>
-  <object id="53" name="enemy_spawn" x="1028" y="312" width="24" height="24"/>
+  <object id="53" name="enemy_spawn" x="800" y="-96" width="56" height="56"/>
   <object id="54" name="wall" x="576" y="672" width="32" height="32"/>
   <object id="55" name="wall" x="451" y="584" width="24" height="84"/>
   <object id="60" name="wall" x="352" y="992" width="128" height="96"/>
@@ -402,14 +402,14 @@
    <ellipse/>
   </object>
   <object id="117" name="wall" x="32" y="0" width="64" height="32"/>
-  <object id="118" name="enemy_spawn" x="968" y="828" width="24" height="24"/>
-  <object id="119" name="enemy_spawn" x="506.667" y="853.333" width="24" height="24"/>
-  <object id="120" name="enemy_spawn" x="188" y="1036" width="24" height="24"/>
-  <object id="121" name="enemy_spawn" x="514.667" y="1217.33" width="24" height="24"/>
-  <object id="122" name="enemy_spawn" x="142.667" y="482.667" width="24" height="24"/>
-  <object id="123" name="enemy_spawn" x="538.667" y="122.667" width="24" height="24"/>
-  <object id="124" name="enemy_spawn" x="989" y="1379" width="24" height="24"/>
-  <object id="125" name="enemy_spawn" x="546" y="519" width="24" height="24"/>
+  <object id="118" name="enemy_spawn" x="704" y="1664" width="24" height="24"/>
+  <object id="119" name="enemy_spawn" x="-64" y="768" width="24" height="24"/>
+  <object id="120" name="enemy_spawn" x="-128" y="800" width="24" height="24"/>
+  <object id="121" name="enemy_spawn" x="-64" y="832" width="24" height="24"/>
+  <object id="122" name="enemy_spawn" x="1024" y="288" width="24" height="24"/>
+  <object id="123" name="enemy_spawn" x="768" y="-64" width="24" height="24"/>
+  <object id="124" name="enemy_spawn" x="800" y="1696" width="24" height="24"/>
+  <object id="125" name="enemy_spawn" x="640" y="1248" width="24" height="24"/>
   <object id="126" name="wall" x="96" y="-32" width="640" height="32"/>
   <object id="132" name="item" x="352" y="608" width="24" height="24"/>
   <object id="133" name="item" x="960" y="384" width="24" height="24"/>
@@ -422,13 +422,13 @@
   <object id="140" name="item" x="96" y="0" width="24" height="24"/>
   <object id="141" name="item" x="640" y="800" width="24" height="24"/>
   <object id="142" name="item" x="928" y="768" width="24" height="24"/>
-  <object id="146" name="enemy_spawn" x="1096" y="956" width="24" height="24"/>
-  <object id="147" name="enemy_spawn" x="1288" y="796" width="24" height="24"/>
-  <object id="148" name="enemy_spawn" x="1000" y="956" width="24" height="24"/>
-  <object id="149" name="enemy_spawn" x="1288" y="636" width="24" height="24"/>
-  <object id="151" name="enemy_spawn" x="1352" y="540" width="24" height="24"/>
-  <object id="153" name="enemy_spawn" x="1384" y="220" width="24" height="24"/>
-  <object id="159" name="enemy_spawn" x="893" y="1071" width="24" height="24"/>
+  <object id="146" name="enemy_spawn" x="1440" y="1248" width="24" height="24"/>
+  <object id="147" name="enemy_spawn" x="1696" y="736" width="24" height="24"/>
+  <object id="148" name="enemy_spawn" x="864" y="1664" width="24" height="24"/>
+  <object id="149" name="enemy_spawn" x="1664" y="864" width="24" height="24"/>
+  <object id="151" name="enemy_spawn" x="1696" y="640" width="24" height="24"/>
+  <object id="153" name="enemy_spawn" x="864" y="-32" width="24" height="24"/>
+  <object id="159" name="enemy_spawn" x="544" y="160" width="24" height="24"/>
   <object id="160" name="wall" x="832" y="1568" width="736" height="32"/>
   <object id="161" name="wall" x="1568" y="0" width="32" height="768"/>
   <object id="162" name="wall" x="0" y="0" width="32" height="768"/>

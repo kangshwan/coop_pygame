@@ -140,6 +140,29 @@ def draw_money(surf, x, y, money_amount, in_font):
     text = font.render(f"Money: {money_amount}",True, GOLD)
     surf.blit(text, (x,y))  
     pass
+
+def draw_bullet_ratio(surf, x, y, gunselect, bullet_left):
+    game_folder = path.dirname(__file__)
+    img_folder = path.join(game_folder, 'Image','weapon')
+    if bullet_left >= MAX_BULLET[gunselect]:
+        pct = 1
+    else:
+        pct = bullet_left/MAX_BULLET[gunselect]
+    if pct >= 1:
+        bullet_img = pg.transform.scale(pg.image.load(path.join(img_folder, BULLET_GAUGE[0])),(30, int(HEIGHT/4)))
+    elif pct >= 0.8:
+        bullet_img = pg.transform.scale(pg.image.load(path.join(img_folder, BULLET_GAUGE[1])),(30, int((HEIGHT/4)*0.8)))
+    elif pct >= 0.6:
+        bullet_img = pg.transform.scale(pg.image.load(path.join(img_folder, BULLET_GAUGE[2])),(30, int((HEIGHT/4)*0.6)))
+    elif pct >= 0.4:
+        bullet_img = pg.transform.scale(pg.image.load(path.join(img_folder, BULLET_GAUGE[3])),(30, int((HEIGHT/4)*0.4)))
+    elif pct > 0:
+        bullet_img = pg.transform.scale(pg.image.load(path.join(img_folder, BULLET_GAUGE[4])),(30, int((HEIGHT/4)*0.2)))
+    else:
+        bullet_img = pg.transform.scale(pg.image.load(path.join(img_folder, BULLET_GAUGE[5])),(1, 1))
+    
+    surf.blit(bullet_img, (x,y))
+    
 gun_button=[]
 for i in range(4):
     gun_button.append(Button(BAR_LENGTH + 40 + i * 80, HEIGHT-60,40,40,i))
