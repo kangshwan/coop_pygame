@@ -1,4 +1,5 @@
-# coop_pygame
+# Zombie Survival  
+만약 실행이 되지 않는다면 pytmx와 pytweening을 설치해주세요!(pip 이용)   
 세상이 좀비로 뒤덮였다!  
 좀비를 처치하고, 살아남아라!  
 게임방법:  
