@@ -17,5 +17,5 @@ ctrl+2,3,4로 총기 구매(1번 총은 무한)
 체력 회복  
 방어력 추가  
 
-
+pytmx, pytweening package download needed.
 
