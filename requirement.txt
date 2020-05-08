@@ -1,0 +1,2 @@
+pytmx, pytweening을 요구합니다.
+pip install 바람.
