@@ -23,3 +23,28 @@ pytweening==1.0.4
 
 pip install -r requirements.txt
 이용하여 패키지 다운로드
+
+# 🤝 Contributers
+<a href = "https://github.com/kangshwan">
+  <img src="https://avatars.githubusercontent.com/u/46666296?v=4" alt="seunghwan" width="80" style="max-width:100%" />
+</a>
+<a href = "https://github.com/cjw9506">
+  <img src="https://avatars.githubusercontent.com/u/63503519?v=4" alt="ㅓiwon" width="80" style="max-width:100%" />
+</a>
+<a href = "https://github.com/JungSoonIn">
+  <img src="https://avatars.githubusercontent.com/u/64190835?v=4" alt="soonin" width="80" style="max-width:100%" />
+</a>
+<table class="tg">
+<tbody>
+    <tr>
+        <td>강승환</td>
+        <td>정지원</td>
+        <td>정순인</td>
+    </tr>
+    <tr>
+        <td><a href="https://github.com/kangshwan">@kangshwan</a></td>
+        <td><a href="https://github.com/cjw9506">@cjw9506</a></td>
+        <td><a href="https://github.com/JungSoonIn">@JungsoonIn</a></td>
+    </tr>
+</tbody>
+</table>
